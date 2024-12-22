@@ -1,14 +1,9 @@
-/* public/admin_mezzi.css */
+/* styles.css */
 
 body {
     font-family: 'Roboto', sans-serif;
     margin: 20px;
     background-color: #f4f4f4;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 h1, h2 {
@@ -17,155 +12,124 @@ h1, h2 {
     margin-bottom: 20px;
 }
 
-.btn {
-    padding: 10px 15px;
+form {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+form label {
+    display: block;
+    margin-top: 10px;
+}
+
+form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
     background-color: #6c63ff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: 10px;
-    font-size: 14px;
+    width: 100%;
+    font-size: 16px;
     transition: background-color 0.3s;
 }
 
-.btn:hover {
+button:hover {
     background-color: #5753d3;
 }
 
-.btn-add {
-    background-color: #28a745;
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-.btn-add:hover {
-    background-color: #218838;
-}
-
-.btn-save {
-    background-color: #007bff;
-}
-
-.btn-save:hover {
-    background-color: #0069d9;
-}
-
-.btn-delete {
-    background-color: #dc3545;
-}
-
-.btn-delete:hover {
-    background-color: #c82333;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #6c63ff;
-    color: white;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 5px;
-}
-
-/* Modal */
+/* Stili per i modali */
 .modal {
-    display: none; 
-    position: fixed;
-    z-index: 9999;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px 30px;
+    margin: auto;
+    padding: 20px;
     border: 1px solid #888;
-    width: 400px;
-    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
     position: relative;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    border-radius: 10px;
 }
 
-.close-button {
+.close {
     color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 25px;
     font-size: 28px;
     font-weight: bold;
-    position: absolute;
-    right: 15px;
-    top: 10px;
     cursor: pointer;
 }
 
-.close-button:hover,
-.close-button:focus {
-    color: #000;
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.form-group {
-    margin-bottom: 15px;
-    text-align: left;
+/* Stili per il configuratore */
+#configurator {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.button-group button {
+    width: 48%;
+}
+
+.prezzo-totale {
     font-weight: bold;
-}
-
-input[type="text"],
-input[type="number"],
-select {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-#confirmDeleteButton:disabled {
-    background-color: #e0e0e0;
-    cursor: not-allowed;
-    color: #888;
+    color: #6c63ff;
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
-    .modal-content {
-        width: 90%;
-        margin: 20% auto;
-    }
-
-    .action-buttons {
+    .button-group {
         flex-direction: column;
     }
 
-    .btn-toggle,
-    .btn-edit,
-    .btn-delete {
+    .button-group button {
         width: 100%;
+        margin-bottom: 10px;
     }
 }

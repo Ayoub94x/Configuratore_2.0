@@ -12,6 +12,16 @@ function formatCurrency(value) {
 }
 
 /**
+ * Funzione per calcolare il prezzo scontato
+ * @param {number} prezzo - Prezzo originale
+ * @param {number} sconto - Percentuale di sconto
+ * @returns {number} - Prezzo scontato
+ */
+function getPrezzoScontato(prezzo, sconto) {
+  return prezzo - (prezzo * sconto / 100);
+}
+
+/**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
  */
@@ -36,10 +46,70 @@ let configurazione = {
   prezzoTotale: 0,               // Prezzo totale base (senza quantità/sconti finali)
   scontoExtra: 0,                // Valore in €
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
-  currentStep: null              // Passo corrente
+  currentStep: null,             // Passo corrente
+  quantità: 1                     // Quantità selezionata
 };
 
-// Funzione per capitalizzare una stringa
+// Dati di base per i mezzi
+configurazione.data = {
+  categorie: {
+    "AUTOMEZZI": {
+      indicazioni: "Seleziona l'automezzo adatto alle tue esigenze.",
+      opzioni: [
+        { nome: "Automezzo 1 (10 Ton)", prezzo: 50000, sconto: 5 },
+        { nome: "Automezzo 2 (15 Ton)", prezzo: 75000, sconto: 10 },
+        { nome: "Automezzo 3 (20 Ton)", prezzo: 100000, sconto: 15 }
+      ]
+    },
+    "Allestimento": {
+      indicazioni: "Scegli il tipo di allestimento per il tuo automezzo.",
+      opzioni: [
+        { nome: "Allestimento Base", prezzo: 10000, sconto: 0 },
+        { nome: "Allestimento Avanzato", prezzo: 20000, sconto: 10 }
+      ]
+    },
+    "GRU": {
+      indicazioni: "Seleziona il modello di GRU.",
+      opzioni: [
+        { nome: "GRU A", prezzo: 30000, sconto: 5 },
+        { nome: "GRU B", prezzo: 45000, sconto: 10 }
+      ]
+    },
+    "Compattatore": {
+      indicazioni: "Scegli il tipo di compattatore.",
+      opzioni: [
+        { nome: "Compattatore Standard", prezzo: 15000, sconto: 0 },
+        { nome: "Compattatore Pro", prezzo: 25000, sconto: 10 }
+      ]
+    },
+    "Lavacontenitori": {
+      indicazioni: "Seleziona il sistema di lavacontenitori.",
+      opzioni: [
+        { nome: "Lavacontenitori Manuale", prezzo: 5000, sconto: 0 },
+        { nome: "Lavacontenitori Automatico", prezzo: 15000, sconto: 15 }
+      ]
+    },
+    "Accessori": {
+      indicazioni: "Aggiungi accessori al tuo automezzo.",
+      opzioni: [
+        { nome: "Accessorio 1", prezzo: 2000, sconto: 0 },
+        { nome: "Accessorio 2", prezzo: 4000, sconto: 5 },
+        { nome: "Accessorio 3", prezzo: 6000, sconto: 10 }
+      ]
+    },
+    "PLUS": {
+      indicazioni: "Aggiungi funzioni extra al tuo automezzo.",
+      opzioni: [
+        { nome: "Funzione Extra 1", prezzo: 3000, sconto: 0 },
+        { nome: "Funzione Extra 2", prezzo: 5000, sconto: 5 }
+      ]
+    }
+  }
+};
+
+/* ----------------------------------------------
+   Funzione di capitalizzazione di una stringa
+----------------------------------------------- */
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -47,7 +117,7 @@ function capitalize(str) {
 /* ----------------------------------------------
    Registrazione: gestisce il form utente
 ----------------------------------------------- */
-document.getElementById("userForm").addEventListener("submit", async function (e) {
+document.getElementById("userForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
   const nome = document.getElementById("nome").value.trim();
@@ -60,47 +130,93 @@ document.getElementById("userForm").addEventListener("submit", async function (e
     return;
   }
 
-  try {
-    // Chiamata reale al server per verificare il codice sconto
-    const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/validate-code', { // Endpoint corretto
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ code: discountCode })
-    });
+  // Simulazione della verifica del codice sconto
+  // In assenza di un database, utilizziamo una semplice logica
+  // Puoi espandere questa logica come preferisci
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Errore nella verifica del codice sconto.');
-    }
-
-    const customerData = await response.json();
-
-    // Aggiorna l'oggetto configurazione con i dati del cliente
-    configurazione.userInfo = { nome, cognome, azienda };
-    configurazione.customer = {
-      code: customerData.code,
-      name: customerData.name,
-      discounts: customerData.discounts,
-      extra_discount: customerData.extra_discount,
-      usage_limit: customerData.usage_limit,
-      is_active: customerData.is_active,
-      usage_count: customerData.usage_count
-    };
-    configurazione.selections = {};
-    configurazione.prezzoTotale = 0;
-    configurazione.scontoExtra = 0;
-    configurazione.prezzoTotaleScontato = 0;
-
-    document.getElementById("registration").style.display = "none";
-    document.getElementById("configurator").style.display = "block";
-    showStep("automezzi");
-  } catch (error) {
-    console.error(error);
-    showWarningModal(`Errore: ${error.message}`);
+  const scontoValido = validateDiscountCode(discountCode);
+  if (!scontoValido) {
+    showWarningModal("Codice sconto non valido o scaduto.");
+    return;
   }
+
+  // Aggiorna l'oggetto configurazione con i dati del cliente
+  configurazione.userInfo = { nome, cognome, azienda };
+  configurazione.customer = {
+    code: discountCode,
+    name: "Cliente Premium",
+    discounts: scontoValido.discounts,
+    extra_discount: scontoValido.extra_discount,
+    usage_limit: scontoValido.usage_limit,
+    is_active: true,
+    usage_count: scontoValido.usage_count
+  };
+  configurazione.selections = {};
+  configurazione.prezzoTotale = 0;
+  configurazione.scontoExtra = 0;
+  configurazione.prezzoTotaleScontato = 0;
+
+  document.getElementById("registration").style.display = "none";
+  document.getElementById("configurator").style.display = "block";
+  showStep("AUTOMEZZI");
 });
+
+/* ----------------------------------------------
+   Funzione di Validazione del Codice Sconto
+   In un contesto reale, questa logica dovrebbe essere gestita dal backend
+----------------------------------------------- */
+function validateDiscountCode(code) {
+  // Esempio di codici sconto
+  const codiciSconto = {
+    "PROMO10": {
+      discounts: {
+        "AUTOMEZZI": 10,
+        "Allestimento": 5,
+        "GRU": 0,
+        "Compattatore": 0,
+        "Lavacontenitori": 0,
+        "Accessori": 0,
+        "PLUS": 0
+      },
+      extra_discount: {
+        active: true,
+        type: "percentuale", // "percentuale" o "fisso"
+        value: 5
+      },
+      usage_limit: 100,
+      usage_count: 10,
+      is_active: true
+    },
+    "PROMO20": {
+      discounts: {
+        "AUTOMEZZI": 20,
+        "Allestimento": 10,
+        "GRU": 5,
+        "Compattatore": 5,
+        "Lavacontenitori": 5,
+        "Accessori": 5,
+        "PLUS": 5
+      },
+      extra_discount: {
+        active: true,
+        type: "fisso", // "percentuale" o "fisso"
+        value: 100
+      },
+      usage_limit: 50,
+      usage_count: 25,
+      is_active: true
+    }
+    // Aggiungi altri codici sconto qui
+  };
+
+  if (codiciSconto[code] && codiciSconto[code].is_active) {
+    const codice = codiciSconto[code];
+    if (codice.usage_count < codice.usage_limit) {
+      return codice;
+    }
+  }
+  return null;
+}
 
 /* ----------------------------------------------
    Navigazione tra i vari step del configuratore
@@ -116,199 +232,300 @@ function showStep(step) {
   }
 
   switch (step) {
-    case "automezzi":
+    case "AUTOMEZZI":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-truck"></i> Seleziona l'Automezzo</h2>
-        <p>Scegli la categoria e il modello dell'automezzo.</p>
+        <p>${configurazione.data.categorie["AUTOMEZZI"].indicazioni}</p>
         <select id="automezziCategoria">
           <option value="">-- Seleziona Categoria --</option>
-          <option value="AUTOMEZZI">AUTOMEZZI</option>
-          <option value="GRU">GRU</option>
-          <option value="Compattatore">Compattatore</option>
-          <option value="Lavacontenitori">Lavacontenitori</option>
-          <option value="Accessori">Accessori</option>
-          <option value="PLUS">PLUS</option>
+          ${configurazione.data.categorie["AUTOMEZZI"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
         </select>
-        <div id="automezziOpzioni" style="margin-top: 20px;"></div>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
-          ${avantiButton("allestimento")}
+          ${avantiButton("Allestimento")}
         </div>
       `;
 
       document
         .getElementById("automezziCategoria")
-        .addEventListener("change", async function () {
-          const categoria = this.value;
-          const opzioniDiv = document.getElementById("automezziOpzioni");
-          opzioniDiv.innerHTML = "";
-
-          if (categoria) {
-            try {
-              const response = await fetch(`https://configuratore-2-0.onrender.com/api/mezzi/categoria/${encodeURIComponent(categoria)}`);
-              if (!response.ok) {
-                throw new Error('Errore nel recupero delle opzioni.');
-              }
-              const mezzo = await response.json();
-              if (mezzo && mezzo.categoria && mezzo.categoria.opzioni.length > 0) {
-                const select = document.createElement("select");
-                select.id = "automezziOpzione";
-                select.innerHTML = `<option value="">-- Seleziona Opzione --</option>`;
-                mezzo.categoria.opzioni.forEach(opzione => {
-                  select.innerHTML += `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzoScontato)}</option>`;
-                });
-                opzioniDiv.appendChild(select);
-
-                // Gestione della selezione
-                select.addEventListener("change", function () {
-                  const opzioneSelezionata = mezzo.categoria.opzioni.find(op => op.nome === this.value);
-                  if (opzioneSelezionata) {
-                    configurazione.selections["AUTOMEZZI"] = {
-                      nome: opzioneSelezionata.nome,
-                      prezzo: opzioneSelezionata.prezzoScontato
-                    };
-                    document.getElementById("currentSelectionPrice").textContent =
-                      `Prezzo Selezione Corrente: ${formatCurrency(opzioneSelezionata.prezzoScontato)}`;
-                  } else {
-                    delete configurazione.selections["AUTOMEZZI"];
-                    document.getElementById("currentSelectionPrice").textContent =
-                      `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
-                  }
-                  // Aggiorna prezzo parziale (no sconto quantità né sconto extra)
-                  aggiornaPrezzo(false);
-                });
-              } else {
-                opzioniDiv.innerHTML = "<p>Nessuna opzione disponibile per questa categoria.</p>";
-              }
-            } catch (error) {
-              console.error(error);
-              showWarningModal("Errore nel recupero delle opzioni.");
-            }
+        .addEventListener("change", function () {
+          const selectedOpzione = configurazione.data.categorie["AUTOMEZZI"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
+            configurazione.selections["AUTOMEZZI"] = {
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["AUTOMEZZI"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
-          // Aggiorna prezzo parziale
+          // Aggiorna prezzo parziale (no sconto quantità né sconto extra)
           aggiornaPrezzo(false);
         });
       break;
 
-    case "allestimento":
+    case "Allestimento":
       configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-tools"></i> Seleziona l'Allestimento</h2>
-        <p>Scegli il tipo di allestimento.</p>
+        <h2><i class="fas fa-tools"></i> Seleziona Allestimento</h2>
+        <p>${configurazione.data.categorie["Allestimento"].indicazioni}</p>
         <select id="allestimentoCategoria">
           <option value="">-- Seleziona Allestimento --</option>
-          <option value="Scarrabile">Scarrabile</option>
-          <option value="Fisso">Fisso</option>
+          ${configurazione.data.categorie["Allestimento"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
         </select>
-        <div id="allestimentoOpzioni" style="margin-top: 20px;"></div>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
-          <button onclick="prevStep('automezzi')">
+          <button onclick="prevStep('AUTOMEZZI')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
-          ${avantiButton("gru")}
+          ${avantiButton("GRU")}
         </div>
       `;
 
       document
         .getElementById("allestimentoCategoria")
-        .addEventListener("change", async function () {
-          const tipo = this.value;
-          const opzioniDiv = document.getElementById("allestimentoOpzioni");
-          opzioniDiv.innerHTML = "";
-
-          if (tipo) {
-            try {
-              const response = await fetch(`https://configuratore-2-0.onrender.com/api/mezzi/allestimento/${encodeURIComponent(tipo)}`);
-              if (!response.ok) {
-                throw new Error('Errore nel recupero delle opzioni di allestimento.');
-              }
-              const mezzo = await response.json();
-              if (mezzo && mezzo.categoria && mezzo.categoria.opzioni.length > 0) {
-                const select = document.createElement("select");
-                select.id = "allestimentoOpzione";
-                select.innerHTML = `<option value="">-- Seleziona Opzione --</option>`;
-                mezzo.categoria.opzioni.forEach(opzione => {
-                  select.innerHTML += `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzoScontato)}</option>`;
-                });
-                opzioniDiv.appendChild(select);
-
-                // Gestione della selezione
-                select.addEventListener("change", function () {
-                  const opzioneSelezionata = mezzo.categoria.opzioni.find(op => op.nome === this.value);
-                  if (opzioneSelezionata) {
-                    configurazione.selections["Allestimento"] = {
-                      nome: opzioneSelezionata.nome,
-                      prezzo: opzioneSelezionata.prezzoScontato
-                    };
-                    document.getElementById("currentSelectionPrice").textContent =
-                      `Prezzo Selezione Corrente: ${formatCurrency(opzioneSelezionata.prezzoScontato)}`;
-                  } else {
-                    delete configurazione.selections["Allestimento"];
-                    document.getElementById("currentSelectionPrice").textContent =
-                      `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
-                  }
-                  // Aggiorna prezzo parziale
-                  aggiornaPrezzo(false);
-                });
-              } else {
-                opzioniDiv.innerHTML = "<p>Nessuna opzione disponibile per questo tipo di allestimento.</p>";
-              }
-            } catch (error) {
-              console.error(error);
-              showWarningModal("Errore nel recupero delle opzioni di allestimento.");
-            }
+        .addEventListener("change", function () {
+          const selectedOpzione = configurazione.data.categorie["Allestimento"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
+            configurazione.selections["Allestimento"] = {
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["Allestimento"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
 
-    // Continua a implementare gli altri passaggi (GRU, Compattatore, Lavacontenitori, Accessori, PLUS) seguendo lo stesso schema.
-
-    case "gru":
+    case "GRU":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-crane"></i> Seleziona la GRU</h2>
-        <p>Scegli il modello di GRU.</p>
-        <select id="gruModello">
+        <p>${configurazione.data.categorie["GRU"].indicazioni}</p>
+        <select id="gruCategoria">
           <option value="">-- Seleziona GRU --</option>
-          <option value="2AS Kinshofer">2AS Kinshofer - ${formatCurrency(125000)}</option>
-          <option value="2AS F90">2AS F90 - ${formatCurrency(125000)}</option>
+          ${configurazione.data.categorie["GRU"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
-          <button onclick="prevStep('allestimento')">
+          <button onclick="prevStep('Allestimento')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
-          ${avantiButton("compattatore")}
+          ${avantiButton("Compattatore")}
         </div>
       `;
 
       document
-        .getElementById("gruModello")
+        .getElementById("gruCategoria")
         .addEventListener("change", function () {
-          const modello = this.value;
-          if (modello) {
-            const prezzo = 125000; // Prezzo fisso per entrambi i modelli
+          const selectedOpzione = configurazione.data.categorie["GRU"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["GRU"] = {
-              nome: modello,
-              prezzo: prezzo
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
           } else {
             delete configurazione.selections["GRU"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
 
-    // Implementa gli altri step seguendo questo schema
-    // ...
+    case "Compattatore":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-trash"></i> Seleziona Compattatore</h2>
+        <p>${configurazione.data.categorie["Compattatore"].indicazioni}</p>
+        <select id="compattatoreCategoria">
+          <option value="">-- Seleziona Compattatore --</option>
+          ${configurazione.data.categorie["Compattatore"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('GRU')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("Lavacontenitori")}
+        </div>
+      `;
+
+      document
+        .getElementById("compattatoreCategoria")
+        .addEventListener("change", function () {
+          const selectedOpzione = configurazione.data.categorie["Compattatore"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
+            configurazione.selections["Compattatore"] = {
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["Compattatore"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          // Aggiorna prezzo parziale
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "Lavacontenitori":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-washer"></i> Seleziona Lavacontenitori</h2>
+        <p>${configurazione.data.categorie["Lavacontenitori"].indicazioni}</p>
+        <select id="lavacontenitoriCategoria">
+          <option value="">-- Seleziona Lavacontenitori --</option>
+          ${configurazione.data.categorie["Lavacontenitori"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('Compattatore')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("Accessori")}
+        </div>
+      `;
+
+      document
+        .getElementById("lavacontenitoriCategoria")
+        .addEventListener("change", function () {
+          const selectedOpzione = configurazione.data.categorie["Lavacontenitori"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
+            configurazione.selections["Lavacontenitori"] = {
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["Lavacontenitori"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          // Aggiorna prezzo parziale
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "Accessori":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-cogs"></i> Seleziona Accessori</h2>
+        <p>${configurazione.data.categorie["Accessori"].indicazioni}</p>
+        <select id="accessoriCategoria">
+          <option value="">-- Seleziona Accessorio --</option>
+          ${configurazione.data.categorie["Accessori"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('Lavacontenitori')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("PLUS")}
+        </div>
+      `;
+
+      document
+        .getElementById("accessoriCategoria")
+        .addEventListener("change", function () {
+          const selectedOpzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
+            configurazione.selections["Accessori"] = {
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["Accessori"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          // Aggiorna prezzo parziale
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "PLUS":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-plus-circle"></i> Seleziona PLUS</h2>
+        <p>${configurazione.data.categorie["PLUS"].indicazioni}</p>
+        <select id="plusCategoria">
+          <option value="">-- Seleziona PLUS --</option>
+          ${configurazione.data.categorie["PLUS"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .join("")}
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('Accessori')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("resoconto")}
+        </div>
+      `;
+
+      document
+        .getElementById("plusCategoria")
+        .addEventListener("change", function () {
+          const selectedOpzione = configurazione.data.categorie["PLUS"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
+            configurazione.selections["PLUS"] = {
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["PLUS"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          // Aggiorna prezzo parziale
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "resoconto":
+      mostraResoconto();
+      return;
 
     default:
       configuratorDiv.innerHTML = "<p>Step non riconosciuto.</p>";
@@ -323,21 +540,54 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Controlli specifici per ogni step
-  if (stepCorrente === "automezzi") {
+  if (stepCorrente === "AUTOMEZZI") {
     if (!configurazione.selections["AUTOMEZZI"]) {
       showWarningModal("Per continuare devi selezionare un'automezzo!");
       return;
     }
   }
 
-  if (stepCorrente === "allestimento") {
+  if (stepCorrente === "Allestimento") {
     if (!configurazione.selections["Allestimento"]) {
       showWarningModal("Per continuare devi selezionare un allestimento!");
       return;
     }
   }
 
-  // Aggiungi altri controlli per gli altri step se necessario
+  if (stepCorrente === "GRU") {
+    if (!configurazione.selections["GRU"]) {
+      showWarningModal("Per continuare devi selezionare una GRU!");
+      return;
+    }
+  }
+
+  if (stepCorrente === "Compattatore") {
+    if (!configurazione.selections["Compattatore"]) {
+      showWarningModal("Per continuare devi selezionare un Compattatore!");
+      return;
+    }
+  }
+
+  if (stepCorrente === "Lavacontenitori") {
+    if (!configurazione.selections["Lavacontenitori"]) {
+      showWarningModal("Per continuare devi selezionare un Lavacontenitori!");
+      return;
+    }
+  }
+
+  if (stepCorrente === "Accessori") {
+    if (!configurazione.selections["Accessori"]) {
+      showWarningModal("Per continuare devi selezionare almeno un Accessorio!");
+      return;
+    }
+  }
+
+  if (stepCorrente === "PLUS") {
+    if (!configurazione.selections["PLUS"]) {
+      showWarningModal("Per continuare devi selezionare almeno un PLUS!");
+      return;
+    }
+  }
 
   showStep(nextStepName);
 }
@@ -356,11 +606,7 @@ function aggiornaPrezzo(isFinal) {
 
   // Somma dei prezzi delle selezioni (scontati a livello di categoria)
   for (let categoria in configurazione.selections) {
-    if (categoria === "optional") {
-      prezzoUnitario += configurazione.selections.optional.prezzo || 0;
-    } else {
-      prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
-    }
+    prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
   }
 
   if (!isFinal) {
@@ -376,7 +622,7 @@ function aggiornaPrezzo(isFinal) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
-      } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
+      } else if (extra.type === "fisso") {
         configurazione.scontoExtra = extra.value;
       }
       configurazione.prezzoTotaleScontato = configurazione.prezzoTotale - configurazione.scontoExtra;
@@ -427,35 +673,16 @@ function mostraResoconto() {
   // Riempi la lista delle selezioni
   const ul = document.getElementById("riepilogoSelezioni");
   for (let categoria in configurazione.selections) {
-    if (categoria === "optional") {
-      if (configurazione.selections.optional.items.length > 0) {
-        const itemsHTML = configurazione.selections.optional.items
-          .map(
-            (item) => `<li>${item.nome} - ${formatCurrency(item.prezzo)}</li>`
-          )
-          .join("");
-        ul.innerHTML += `
-          <li>
-            <div>
-              <strong>${capitalize(categoria)}</strong>:
-              <ul>${itemsHTML}</ul>
-            </div>
-            <button class="modifica" onclick="modificaSelezione('optional')">Modifica</button>
-          </li>
-        `;
-      }
-    } else {
-      const sel = configurazione.selections[categoria];
-      ul.innerHTML += `
-        <li>
-          <div>
-            <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - ${formatCurrency(sel.prezzo)}
-          </div>
-          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-        </li>
-      `;
-    }
+    const sel = configurazione.selections[categoria];
+    ul.innerHTML += `
+      <li>
+        <div>
+          <strong>${capitalize(categoria)}</strong>:
+          ${sel.nome} - ${formatCurrency(sel.prezzo)}
+        </div>
+        <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+      </li>
+    `;
   }
 
   // Mostriamo il prezzo "parziale" per default
@@ -469,7 +696,7 @@ function mostraResoconto() {
   const inviaOrdineBtn = document.getElementById("inviaOrdineBtn");
 
   // Quando clicca su "Conferma Quantità":
-  confermaQuantitaBtn.addEventListener("click", async () => {
+  confermaQuantitaBtn.addEventListener("click", () => {
     const q = parseInt(quantitaInput.value);
     if (!q || q < 1) {
       showWarningModal("Inserisci una quantità valida (>=1).");
@@ -494,7 +721,7 @@ function mostraResoconto() {
         htmlPrezzi += `
           <p>Sconto Extra: -${extra.value}% (${formatCurrency(scontoExtra)})</p>
         `;
-      } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
+      } else if (extra.type === "fisso") {
         htmlPrezzi += `<p>Sconto Extra: -${formatCurrency(scontoExtra)}</p>`;
       }
     }
@@ -530,9 +757,9 @@ function mostraResoconto() {
   });
 
   // Quando l'utente clicca su "Invia Ordine"
-  inviaOrdineBtn.addEventListener("click", async () => {
+  inviaOrdineBtn.addEventListener("click", () => {
     // Procedi con l'invio dell'ordine
-    await inviaConfigurazione();
+    inviaConfigurazione();
   });
 }
 
@@ -551,42 +778,33 @@ function modificaSelezione(categoria) {
 /* ----------------------------------------------
    Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
 ----------------------------------------------- */
-async function inviaConfigurazione() {
+function inviaConfigurazione() {
   const doc = new jsPDF();
-  const logoURL = "../Logo.jpg"; // Assicurati che il percorso sia corretto
+  const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
 
   try {
     const img = new Image();
     img.src = logoURL;
-    img.onload = async function () {
-      doc.addImage(img, "JPEG", 10, 10, 50, 20);
-      doc.setFontSize(20);
-      doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
+    img.onload = function () {
+      try {
+        doc.addImage(img, "JPEG", 10, 10, 50, 20);
+        doc.setFontSize(20);
+        doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
 
-      // Dati utente
-      doc.setFontSize(12);
-      doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
-      doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
-      doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
-      doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
+        // Dati utente
+        doc.setFontSize(12);
+        doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
+        doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
+        doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
+        doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
 
-      // Selezioni
-      doc.setFontSize(16);
-      doc.text("Selezioni:", 20, 95);
-      doc.setFontSize(12);
+        // Selezioni
+        doc.setFontSize(16);
+        doc.text("Selezioni:", 20, 95);
+        doc.setFontSize(12);
 
-      let y = 105;
-      for (let categoria in configurazione.selections) {
-        if (categoria === "optional") {
-          if (configurazione.selections.optional.items.length > 0) {
-            doc.text(`${capitalize(categoria)}:`, 20, y);
-            y += 10;
-            configurazione.selections.optional.items.forEach((item) => {
-              doc.text(`- ${item.nome} - ${formatCurrency(item.prezzo)}`, 30, y);
-              y += 10;
-            });
-          }
-        } else {
+        let y = 105;
+        for (let categoria in configurazione.selections) {
           const sel = configurazione.selections[categoria];
           doc.text(
             `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
@@ -595,100 +813,83 @@ async function inviaConfigurazione() {
           );
           y += 10;
         }
-      }
 
-      // Sconti finali
-      if (
-        configurazione.customer.extra_discount.active &&
-        configurazione.scontoExtra > 0
-      ) {
-        if (configurazione.customer.extra_discount.type === "percentuale") {
-          doc.text(
-            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
-            20,
-            y
-          );
-        } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
-          doc.text(
-            `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
-            20,
-            y
-          );
-        }
-        y += 10;
-      }
-
-      doc.setFontSize(14);
-      doc.text(
-        `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
-        20,
-        y + 10
-      );
-
-      // Salva PDF
-      doc.save("resoconto_mezzo.pdf");
-
-      // Aggiorna l'uso del codice sconto sul server
-      try {
-        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ code: configurazione.customer.code })
-        });
-
-        if (!updateResponse.ok) {
-          const errorData = await updateResponse.json();
-          throw new Error(errorData.message || 'Errore nell\'aggiornamento dell\'uso del codice sconto.');
-        }
-
-        console.log('Uso del codice sconto aggiornato con successo.');
-      } catch (error) {
-        console.error(error);
-        showWarningModal(`Errore: ${error.message}`);
-        return;
-      }
-
-      // Prepara il mailto
-      const toEmail = "ayoub.majdouli@esa-italy.com"; // Sostituisci con la tua email
-      const subject = encodeURIComponent("Nuova Configurazione Mezzo");
-
-      let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
-
-      for (let categoria in configurazione.selections) {
-        if (categoria === "optional") {
-          if (configurazione.selections.optional.items.length > 0) {
-            body += `${capitalize(categoria)}:\n`;
-            configurazione.selections.optional.items.forEach((item) => {
-              body += `- ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
-            });
+        // Sconti finali
+        if (
+          configurazione.customer.extra_discount.active &&
+          configurazione.scontoExtra > 0
+        ) {
+          if (configurazione.customer.extra_discount.type === "percentuale") {
+            doc.text(
+              `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
+              20,
+              y
+            );
+          } else if (configurazione.customer.extra_discount.type === "fisso") {
+            doc.text(
+              `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
+              20,
+              y
+            );
           }
-        } else {
+          y += 10;
+        }
+
+        doc.setFontSize(14);
+        doc.text(
+          `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
+          20,
+          y + 10
+        );
+
+        // Salva PDF
+        doc.save("resoconto_mezzo.pdf");
+
+        // Aggiorna l'uso del codice sconto (simulazione)
+        aggiornamentoUsoCodiceSconto(configurazione.customer.code);
+
+        // Prepara il mailto
+        const toEmail = "tuo.email@esempio.com"; // Sostituisci con la tua email
+        const subject = encodeURIComponent("Nuova Configurazione Mezzo");
+
+        let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
+
+        for (let categoria in configurazione.selections) {
           const sel = configurazione.selections[categoria];
           body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
         }
-      }
 
-      if (
-        configurazione.customer.extra_discount.active &&
-        configurazione.scontoExtra > 0
-      ) {
-        if (configurazione.customer.extra_discount.type === "percentuale") {
-          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
-        } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
-          body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
+        if (
+          configurazione.customer.extra_discount.active &&
+          configurazione.scontoExtra > 0
+        ) {
+          if (configurazione.customer.extra_discount.type === "percentuale") {
+            body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+          } else if (configurazione.customer.extra_discount.type === "fisso") {
+            body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
+          }
         }
+        body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
+
+        const encodedBody = encodeURIComponent(body);
+        const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
+        const emailLink = document.getElementById("emailLink");
+        if (emailLink) {
+          emailLink.href = mailtoLink;
+          emailLink.click(); // Avvia l'email client
+        } else {
+          // Se l'elemento non esiste, apri direttamente il mailto
+          window.location.href = mailtoLink;
+        }
+
+        openModal();
+      } catch (error) {
+        console.error("Errore durante la generazione del PDF:", error);
+        showWarningModal("Errore durante la generazione del PDF.");
       }
-      body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
-
-      const encodedBody = encodeURIComponent(body);
-      const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
-      const emailLink = document.getElementById("emailLink");
-      emailLink.href = mailtoLink;
-
-      openModal();
     };
+
+    // Gestione degli errori di caricamento dell'immagine
     img.onerror = function () {
       showWarningModal("Errore nel caricamento del logo.");
     };
@@ -699,14 +900,19 @@ async function inviaConfigurazione() {
 }
 
 /* ----------------------------------------------
-   Funzione per Ottenere il Volume Selezionato
+   Funzione di Aggiornamento Uso Codice Sconto
+   In un contesto reale, questa logica dovrebbe essere gestita dal backend
 ----------------------------------------------- */
-function getSelectedVolume() {
-  const sel = configurazione.selections["AUTOMEZZI"];
-  if (!sel) return null;
-  // Estrai le specifiche dal nome, ad esempio "2 assi (18 Ton)"
-  const match = sel.nome.match(/\((.*?)\)/);
-  return match ? match[1] : null;
+function aggiornamentoUsoCodiceSconto(code) {
+  // Simulazione dell'aggiornamento dell'uso del codice sconto
+  // Puoi espandere questa funzione per integrare con il tuo sistema
+  console.log(`Aggiornato l'uso del codice sconto: ${code}`);
+  // Ad esempio, incrementa il contatore
+  configurazione.customer.usage_count += 1;
+  if (configurazione.customer.usage_count >= configurazione.customer.usage_limit) {
+    configurazione.customer.is_active = false;
+    console.log(`Il codice sconto ${code} è ora scaduto.`);
+  }
 }
 
 /* ----------------------------------------------
@@ -715,23 +921,33 @@ function getSelectedVolume() {
 function showWarningModal(message) {
   const warningModal = document.getElementById("warningModal");
   const warningMessageText = document.getElementById("warningMessageText");
-  warningMessageText.textContent = message;
-  warningModal.style.display = "block";
+  if (warningMessageText) {
+    warningMessageText.textContent = message;
+  }
+  if (warningModal) {
+    warningModal.style.display = "block";
+  }
 }
 
 function closeWarningModal() {
   const warningModal = document.getElementById("warningModal");
-  warningModal.style.display = "none";
+  if (warningModal) {
+    warningModal.style.display = "none";
+  }
 }
 
 function openModal() {
   const modal = document.getElementById("messageModal");
-  modal.style.display = "block";
+  if (modal) {
+    modal.style.display = "block";
+  }
 }
 
 function closeModal() {
   const modal = document.getElementById("messageModal");
-  modal.style.display = "none";
+  if (modal) {
+    modal.style.display = "none";
+  }
 }
 
 /* ----------------------------------------------
@@ -740,10 +956,10 @@ function closeModal() {
 window.onclick = function(event) {
   const warningModal = document.getElementById("warningModal");
   const messageModal = document.getElementById("messageModal");
-  if (event.target === warningModal) {
+  if (warningModal && event.target === warningModal) {
     warningModal.style.display = 'none';
   }
-  if (event.target === messageModal) {
+  if (messageModal && event.target === messageModal) {
     messageModal.style.display = 'none';
   }
 }
