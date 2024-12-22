@@ -211,7 +211,7 @@ document.getElementById("userForm").addEventListener("submit", async function (e
 
   try {
     // Chiamata reale al server per verificare il codice sconto
-    const response = await fetch('https://7cf1-151-67-189-1.ngrok-free.app/api/customers/validate-code', { // Endpoint corretto
+    const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/validate-code', { // Endpoint corretto
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -963,7 +963,7 @@ async function inviaConfigurazione() {
 
       // Aggiorna l'uso del codice sconto sul server
       try {
-        const updateResponse = await fetch('https://7cf1-151-67-189-1.ngrok-free.app/api/customers/update-usage', { // Endpoint corretto
+        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
