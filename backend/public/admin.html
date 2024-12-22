@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Amministrazione Sconti</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <h1>Gestione Sconti Clienti</h1>
+    <form id="addCustomerForm">
+        <h2>Aggiungi Nuovo Cliente</h2>
+        
+        <label for="code">Codice Cliente:</label>
+        <input type="text" id="code" name="code" required>
+        
+        <label for="name">Nome Cliente:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <h3>Sconti per Categoria (%)</h3>
+        
+        <label for="corpo_contenitore">Corpo Contenitore:</label>
+        <input type="number" id="corpo_contenitore" name="corpo_contenitore" min="0" max="100" required>
+        
+        <label for="bascule">Bascule:</label>
+        <input type="number" id="bascule" name="bascule" min="0" max="100" required>
+        
+        <label for="gancio">Gancio:</label>
+        <input type="number" id="gancio" name="gancio" min="0" max="100" required>
+        
+        <label for="bocche">Bocche:</label>
+        <input type="number" id="bocche" name="bocche" min="0" max="100" required>
+        
+        <label for="guida_a_terra">Guida a Terra:</label>
+        <input type="number" id="guida_a_terra" name="guida_a_terra" min="0" max="100" required>
+        
+        <label for="adesivo">Adesivo:</label>
+        <input type="number" id="adesivo" name="adesivo" min="0" max="100" required>
+        
+        <label for="optional">Optional:</label>
+        <input type="number" id="optional" name="optional" min="0" max="100" required>
+        
+        <h3>Extra Sconto</h3>
+        
+        <label for="extra_type">Tipo:</label>
+        <select id="extra_type" name="extra_type" required>
+            <option value="percentuale">Percentuale</option>
+            <option value="fisso">Fisso</option>
+        </select>
+        
+        <label for="extra_value">Valore:</label>
+        <input type="number" id="extra_value" name="extra_value" min="0" step="0.01" required>
+        
+        <label for="usage_limit">Limite di Utilizzo (null per illimitato):</label>
+        <input type="number" id="usage_limit" name="usage_limit" min="0">
+        
+        <button type="submit">Aggiungi Cliente</button>
+    </form>
+    
+    <!-- Modal per i popup -->
+    <div id="popupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalButton">&times;</span>
+            <p id="popupMessageText"></p>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

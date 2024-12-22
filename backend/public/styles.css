@@ -1,0 +1,260 @@
+/* styles.css */
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+  background-color: #f4f4f4;
+}
+
+header {
+  background-color: #ffffff;
+  padding: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+header .container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.logo {
+  width: 100px; /* Imposta la larghezza desiderata */
+  height: auto; /* Mantiene le proporzioni */
+  margin-right: 20px; /* Spazio tra il logo e il titolo */
+}
+
+h1 {
+  font-size: 24px;
+  color: #444;
+}
+
+/* Sezione di Registrazione */
+h2 {
+  text-align: center;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #ffffffcc; /* semi-transparent white */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Centra il contenuto del form */
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-align: left;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: #6c63ff;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #6c63ff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #5753d3;
+}
+
+/* Sezione Configuratore */
+#configurator {
+  max-width: 700px;
+  margin: 20px auto;
+  background: #ffffffcc;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f0f0f0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modifica,
+.invia {
+  padding: 8px 12px;
+  background: #ff7f50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 14px;
+}
+
+.modifica:hover,
+.invia:hover {
+  background: #e67e22;
+}
+
+/* Pulsanti Indietro e Avanti */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.button-group button {
+  width: 48%;
+  padding: 10px;
+  font-size: 14px;
+  background: #6c63ff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.button-group button:hover {
+  background: #5753d3;
+}
+
+/* Link "Apri Email" */
+a.email-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: #28a745;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+a.email-link:hover {
+  background: #218838;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+}
+
+/* Optional Items */
+.optional-item {
+  margin-bottom: 10px;
+}
+
+.optional-item label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.optional-item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .logo {
+    width: 80px;
+    margin-right: 10px;
+  }
+
+  header .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  header h1 {
+    margin-top: 10px;
+    text-align: left;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .button-group button:last-child {
+    margin-bottom: 0;
+  }
+}

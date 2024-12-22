@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Configuratore Contenitori</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Includi Font Awesome per le icone -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Includi jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <!-- Sezione di Registrazione -->
+  <div id="registration">
+    <h1>Registrazione Utente</h1>
+    <form id="userForm">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+
+      <label for="cognome">Cognome:</label>
+      <input type="text" id="cognome" name="cognome" required>
+
+      <label for="azienda">Azienda:</label>
+      <input type="text" id="azienda" name="azienda" required>
+
+      <label for="discountCode">Codice Sconto:</label>
+      <input type="text" id="discountCode" name="discountCode" required>
+
+      <button type="submit">Registrati</button>
+    </form>
+  </div>
+
+  <!-- Sezione Configuratore -->
+  <div id="configurator" style="display: none;"></div>
+
+  <!-- Modal di Avviso -->
+  <div id="warningModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeWarningModal()">&times;</span>
+      <p id="warningMessageText"></p>
+    </div>
+  </div>
+
+  <!-- Modal di Conferma -->
+  <div id="messageModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <p>Il tuo ordine è stato inviato con successo!</p>
+      <a id="emailLink" href="#">Apri Email</a>
+    </div>
+  </div>
+
+  <!-- Includi il tuo script -->
+  <script src="script.js"></script>
+
+  <style>
+    /* Stili di base per i modali */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    /* The Close Button */
+    .close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 25px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Stili per il bottone */
+    .button-group {
+      margin-top: 20px;
+    }
+
+    .button-group button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    /* Stili per i moduli */
+    form label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    form input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    /* Stili per le liste */
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+    }
+
+    /* Stili per i bottoni di modifica */
+    .modifica {
+      background-color: #f0ad4e;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .modifica:hover {
+      background-color: #ec971f;
+    }
+
+    /* Stili per i bottoni di invio */
+    .invia {
+      background-color: #5cb85c;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .invia:disabled {
+      background-color: #c3e6cb;
+      cursor: not-allowed;
+    }
+  </style>
+</body>
+</html>

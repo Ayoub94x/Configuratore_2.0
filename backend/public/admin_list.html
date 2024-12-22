@@ -1,0 +1,109 @@
+<!-- admin/admin_list.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Codici Sconto</title>
+    <!-- Link al CSS personalizzato -->
+    <link rel="stylesheet" href="admin_list.css">
+    <!-- Google Fonts per una migliore tipografia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"> 
+</head>
+<body>
+    <div class="container">
+        <h1>Gestione Codici Sconto</h1>
+        <button id="reloadButton" class="btn">Ricarica Elenco</button>
+        <table id="customersTable">
+            <thead>
+                <tr>
+                    <th>Codice</th>
+                    <th>Nome</th>
+                    <th>Sconti (%)</th>
+                    <th>Extra Sconto</th>
+                    <th>Utilizzi</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Righe generate dinamicamente da JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal per aggiornare i dati di uno sconto -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeEditModal">&times;</span>
+            <h2>Modifica Cliente</h2>
+            <form id="editForm">
+                <input type="hidden" id="editCustomerId">
+                
+                <div class="form-group">
+                    <label for="editCorpoContenitore">Corpo Contenitore (%)</label>
+                    <input type="number" id="editCorpoContenitore" min="0" max="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editBascule">Bascule (%)</label>
+                    <input type="number" id="editBascule" min="0" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editGancio">Gancio (%)</label>
+                    <input type="number" id="editGancio" min="0" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBocche">Bocche (%)</label>
+                    <input type="number" id="editBocche" min="0" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editGuidaATerra">Guida a Terra (%)</label>
+                    <input type="number" id="editGuidaATerra" min="0" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editAdesivo">Adesivo (%)</label>
+                    <input type="number" id="editAdesivo" min="0" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editOptional">Optional (%)</label>
+                    <input type="number" id="editOptional" min="0" max="100" required>
+                </div>
+
+                <h3>Extra Sconto</h3>
+
+                <div class="form-group">
+                    <label for="editExtraType">Tipo</label>
+                    <select id="editExtraType" required>
+                        <option value="percentuale">Percentuale</option>
+                        <option value="fisso">Fisso</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editExtraValue">Valore</label>
+                    <input type="number" id="editExtraValue" min="0" step="0.01" required>
+                </div>
+
+                <button type="submit" class="btn btn-save">Salva Modifiche</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal per i popup -->
+    <div id="popupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closePopupModal">&times;</span>
+            <p id="popupMessageText"></p>
+        </div>
+    </div>
+
+    <!-- Link al JS personalizzato -->
+    <script src="admin_list.js"></script>
+</body>
+</html>

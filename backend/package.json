@@ -1,0 +1,25 @@
+{
+  "name": "confguratore",
+  "version": "1.0.0",
+  "description": "Progetto configuratore con Express e Mongoose.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["express", "mongoose", "cors", "dotenv", "body-parser"],
+  "author": "Tuo Nome",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-basic-auth": "^1.2.1",
+    "mongoose": "^8.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuo-utente/tuo-repo.git"
+  }
+}

@@ -1,0 +1,236 @@
+/* admin/admin_list.css */
+
+/* Importazione del font */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding-bottom: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #5753d3;
+}
+
+#reloadButton {
+    display: block;
+    margin: 0 auto 20px auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #6c63ff;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+}
+
+input[type="number"],
+select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px 30px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.modal-content form button {
+    width: 100%;
+}
+
+#popupModal .modal-content p {
+    font-size: 1.1em;
+    color: #333;
+}
+
+/* Pulsanti di Azione nella Tabella */
+td > .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Spazio tra i pulsanti */
+}
+
+.btn-toggle {
+    background-color: #ff9800;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-toggle:hover {
+    background-color: #e68900;
+}
+
+.btn-edit {
+    background-color: #2196F3;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit:hover {
+    background-color: #0b7dda;
+}
+
+/* Pulsanti nel Modal di Salvataggio */
+.btn-save {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #45a049;
+}
+
+/* Popup Modal Personalizzata */
+#popupModal .modal-content {
+    text-align: center;
+}
+
+#popupModal .modal-content.success {
+    border-top: 5px solid #28a745;
+}
+
+#popupModal .modal-content.error {
+    border-top: 5px solid #dc3545;
+}
+
+#popupModal .modal-content p {
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 0.9em;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+}
