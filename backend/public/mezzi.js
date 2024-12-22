@@ -16,13 +16,13 @@ function formatCurrency(value) {
  * e per la modifica delle selezioni.
  */
 const stepMap = {
-  "AUTOMEZZI": "automezzi",
-  "Allestimento": "allestimento",
-  "GRU": "gru",
-  "Compattatore": "compattatore",
-  "Lavacontenitori": "lavacontenitori",
-  "Accessori": "accessori",
-  "PLUS": "plus"
+  "AUTOMEZZI": "AUTOMEZZI",
+  "Allestimento": "Allestimento",
+  "GRU": "GRU",
+  "Compattatore": "Compattatore",
+  "Lavacontenitori": "Lavacontenitori",
+  "Accessori": "Accessori",
+  "PLUS": "PLUS"
 };
 
 /**
@@ -46,52 +46,70 @@ configurazione.data = {
     "AUTOMEZZI": {
       indicazioni: "Seleziona l'automezzo adatto alle tue esigenze.",
       opzioni: [
-        { nome: "Automezzo 1 (10 Ton)", prezzo: 50000, sconto: 5 },
-        { nome: "Automezzo 2 (15 Ton)", prezzo: 75000, sconto: 10 },
-        { nome: "Automezzo 3 (20 Ton)", prezzo: 100000, sconto: 15 }
+        { nome: "2 assi (18 Ton)", prezzo: 88500.00, sconto: 0 },
+        { nome: "2 + 1 assi (22 Ton)", prezzo: 95000.00, sconto: 0 },
+        { nome: "3 assi (26 Ton)", prezzo: 108000.00, sconto: 0 },
+        { nome: "4 assi (32 Ton)", prezzo: 115000.00, sconto: 0 }
       ]
     },
     "Allestimento": {
       indicazioni: "Scegli il tipo di allestimento per il tuo automezzo.",
       opzioni: [
-        { nome: "Allestimento Base", prezzo: 10000, sconto: 0 },
-        { nome: "Allestimento Avanzato", prezzo: 20000, sconto: 10 }
+        { nome: "Scarrabile 2 assi", prezzo: 37830.00, sconto: 0 },
+        { nome: "Scarrabile 2+1 assi", prezzo: 38500.00, sconto: 0 },
+        { nome: "Scarrabile 3 assi", prezzo: 40740.00, sconto: 0 },
+        { nome: "Scarrabile 4 assi", prezzo: 43500.00, sconto: 0 },
+        { nome: "Fisso 2 assi", prezzo: 25000.00, sconto: 0 },
+        { nome: "Fisso 2+1 assi", prezzo: 25000.00, sconto: 0 },
+        { nome: "Fisso 3 assi", prezzo: 25000.00, sconto: 0 },
+        { nome: "Fisso 4 assi", prezzo: 25000.00, sconto: 0 }
       ]
     },
     "GRU": {
       indicazioni: "Seleziona il modello di GRU.",
       opzioni: [
-        { nome: "GRU A", prezzo: 30000, sconto: 5 },
-        { nome: "GRU B", prezzo: 45000, sconto: 10 }
+        { nome: "2AS Kinshofer", prezzo: 125000.00, sconto: 0 },
+        { nome: "2AS F90", prezzo: 125000.00, sconto: 0 }
       ]
     },
     "Compattatore": {
       indicazioni: "Scegli il tipo di compattatore.",
       opzioni: [
-        { nome: "Compattatore Standard", prezzo: 15000, sconto: 0 },
-        { nome: "Compattatore Pro", prezzo: 25000, sconto: 10 }
+        { nome: "Scarrabili L=4500", prezzo: 55000.00, sconto: 0 },
+        { nome: "Scarrabili L=4800", prezzo: 55000.00, sconto: 0 },
+        { nome: "Scarrabili L=6200", prezzo: 55000.00, sconto: 0 },
+        { nome: "Scarrabili L=6600", prezzo: 55000.00, sconto: 0 },
+        { nome: "Fisso L=4500", prezzo: 55000.00, sconto: 0 },
+        { nome: "Fisso L=4800", prezzo: 55000.00, sconto: 0 },
+        { nome: "Fisso L=6200", prezzo: 55000.00, sconto: 0 },
+        { nome: "Fisso L=6600", prezzo: 55000.00, sconto: 0 }
       ]
     },
     "Lavacontenitori": {
       indicazioni: "Seleziona il sistema di lavacontenitori.",
       opzioni: [
-        { nome: "Lavacontenitori Manuale", prezzo: 5000, sconto: 0 },
-        { nome: "Lavacontenitori Automatico", prezzo: 15000, sconto: 15 }
+        { nome: "2 assi", prezzo: 135315.00, sconto: 0 },
+        { nome: "2 + 1 assi", prezzo: 142120.00, sconto: 0 },
+        { nome: "3 assi", prezzo: 149380.00, sconto: 0 },
+        { nome: "4 assi", prezzo: 153120.00, sconto: 0 }
       ]
     },
     "Accessori": {
       indicazioni: "Aggiungi accessori al tuo automezzo.",
       opzioni: [
-        { nome: "Accessorio 1", prezzo: 2000, sconto: 0 },
-        { nome: "Accessorio 2", prezzo: 4000, sconto: 5 },
-        { nome: "Accessorio 3", prezzo: 6000, sconto: 10 }
+        { nome: "PTO", prezzo: 2300.00, sconto: 0 },
+        { nome: "Tracciamento percorso", prezzo: 5000.00, sconto: 0 },
+        { nome: "Antenna UHF", prezzo: 6693.00, sconto: 0 },
+        { nome: "Impianto di sanificazione", prezzo: 4400.00, sconto: 0 },
+        { nome: "Impianto di lubrificazione", prezzo: 4850.00, sconto: 0 },
+        { nome: "Centralina oleodinamica di emergenza (GRU)", prezzo: 3492.00, sconto: 0 },
+        { nome: "Connessione remota (1Y)", prezzo: 2910.00, sconto: 0 }
       ]
     },
     "PLUS": {
       indicazioni: "Aggiungi funzioni extra al tuo automezzo.",
       opzioni: [
-        { nome: "Funzione Extra 1", prezzo: 3000, sconto: 0 },
-        { nome: "Funzione Extra 2", prezzo: 5000, sconto: 5 }
+        { nome: "Trasporto", prezzo: 1000.00, sconto: 0 }
       ]
     }
   }
@@ -143,7 +161,7 @@ document.getElementById("userForm").addEventListener("submit", async function (e
       code: customerData.code,
       name: customerData.name,
       discounts: customerData.discounts,
-      extra_discount: customerData.extra_discount,
+      extra_discount: customerData.extra_discount || { active: false, type: null, value: 0 },
       usage_limit: customerData.usage_limit,
       is_active: customerData.is_active,
       usage_count: customerData.usage_count
@@ -530,7 +548,7 @@ function aggiornaPrezzo(isFinal) {
     configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
 
     // Sconto extra
-    if (configurazione.customer.extra_discount.active) {
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
@@ -627,7 +645,7 @@ function mostraResoconto() {
     let htmlPrezzi = `
       <p><strong>Prezzo Totale (${q} pz):</strong> ${formatCurrency(prezzoTotale)}</p>
     `;
-    if (configurazione.customer.extra_discount.active && scontoExtra > 0) {
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active && scontoExtra > 0) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         htmlPrezzi += `
@@ -727,6 +745,7 @@ async function inviaConfigurazione() {
 
       // Sconti finali
       if (
+        configurazione.customer.extra_discount &&
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
@@ -790,6 +809,7 @@ async function inviaConfigurazione() {
       }
 
       if (
+        configurazione.customer.extra_discount &&
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
