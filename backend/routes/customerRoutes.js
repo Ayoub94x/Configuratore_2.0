@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const Customer = require('../models/Customer');
 const Joi = require('joi');
+const mongoose = require('mongoose'); // Assicurati di importare mongoose
+
 
 // Schema di validazione per l'aggiunta di un nuovo cliente
 const customerSchema = Joi.object({
@@ -145,6 +147,33 @@ router.patch('/:id', async (req, res) => {
     } catch (error) {
         console.error('Errore nell\'aggiornamento del cliente:', error);
         res.status(500).json({ message: 'Errore nel server durante l\'aggiornamento del cliente.' });
+    }
+});
+
+// DELETE /api/customers/:id - Elimina un cliente
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Verifica se l'ID è un ObjectId valido
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.log('ID del cliente non valido:', id);
+            return res.status(400).json({ message: 'ID del cliente non valido.' });
+        }
+
+        console.log(`Richiesta DELETE per il cliente con ID: ${id}`);
+        const deletedCustomer = await Customer.findByIdAndDelete(id);
+
+        if (!deletedCustomer) {
+            console.log('Cliente non trovato.');
+            return res.status(404).json({ message: 'Cliente non trovato.' });
+        }
+
+        console.log('Cliente eliminato con successo.');
+        res.json({ message: 'Cliente eliminato con successo.' });
+    } catch (error) {
+        console.error('Errore durante l\'eliminazione del cliente:', error);
+        res.status(500).json({ message: 'Errore interno del server.' });
     }
 });
 
