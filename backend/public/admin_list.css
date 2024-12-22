@@ -239,3 +239,106 @@ tr:hover {
         width: 100%;
     }
 }
+/* admin/admin_list.css */
+
+/* Stili Esistenti */
+/* ... (come nel tuo codice originale) ... */
+
+/* Stili per le Sezioni */
+section {
+    margin-bottom: 50px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Tabella Mezzi */
+#mezziTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#mezziTable th, #mezziTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#mezziTable th {
+    background-color: #007bff;
+    color: white;
+}
+
+#mezziTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Stili per Mezzi */
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: bold;
+}
+
+/* Azioni per Mezzi */
+#mezziTable .action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#mezziTable .btn-toggle-mezzo {
+    background-color: #17a2b8; /* Blu */
+}
+
+#mezziTable .btn-toggle-mezzo:hover {
+    background-color: #138496;
+}
+
+#mezziTable .btn-edit-mezzo {
+    background-color: #ffc107; /* Giallo */
+    color: #212529;
+}
+
+#mezziTable .btn-edit-mezzo:hover {
+    background-color: #e0a800;
+}
+
+#mezziTable .btn-delete-mezzo {
+    background-color: #dc3545; /* Rosso */
+}
+
+#mezziTable .btn-delete-mezzo:hover {
+    background-color: #c82333;
+}
+
+/* Modal Mezzi */
+#editMezzoModal .form-group,
+#deleteMezzoModal .form-group {
+    margin-top: 15px;
+}
+
+#editMezzoModal input[type="text"],
+#editMezzoModal input[type="number"],
+#deleteMezzoModal input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Responsive Design per le nuove tabelle */
+@media (max-width: 600px) {
+    #mezziTable, #scontiTable {
+        display: block;
+        overflow-x: auto;
+    }
+}
