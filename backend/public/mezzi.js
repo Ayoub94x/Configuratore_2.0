@@ -16,16 +16,6 @@ const popupCloseButton = document.getElementById('closePopupModal');
 const editModal = document.getElementById('editModal');
 const closeEditModalButton = document.getElementById('closeEditModal');
 const editForm = document.getElementById('editForm');
-const editCustomerId = document.getElementById('editCustomerId'); // Aggiunto
-const editCorpoContenitore = document.getElementById('editCorpoContenitore'); // Aggiunto
-const editBascule = document.getElementById('editBascule'); // Aggiunto
-const editGancio = document.getElementById('editGancio'); // Aggiunto
-const editBocche = document.getElementById('editBocche'); // Aggiunto
-const editGuidaATerra = document.getElementById('editGuidaATerra'); // Aggiunto
-const editAdesivo = document.getElementById('editAdesivo'); // Aggiunto
-const editOptional = document.getElementById('editOptional'); // Aggiunto
-const editExtraType = document.getElementById('editExtraType'); // Aggiunto
-const editExtraValue = document.getElementById('editExtraValue'); // Aggiunto
 
 // Seleziona gli elementi HTML dei Modali Mezzo
 const editMezzoModal = document.getElementById('editMezzoModal');
@@ -349,29 +339,32 @@ editForm.addEventListener('submit', async (e) => {
 function openDeleteModal(sconto) {
     mezzoIdToDelete = null; // Reset della variabile
     // Reimposta il campo di input
-    mezzoIdToDelete = sconto._id;
-    mezzoCodeToDelete = sconto.code; // Aggiunto
-    confirmDeleteMezzoCodeInput.value = '';
-    confirmDeleteMezzoButton.disabled = true;
-    deleteMezzoModal.style.display = 'block';
+    customerIdToDelete = sconto._id;
+    customerCodeToDelete = sconto.code;
+    document.getElementById('confirmDeleteCode').value = '';
+    document.getElementById('confirmDeleteButton').disabled = true;
+    deleteModal.style.display = 'block';
 }
 
 // Gestisci la conferma di eliminazione sconto
-confirmDeleteMezzoCodeInput.addEventListener('input', () => {
-    const enteredCode = confirmDeleteMezzoCodeInput.value.trim();
-    const expectedCode = mezzoCodeToDelete || '';
+const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+const confirmDeleteCodeInput = document.getElementById('confirmDeleteCode');
+
+confirmDeleteCodeInput.addEventListener('input', () => {
+    const enteredCode = confirmDeleteCodeInput.value.trim();
+    const expectedCode = customerCodeToDelete || '';
     if (enteredCode === expectedCode) {
-        confirmDeleteMezzoButton.disabled = false;
+        confirmDeleteButton.disabled = false;
     } else {
-        confirmDeleteMezzoButton.disabled = true;
+        confirmDeleteButton.disabled = true;
     }
 });
 
-confirmDeleteMezzoButton.addEventListener('click', async () => {
-    if (!mezzoIdToDelete) return;
+confirmDeleteButton.addEventListener('click', async () => {
+    if (!customerIdToDelete) return;
 
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + mezzoIdToDelete, {
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + customerIdToDelete, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -385,14 +378,14 @@ confirmDeleteMezzoButton.addEventListener('click', async () => {
             const textResult = await response.text();
             console.error('Risposta non JSON:', textResult);
             showPopup('Errore nel server.', true);
-            deleteMezzoModal.style.display = 'none';
+            deleteModal.style.display = 'none';
             resetDeleteMezzoModal();
             return;
         }
 
         if (response.ok) {
             showPopup('Cliente eliminato con successo!');
-            deleteMezzoModal.style.display = 'none';
+            deleteModal.style.display = 'none';
             resetDeleteMezzoModal();
             loadSconti();
         } else {
@@ -401,7 +394,7 @@ confirmDeleteMezzoButton.addEventListener('click', async () => {
     } catch (error) {
         console.error('Errore nell\'eliminazione del mezzo:', error);
         showPopup('Errore di connessione al server.', true);
-        deleteMezzoModal.style.display = 'none';
+        deleteModal.style.display = 'none';
         resetDeleteMezzoModal();
     }
 });
@@ -576,7 +569,6 @@ editMezzoForm.addEventListener('submit', async (e) => {
 // Apri il modal di eliminazione mezzo
 function openDeleteMezzoModal(mezzo) {
     mezzoIdToDelete = mezzo._id;
-    mezzoCodeToDelete = mezzo.code; // Assicurati di dichiarare questa variabile
     confirmDeleteMezzoCodeInput.value = '';
     confirmDeleteMezzoButton.disabled = true;
     deleteMezzoModal.style.display = 'block';
@@ -775,7 +767,7 @@ async function inviaConfigurazione() {
             let y = 105;
             for (let categoria in configurazione.selections) {
                 if (categoria === "optional") {
-                    if (configurazione.selections.optional && configurazione.selections.optional.items && configurazione.selections.optional.items.length > 0) {
+                    if (configurazione.selections.optional.items.length > 0) {
                         doc.text(`${capitalize(categoria)}:`, 20, y);
                         y += 10;
                         configurazione.selections.optional.items.forEach((item) => {
@@ -855,7 +847,7 @@ async function inviaConfigurazione() {
 
             for (let categoria in configurazione.selections) {
                 if (categoria === "optional") {
-                    if (configurazione.selections.optional && configurazione.selections.optional.items && configurazione.selections.optional.items.length > 0) {
+                    if (configurazione.selections.optional.items.length > 0) {
                         body += `${capitalize(categoria)}:\n`;
                         configurazione.selections.optional.items.forEach((item) => {
                             body += `- ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
@@ -898,6 +890,355 @@ async function inviaConfigurazione() {
         showPopup("Errore durante la generazione del PDF.", true);
     }
 }
+
+/* ----------------------------------------------
+   Funzione per Ottenere il Volume Selezionato
+----------------------------------------------- */
+function getSelectedVolume() {
+    const sel = configurazione.selections["corpo_contenitore"];
+    if (!sel) return null;
+    const match = sel.nome.match(/\((.*?)\)/);
+    return match ? match[1] : null;
+}
+
+/* ----------------------------------------------
+   Gestione dei Passi del Configuratore
+----------------------------------------------- */
+avantiButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const stepId = button.getAttribute('data-step'); // Assumiamo che ogni pulsante abbia un data-step attribuito
+        handleAvanti(stepId);
+    });
+});
+
+/**
+ * Gestisce il click su un pulsante "Avanti"
+ * @param {string} stepId - L'ID del passo corrente
+ */
+function handleAvanti(stepId) {
+    currentStep = stepId;
+
+    // Se il passo è uno dei passi obbligatori, verifica che una selezione sia stata fatta
+    if (mandatorySteps.includes(currentStep)) {
+        const selectedOption = getSelectedOption(currentStep);
+        if (!selectedOption) {
+            showPopup(`Per procedere, devi effettuare una selezione nel passo "${capitalize(currentStep)}".`, true);
+            return;
+        }
+    }
+
+    // Determina il prossimo passo
+    let nextStep = getNextStep(currentStep);
+
+    // Se l'utente ha appena modificato una selezione, vai direttamente al riepilogo
+    if (isStepModified(currentStep)) {
+        nextStep = summaryStep;
+    }
+
+    // Nascondi il passo corrente
+    if (stepContainers[currentStep]) {
+        stepContainers[currentStep].style.display = 'none';
+    }
+
+    // Mostra il prossimo passo
+    if (stepContainers[nextStep]) {
+        stepContainers[nextStep].style.display = 'block';
+    }
+
+    // Se il prossimo passo è riepilogo, resetta i passi modificati
+    if (nextStep === summaryStep) {
+        resetModifiedSteps();
+    }
+}
+
+/**
+ * Ottiene la prossima step dato il passo corrente
+ * @param {string} currentStep
+ * @returns {string} nextStep
+ */
+function getNextStep(currentStep) {
+    const stepOrder = ["AUTOMEZZI", "Allestimento", "GRU", "Compattatore", "Lavacontenitori", "Contenitori", "Accessori", "PLUS", "Riepilogo"];
+    const currentIndex = stepOrder.indexOf(currentStep);
+    if (currentIndex === -1 || currentIndex === stepOrder.length - 1) {
+        return summaryStep;
+    }
+    return stepOrder[currentIndex + 1];
+}
+
+/**
+ * Verifica se un passo è stato modificato
+ * @param {string} stepId
+ * @returns {boolean}
+ */
+function isStepModified(stepId) {
+    // Implementa la logica per verificare se il passo è stato modificato
+    // Ad esempio, potresti tenere traccia dei passi modificati in un array
+    // Per semplicità, supponiamo che ogni volta che "Avanti" viene premuto dopo una modifica, il passo sia considerato modificato
+    // Puoi implementare una logica più sofisticata se necessario
+    return configurazione.modifiedSteps && configurazione.modifiedSteps.includes(stepId);
+}
+
+/**
+ * Ottiene l'opzione selezionata in un passo
+ * @param {string} stepId
+ * @returns {string|null} selectedOption
+ */
+function getSelectedOption(stepId) {
+    // Implementa la logica per ottenere l'opzione selezionata per un dato passo
+    // Ad esempio, supponiamo che ogni passo abbia un set di radio buttons con name corrispondente al passo
+    const radios = document.getElementsByName(stepId);
+    for (let radio of radios) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return null;
+}
+
+/**
+ * Segna un passo come modificato
+ * @param {string} stepId
+ */
+function markStepAsModified(stepId) {
+    if (!configurazione.modifiedSteps) {
+        configurazione.modifiedSteps = [];
+    }
+    if (!configurazione.modifiedSteps.includes(stepId)) {
+        configurazione.modifiedSteps.push(stepId);
+    }
+}
+
+/**
+ * Reset dei passi modificati
+ */
+function resetModifiedSteps() {
+    configurazione.modifiedSteps = [];
+}
+
+
+
+/**
+ * Apre la schermata di modifica per un passo specifico
+ * @param {string} stepId
+ */
+function openEditStep(stepId) {
+    // Nascondi il riepilogo se visibile
+    if (stepContainers[summaryStep]) {
+        stepContainers[summaryStep].style.display = 'none';
+    }
+
+    // Mostra il passo di modifica
+    if (stepContainers[stepId]) {
+        stepContainers[stepId].style.display = 'block';
+    }
+
+    // Imposta currentStep
+    currentStep = stepId;
+}
+
+/* ----------------------------------------------
+   Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
+----------------------------------------------- */
+async function inviaConfigurazione() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
+
+    try {
+        const img = new Image();
+        img.src = logoURL;
+        img.onload = async function () {
+            doc.addImage(img, "JPEG", 10, 10, 50, 20);
+            doc.setFontSize(20);
+            doc.text("Configurazione Utente", 105, 40, null, null, "center");
+
+            // Dati utente
+            doc.setFontSize(12);
+            doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
+            doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
+            doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
+            doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
+
+            // Selezioni
+            doc.setFontSize(16);
+            doc.text("Selezioni:", 20, 95);
+            doc.setFontSize(12);
+
+            let y = 105;
+            for (let categoria in configurazione.selections) {
+                if (categoria === "optional") {
+                    if (configurazione.selections.optional.items.length > 0) {
+                        doc.text(`${capitalize(categoria)}:`, 20, y);
+                        y += 10;
+                        configurazione.selections.optional.items.forEach((item) => {
+                            doc.text(`- ${item.nome} - ${formatCurrency(item.prezzo)}`, 30, y);
+                            y += 10;
+                        });
+                    }
+                } else {
+                    const sel = configurazione.selections[categoria];
+                    doc.text(
+                        `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
+                        20,
+                        y
+                    );
+                    y += 10;
+                }
+            }
+
+            // Sconti finali
+            if (
+                configurazione.customer.extra_discount.active &&
+                configurazione.scontoExtra > 0
+            ) {
+                if (configurazione.customer.extra_discount.type === "percentuale") {
+                    doc.text(
+                        `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
+                        20,
+                        y
+                    );
+                } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
+                    doc.text(
+                        `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
+                        20,
+                        y
+                    );
+                }
+                y += 10;
+            }
+
+            doc.setFontSize(14);
+            doc.text(
+                `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
+                20,
+                y + 10
+            );
+
+            // Salva PDF
+            doc.save("resoconto.pdf");
+
+            // Aggiorna l'uso del codice sconto sul server
+            try {
+                const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: configurazione.customer.code })
+                });
+
+                if (!updateResponse.ok) {
+                    const errorData = await updateResponse.json();
+                    throw new Error(errorData.message || 'Errore nell\'aggiornamento dell\'uso del codice sconto.');
+                }
+
+                console.log('Uso del codice sconto aggiornato con successo.');
+            } catch (error) {
+                console.error(error);
+                showPopup(`Errore: ${error.message}`, true);
+                return;
+            }
+
+            // Prepara il mailto
+            const toEmail = "ayoub.majdouli@esa-italy.com"; // Sostituisci con la tua email
+            const subject = encodeURIComponent("Nuova Configurazione Utente");
+
+            let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
+
+            for (let categoria in configurazione.selections) {
+                if (categoria === "optional") {
+                    if (configurazione.selections.optional.items.length > 0) {
+                        body += `${capitalize(categoria)}:\n`;
+                        configurazione.selections.optional.items.forEach((item) => {
+                            body += `- ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
+                        });
+                    }
+                } else {
+                    const sel = configurazione.selections[categoria];
+                    body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
+                }
+            }
+
+            if (
+                configurazione.customer.extra_discount.active &&
+                configurazione.scontoExtra > 0
+            ) {
+                if (configurazione.customer.extra_discount.type === "percentuale") {
+                    body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+                } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
+                    body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
+                }
+            }
+            body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
+
+            const encodedBody = encodeURIComponent(body);
+            const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
+            
+            // Creare un link temporaneo per avviare il client di posta
+            const tempLink = document.createElement('a');
+            tempLink.href = mailtoLink;
+            tempLink.click();
+
+            // Mostra il modale di conferma
+            messageModal.style.display = 'block';
+        };
+        img.onerror = function () {
+            showPopup("Errore nel caricamento del logo.", true);
+        };
+    } catch (error) {
+        console.error("Errore durante la generazione del PDF:", error);
+        showPopup("Errore durante la generazione del PDF.", true);
+    }
+}
+
+/* ----------------------------------------------
+   MODALS per avvisi e successi
+----------------------------------------------- */
+function showWarningModal(message) {
+    const warningModal = document.getElementById("warningModal");
+    const warningMessageText = document.getElementById("warningMessageText");
+    if (warningMessageText) {
+        warningMessageText.textContent = message;
+    }
+    if (warningModal) {
+        warningModal.style.display = "block";
+    }
+}
+
+function closeWarningModal() {
+    const warningModal = document.getElementById("warningModal");
+    if (warningModal) {
+        warningModal.style.display = "none";
+    }
+}
+
+function openModal() {
+    const modal = document.getElementById("messageModal");
+    if (modal) {
+        modal.style.display = "block";
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById("messageModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+/* ----------------------------------------------
+   Event Listener per chiudere i Modal cliccando fuori
+----------------------------------------------- */
+window.onclick = function(event) {
+    const warningModal = document.getElementById("warningModal");
+    const messageModal = document.getElementById("messageModal");
+    if (warningModal && event.target === warningModal) {
+        warningModal.style.display = 'none';
+    }
+    if (messageModal && event.target === messageModal) {
+        messageModal.style.display = 'none';
+    }
+};
 
 /* ----------------------------------------------
    Gestione dei Passi del Configuratore
@@ -1015,7 +1356,7 @@ function resetModifiedSteps() {
 /* ----------------------------------------------
    Gestione del Pulsante "Modifica" nella Configurazione
 ----------------------------------------------- */
-// Dichiarazione unica
+// Supponiamo che ci sia un pulsante "Modifica" in ogni passo che apre il passo per la modifica
 const modificaButtons = document.querySelectorAll(".modifica-btn");
 modificaButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -1044,50 +1385,166 @@ function openEditStep(stepId) {
 }
 
 /* ----------------------------------------------
-   MODALS per avvisi e successi
+   Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
 ----------------------------------------------- */
-function showWarningModal(message) {
-    const warningModal = document.getElementById("warningModal");
-    const warningMessageText = document.getElementById("warningMessageText");
-    if (warningMessageText) {
-        warningMessageText.textContent = message;
-    }
-    if (warningModal) {
-        warningModal.style.display = "block";
-    }
-}
+async function inviaConfigurazione() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
 
-function closeWarningModal() {
-    const warningModal = document.getElementById("warningModal");
-    if (warningModal) {
-        warningModal.style.display = "none";
-    }
-}
+    try {
+        const img = new Image();
+        img.src = logoURL;
+        img.onload = async function () {
+            doc.addImage(img, "JPEG", 10, 10, 50, 20);
+            doc.setFontSize(20);
+            doc.text("Configurazione Utente", 105, 40, null, null, "center");
 
-function openModal() {
-    const modal = document.getElementById("messageModal");
-    if (modal) {
-        modal.style.display = "block";
-    }
-}
+            // Dati utente
+            doc.setFontSize(12);
+            doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
+            doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
+            doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
+            doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
 
-function closeModal() {
-    const modal = document.getElementById("messageModal");
-    if (modal) {
-        modal.style.display = "none";
+            // Selezioni
+            doc.setFontSize(16);
+            doc.text("Selezioni:", 20, 95);
+            doc.setFontSize(12);
+
+            let y = 105;
+            for (let categoria in configurazione.selections) {
+                if (categoria === "optional") {
+                    if (configurazione.selections.optional.items.length > 0) {
+                        doc.text(`${capitalize(categoria)}:`, 20, y);
+                        y += 10;
+                        configurazione.selections.optional.items.forEach((item) => {
+                            doc.text(`- ${item.nome} - ${formatCurrency(item.prezzo)}`, 30, y);
+                            y += 10;
+                        });
+                    }
+                } else {
+                    const sel = configurazione.selections[categoria];
+                    doc.text(
+                        `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
+                        20,
+                        y
+                    );
+                    y += 10;
+                }
+            }
+
+            // Sconti finali
+            if (
+                configurazione.customer.extra_discount.active &&
+                configurazione.scontoExtra > 0
+            ) {
+                if (configurazione.customer.extra_discount.type === "percentuale") {
+                    doc.text(
+                        `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
+                        20,
+                        y
+                    );
+                } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
+                    doc.text(
+                        `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
+                        20,
+                        y
+                    );
+                }
+                y += 10;
+            }
+
+            doc.setFontSize(14);
+            doc.text(
+                `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
+                20,
+                y + 10
+            );
+
+            // Salva PDF
+            doc.save("resoconto.pdf");
+
+            // Aggiorna l'uso del codice sconto sul server
+            try {
+                const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: configurazione.customer.code })
+                });
+
+                if (!updateResponse.ok) {
+                    const errorData = await updateResponse.json();
+                    throw new Error(errorData.message || 'Errore nell\'aggiornamento dell\'uso del codice sconto.');
+                }
+
+                console.log('Uso del codice sconto aggiornato con successo.');
+            } catch (error) {
+                console.error(error);
+                showPopup(`Errore: ${error.message}`, true);
+                return;
+            }
+
+            // Prepara il mailto
+            const toEmail = "ayoub.majdouli@esa-italy.com"; // Sostituisci con la tua email
+            const subject = encodeURIComponent("Nuova Configurazione Utente");
+
+            let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
+
+            for (let categoria in configurazione.selections) {
+                if (categoria === "optional") {
+                    if (configurazione.selections.optional.items.length > 0) {
+                        body += `${capitalize(categoria)}:\n`;
+                        configurazione.selections.optional.items.forEach((item) => {
+                            body += `- ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
+                        });
+                    }
+                } else {
+                    const sel = configurazione.selections[categoria];
+                    body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
+                }
+            }
+
+            if (
+                configurazione.customer.extra_discount.active &&
+                configurazione.scontoExtra > 0
+            ) {
+                if (configurazione.customer.extra_discount.type === "percentuale") {
+                    body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+                } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
+                    body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
+                }
+            }
+            body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
+
+            const encodedBody = encodeURIComponent(body);
+            const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
+            
+            // Creare un link temporaneo per avviare il client di posta
+            const tempLink = document.createElement('a');
+            tempLink.href = mailtoLink;
+            tempLink.click();
+
+            // Mostra il modale di conferma
+            messageModal.style.display = 'block';
+        };
+        img.onerror = function () {
+            showPopup("Errore nel caricamento del logo.", true);
+        };
+    } catch (error) {
+        console.error("Errore durante la generazione del PDF:", error);
+        showPopup("Errore durante la generazione del PDF.", true);
     }
 }
 
 /* ----------------------------------------------
-   Event Listener per chiudere i Modal cliccando fuori
+   Funzione per Ottenere il Volume Selezionato
 ----------------------------------------------- */
-window.onclick = function(event) {
-    const warningModal = document.getElementById("warningModal");
-    const messageModal = document.getElementById("messageModal");
-    if (warningModal && event.target === warningModal) {
-        warningModal.style.display = 'none';
-    }
-    if (messageModal && event.target === messageModal) {
-        messageModal.style.display = 'none';
-    }
-};
+function getSelectedVolume() {
+    const sel = configurazione.selections["corpo_contenitore"];
+    if (!sel) return null;
+    const match = sel.nome.match(/\((.*?)\)/);
+    return match ? match[1] : null;
+}
