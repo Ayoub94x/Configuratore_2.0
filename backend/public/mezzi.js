@@ -214,7 +214,7 @@ function showStep(step) {
         <select id="automezziCategoria">
           <option value="">-- Seleziona Categoria --</option>
           ${configurazione.data.categorie["AUTOMEZZI"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -240,7 +240,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["AUTOMEZZI"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -258,7 +258,7 @@ function showStep(step) {
         <select id="allestimentoCategoria">
           <option value="">-- Seleziona Allestimento --</option>
           ${configurazione.data.categorie["Allestimento"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -287,7 +287,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Allestimento"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -305,7 +305,7 @@ function showStep(step) {
         <select id="gruCategoria">
           <option value="">-- Seleziona GRU --</option>
           ${configurazione.data.categorie["GRU"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -334,7 +334,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["GRU"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -352,7 +352,7 @@ function showStep(step) {
         <select id="compattatoreCategoria">
           <option value="">-- Seleziona Compattatore --</option>
           ${configurazione.data.categorie["Compattatore"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -381,7 +381,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Compattatore"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -399,7 +399,7 @@ function showStep(step) {
         <select id="lavacontenitoriCategoria">
           <option value="">-- Seleziona Lavacontenitori --</option>
           ${configurazione.data.categorie["Lavacontenitori"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -428,7 +428,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Lavacontenitori"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -448,7 +448,7 @@ function showStep(step) {
             .map((opzione) => `
               <div>
                 <input type="checkbox" id="${opzione.nome}" name="contenitori" value="${opzione.nome}" />
-                <label for="${opzione.nome}">${capitalize(opzione.nome.replace('_', ' '))} - ${formatCurrency(0)}</label>
+                <label for="${opzione.nome}">${capitalize(opzione.nome.replace('_', ' '))}</label> <!-- Rimosso il prezzo -->
               </div>
             `)
             .join("")}
@@ -484,7 +484,7 @@ function showStep(step) {
             // Aggiorna la label con il prezzo scontato
             const label = configuratorDiv.querySelector(`label[for="${opzioneNome}"]`);
             if (label) {
-              label.textContent = `${capitalize(opzioneNome.replace('_', ' '))} - ${formatCurrency(prezzo)}`;
+              label.textContent = `${capitalize(opzioneNome.replace('_', ' '))} - ${formatCurrency(prezzo)}`; // Aggiunto il prezzo solo nella label
             }
           });
 
@@ -500,7 +500,7 @@ function showStep(step) {
             }).join(', ');
 
             configuratorDiv.querySelector("#currentSelectionPriceContenitori").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Contenitori"];
             configuratorDiv.querySelector("#currentSelectionPriceContenitori").textContent =
@@ -520,7 +520,7 @@ function showStep(step) {
         <select id="accessoriCategoria">
           <option value="">-- Seleziona Accessorio --</option>
           ${configurazione.data.categorie["Accessori"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -549,7 +549,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Accessori"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -567,7 +567,7 @@ function showStep(step) {
         <select id="plusCategoria">
           <option value="">-- Seleziona PLUS --</option>
           ${configurazione.data.categorie["PLUS"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`) // Rimosso il prezzo
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -596,7 +596,7 @@ function showStep(step) {
               sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["PLUS"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -1008,18 +1008,6 @@ async function inviaConfigurazione() {
 }
 
 /* ----------------------------------------------
-   Funzione modificaSelezione: permette di modificare una selezione specifica
------------------------------------------------ */
-function modificaSelezione(categoria) {
-  const step = stepMap[categoria];
-  if (step) {
-    showStep(step);
-  } else {
-    alert("Passo non trovato per la modifica.");
-  }
-}
-
-/* ----------------------------------------------
    MODALS per avvisi e successi
 ----------------------------------------------- */
 function showWarningModal(message) {
@@ -1066,416 +1054,4 @@ window.onclick = function(event) {
   if (messageModal && event.target === messageModal) {
     messageModal.style.display = 'none';
   }
-}
-
-/* ----------------------------------------------
-   Funzione di Ottimizzazione dei Prezzi Base per Contenitori
------------------------------------------------ */
-function getContenitorePrezzoBase(opzioneNome) {
-  // Definisci qui i prezzi base per ogni componente del contenitore
-  const prezziBase = {
-    "corpo_contenitore": 10000.00,
-    "bascule": 20000.00,
-    "gancio": 5000.00,
-    "bocche": 4000.00,
-    "guida_a_terra": 7000.00,
-    "adesivo": 9000.00,
-    "optional": 10000.00
-  };
-  return prezziBase[opzioneNome] || 0;
-}
-
-/* ----------------------------------------------
-   Aggiorna il prezzo
-   isFinal = false => no sconto quantità, no sconto extra
-   isFinal = true  => sconto extra
------------------------------------------------ */
-function aggiornaPrezzo(isFinal) {
-  let prezzoUnitario = 0;
-
-  // Somma dei prezzi delle selezioni
-  for (let categoria in configurazione.selections) {
-    prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
-  }
-
-  if (!isFinal) {
-    // Calcolo "parziale" (1 pezzo, no sconto extra)
-    configurazione.prezzoTotale = prezzoUnitario;
-    configurazione.prezzoTotaleScontato = prezzoUnitario;
-  } else {
-    // Calcolo finale con la quantità effettiva
-    configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
-
-    // Sconto extra
-    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active) {
-      const extra = configurazione.customer.extra_discount;
-      if (extra.type === "percentuale") {
-        configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
-      } else if (extra.type === "fisso") {
-        configurazione.scontoExtra = extra.value;
-      }
-      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale - configurazione.scontoExtra;
-    } else {
-      configurazione.scontoExtra = 0;
-      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale;
-    }
-  }
-
-  // Aggiorna i .prezzo-totale (se presenti)
-  const configuratorDiv = document.getElementById("configurator");
-  const totElems = configuratorDiv.querySelectorAll(".prezzo-totale");
-  totElems.forEach((el) => {
-    el.textContent = formatCurrency(configurazione.prezzoTotaleScontato);
-  });
-}
-
-/* ----------------------------------------------
-   Schermata di Resoconto
------------------------------------------------ */
-function mostraResoconto() {
-  const configuratorDiv = document.getElementById("configurator");
-  configuratorDiv.innerHTML = `
-    <h2><i class="fas fa-list-alt"></i> Riepilogo Selezioni</h2>
-    <ul id="riepilogoSelezioni"></ul>
-
-    <!-- Sezione Quantità -->
-    <div style="margin: 20px 0;">
-      <label for="quantitaInput"><strong>Quantità:</strong></label>
-      <input type="number" id="quantitaInput" min="1" value="1" />
-      <button id="confermaQuantitaBtn" class="invia">
-        Conferma Quantità
-      </button>
-      <button id="modificaQuantitaBtn" class="modifica_quantita" style="display: none;">
-        Modifica Quantità
-      </button>
-    </div>
-
-    <!-- Sezione prezzi finale (inizialmente vuota) -->
-    <div id="dettagliPrezzoFinale" style="margin-bottom: 20px;"></div>
-
-    <!-- Pulsante Invia Ordine (inizialmente disabilitato) -->
-    <button class="invia" id="inviaOrdineBtn" disabled>
-      Invia Ordine <i class="fas fa-check"></i>
-    </button>
-  `;
-
-  // Riempi la lista delle selezioni
-  const ul = document.getElementById("riepilogoSelezioni");
-  for (let categoria in configurazione.selections) {
-    const sel = configurazione.selections[categoria];
-    if (categoria === "Contenitori") {
-      ul.innerHTML += `
-        <li>
-          <div>
-            <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})
-          </div>
-          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-        </li>
-      `;
-    } else {
-      ul.innerHTML += `
-        <li>
-          <div>
-            <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
-          </div>
-          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-        </li>
-      `;
-    }
-  }
-
-  // Mostriamo il prezzo "parziale" per default
-  aggiornaPrezzo(false);
-
-  // Riferimenti ai vari elementi
-  const quantitaInput = document.getElementById("quantitaInput");
-  const confermaQuantitaBtn = document.getElementById("confermaQuantitaBtn");
-  const modificaQuantitaBtn = document.getElementById("modificaQuantitaBtn");
-  const dettagliPrezzoFinale = document.getElementById("dettagliPrezzoFinale");
-  const inviaOrdineBtn = document.getElementById("inviaOrdineBtn");
-
-  // Quando clicca su "Conferma Quantità":
-  confermaQuantitaBtn.addEventListener("click", async () => {
-    const q = parseInt(quantitaInput.value);
-    if (!q || q < 1) {
-      showWarningModal("Inserisci una quantità valida (>=1).");
-      return;
-    }
-    configurazione.quantità = q;
-    aggiornaPrezzo(true);
-
-    // Mostriamo i dettagli dei prezzi finali
-    const {
-      prezzoTotale,
-      scontoExtra,
-      prezzoTotaleScontato
-    } = configurazione;
-
-    let htmlPrezzi = `
-      <p><strong>Prezzo Totale (${q} pz):</strong> ${formatCurrency(prezzoTotale)}</p>
-    `;
-    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active && scontoExtra > 0) {
-      const extra = configurazione.customer.extra_discount;
-      if (extra.type === "percentuale") {
-        htmlPrezzi += `
-          <p>Sconto Extra: -${extra.value}% (${formatCurrency(scontoExtra)})</p>
-        `;
-      } else if (extra.type === "fisso") {
-        htmlPrezzi += `<p>Sconto Extra: -${formatCurrency(scontoExtra)}</p>`;
-      }
-    }
-    htmlPrezzi += `
-      <p><strong>Prezzo Totale Scontato:</strong> ${formatCurrency(prezzoTotaleScontato)}</p>
-    `;
-
-    dettagliPrezzoFinale.innerHTML = htmlPrezzi;
-
-    // Abilita il pulsante "Invia Ordine"
-    inviaOrdineBtn.disabled = false;
-
-    // Disabilita input e bottone per evitare modifiche successive
-    quantitaInput.disabled = true;
-    confermaQuantitaBtn.disabled = true;
-
-    // Mostra il pulsante "Modifica Quantità"
-    modificaQuantitaBtn.style.display = "inline-block";
-  });
-
-  // Quando l'utente clicca su "Modifica Quantità"
-  modificaQuantitaBtn.addEventListener("click", () => {
-    // Abilita l'input della quantità
-    quantitaInput.disabled = false;
-    // Disabilita il pulsante "Invia Ordine"
-    inviaOrdineBtn.disabled = true;
-    // Riabilita il pulsante "Conferma Quantità"
-    confermaQuantitaBtn.disabled = false;
-    // Nascondi il pulsante "Modifica Quantità"
-    modificaQuantitaBtn.style.display = "none";
-    // Rimuovi i dettagli del prezzo finale
-    dettagliPrezzoFinale.innerHTML = "";
-  });
-
-  // Quando l'utente clicca su "Invia Ordine"
-  inviaOrdineBtn.addEventListener("click", async () => {
-    // Procedi con l'invio dell'ordine
-    await inviaConfigurazione();
-  });
-}
-
-/* ----------------------------------------------
-   Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
------------------------------------------------ */
-async function inviaConfigurazione() {
-  const doc = new jsPDF();
-  const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
-
-  try {
-    const img = new Image();
-    img.src = logoURL;
-    img.onload = async function () {
-      doc.addImage(img, "JPEG", 10, 10, 50, 20);
-      doc.setFontSize(20);
-      doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
-
-      // Dati utente
-      doc.setFontSize(12);
-      doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
-      doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
-      doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
-      doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
-
-      // Selezioni
-      doc.setFontSize(16);
-      doc.text("Selezioni:", 20, 95);
-      doc.setFontSize(12);
-
-      let y = 105;
-      for (let categoria in configurazione.selections) {
-        const sel = configurazione.selections[categoria];
-        if (categoria === "Contenitori") {
-          doc.text(
-            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})`,
-            20,
-            y
-          );
-        } else {
-          doc.text(
-            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)`,
-            20,
-            y
-          );
-        }
-        y += 10;
-      }
-
-      // Sconti finali
-      if (
-        configurazione.customer.extra_discount &&
-        configurazione.customer.extra_discount.active &&
-        configurazione.scontoExtra > 0
-      ) {
-        if (configurazione.customer.extra_discount.type === "percentuale") {
-          doc.text(
-            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
-            20,
-            y
-          );
-        } else if (configurazione.customer.extra_discount.type === "fisso") {
-          doc.text(
-            `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
-            20,
-            y
-          );
-        }
-        y += 10;
-      }
-
-      doc.setFontSize(14);
-      doc.text(
-        `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
-        20,
-        y + 10
-      );
-
-      // Salva PDF
-      doc.save("resoconto_mezzo.pdf");
-
-      // Aggiorna l'uso del codice sconto sul server
-      try {
-        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ code: configurazione.customer.code })
-        });
-
-        if (!updateResponse.ok) {
-          const errorData = await updateResponse.json();
-          throw new Error(errorData.message || 'Errore nell\'aggiornamento dell\'uso del codice sconto.');
-        }
-
-        console.log('Uso del codice sconto aggiornato con successo.');
-      } catch (error) {
-        console.error(error);
-        showWarningModal(`Errore: ${error.message}`);
-        return;
-      }
-
-      // Prepara il mailto
-      const toEmail = "tuo.email@esempio.com"; // Sostituisci con la tua email
-      const subject = encodeURIComponent("Nuova Configurazione Mezzo");
-
-      let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
-
-      for (let categoria in configurazione.selections) {
-        const sel = configurazione.selections[categoria];
-        if (categoria === "Contenitori") {
-          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})\n`;
-        } else {
-          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)\n`;
-        }
-      }
-
-      if (
-        configurazione.customer.extra_discount &&
-        configurazione.customer.extra_discount.active &&
-        configurazione.scontoExtra > 0
-      ) {
-        if (configurazione.customer.extra_discount.type === "percentuale") {
-          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
-        } else if (configurazione.customer.extra_discount.type === "fisso") {
-          body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
-        }
-      }
-      body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
-
-      const encodedBody = encodeURIComponent(body);
-      const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
-      const emailLink = document.getElementById("emailLink");
-      if (emailLink) {
-        emailLink.href = mailtoLink;
-        emailLink.click(); // Avvia l'email client
-      } else {
-        // Se l'elemento non esiste, apri direttamente il mailto
-        window.location.href = mailtoLink;
-      }
-
-      openModal();
-    };
-    img.onerror = function () {
-      showWarningModal("Errore nel caricamento del logo.");
-    };
-  } catch (error) {
-    console.error("Errore durante la generazione del PDF:", error);
-    showWarningModal("Errore durante la generazione del PDF.");
-  }
-}
-
-/* ----------------------------------------------
-   MODALS per avvisi e successi
------------------------------------------------ */
-function showWarningModal(message) {
-  const warningModal = document.getElementById("warningModal");
-  const warningMessageText = document.getElementById("warningMessageText");
-  if (warningMessageText) {
-    warningMessageText.textContent = message;
-  }
-  if (warningModal) {
-    warningModal.style.display = "block";
-  }
-}
-
-function closeWarningModal() {
-  const warningModal = document.getElementById("warningModal");
-  if (warningModal) {
-    warningModal.style.display = "none";
-  }
-}
-
-function openModal() {
-  const modal = document.getElementById("messageModal");
-  if (modal) {
-    modal.style.display = "block";
-  }
-}
-
-function closeModal() {
-  const modal = document.getElementById("messageModal");
-  if (modal) {
-    modal.style.display = "none";
-  }
-}
-
-/* ----------------------------------------------
-   Event Listener per chiudere i Modal cliccando fuori
------------------------------------------------ */
-window.onclick = function(event) {
-  const warningModal = document.getElementById("warningModal");
-  const messageModal = document.getElementById("messageModal");
-  if (warningModal && event.target === warningModal) {
-    warningModal.style.display = 'none';
-  }
-  if (messageModal && event.target === messageModal) {
-    messageModal.style.display = 'none';
-  }
-}
-
-/* ----------------------------------------------
-   Funzione di Ottimizzazione dei Prezzi Base per Contenitori
------------------------------------------------ */
-function getContenitorePrezzoBase(opzioneNome) {
-  // Definisci qui i prezzi base per ogni componente del contenitore
-  const prezziBase = {
-    "corpo_contenitore": 10000.00,
-    "bascule": 20000.00,
-    "gancio": 5000.00,
-    "bocche": 4000.00,
-    "guida_a_terra": 7000.00,
-    "adesivo": 9000.00,
-    "optional": 10000.00
-  };
-  return prezziBase[opzioneNome] || 0;
 }
