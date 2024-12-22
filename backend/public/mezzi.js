@@ -12,16 +12,6 @@ function formatCurrency(value) {
 }
 
 /**
- * Funzione per calcolare il prezzo scontato
- * @param {number} prezzo - Prezzo originale
- * @param {number} sconto - Percentuale di sconto
- * @returns {number} - Prezzo scontato
- */
-function getPrezzoScontato(prezzo, sconto) {
-  return prezzo - (prezzo * sconto / 100);
-}
-
-/**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
  */
@@ -117,7 +107,7 @@ function capitalize(str) {
 /* ----------------------------------------------
    Registrazione: gestisce il form utente
 ----------------------------------------------- */
-document.getElementById("userForm").addEventListener("submit", function (e) {
+document.getElementById("userForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const nome = document.getElementById("nome").value.trim();
@@ -130,93 +120,47 @@ document.getElementById("userForm").addEventListener("submit", function (e) {
     return;
   }
 
-  // Simulazione della verifica del codice sconto
-  // In assenza di un database, utilizziamo una semplice logica
-  // Puoi espandere questa logica come preferisci
+  try {
+    // Chiamata reale al server per verificare il codice sconto
+    const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/validate-code', { // Endpoint corretto
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ code: discountCode })
+    });
 
-  const scontoValido = validateDiscountCode(discountCode);
-  if (!scontoValido) {
-    showWarningModal("Codice sconto non valido o scaduto.");
-    return;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Errore nella verifica del codice sconto.');
+    }
+
+    const customerData = await response.json();
+
+    // Aggiorna l'oggetto configurazione con i dati del cliente
+    configurazione.userInfo = { nome, cognome, azienda };
+    configurazione.customer = {
+      code: customerData.code,
+      name: customerData.name,
+      discounts: customerData.discounts,
+      extra_discount: customerData.extra_discount,
+      usage_limit: customerData.usage_limit,
+      is_active: customerData.is_active,
+      usage_count: customerData.usage_count
+    };
+    configurazione.selections = {};
+    configurazione.prezzoTotale = 0;
+    configurazione.scontoExtra = 0;
+    configurazione.prezzoTotaleScontato = 0;
+
+    document.getElementById("registration").style.display = "none";
+    document.getElementById("configurator").style.display = "block";
+    showStep("AUTOMEZZI");
+  } catch (error) {
+    console.error(error);
+    showWarningModal(`Errore: ${error.message}`);
   }
-
-  // Aggiorna l'oggetto configurazione con i dati del cliente
-  configurazione.userInfo = { nome, cognome, azienda };
-  configurazione.customer = {
-    code: discountCode,
-    name: "Cliente Premium",
-    discounts: scontoValido.discounts,
-    extra_discount: scontoValido.extra_discount,
-    usage_limit: scontoValido.usage_limit,
-    is_active: true,
-    usage_count: scontoValido.usage_count
-  };
-  configurazione.selections = {};
-  configurazione.prezzoTotale = 0;
-  configurazione.scontoExtra = 0;
-  configurazione.prezzoTotaleScontato = 0;
-
-  document.getElementById("registration").style.display = "none";
-  document.getElementById("configurator").style.display = "block";
-  showStep("AUTOMEZZI");
 });
-
-/* ----------------------------------------------
-   Funzione di Validazione del Codice Sconto
-   In un contesto reale, questa logica dovrebbe essere gestita dal backend
------------------------------------------------ */
-function validateDiscountCode(code) {
-  // Esempio di codici sconto
-  const codiciSconto = {
-    "PROMO10": {
-      discounts: {
-        "AUTOMEZZI": 10,
-        "Allestimento": 5,
-        "GRU": 0,
-        "Compattatore": 0,
-        "Lavacontenitori": 0,
-        "Accessori": 0,
-        "PLUS": 0
-      },
-      extra_discount: {
-        active: true,
-        type: "percentuale", // "percentuale" o "fisso"
-        value: 5
-      },
-      usage_limit: 100,
-      usage_count: 10,
-      is_active: true
-    },
-    "PROMO20": {
-      discounts: {
-        "AUTOMEZZI": 20,
-        "Allestimento": 10,
-        "GRU": 5,
-        "Compattatore": 5,
-        "Lavacontenitori": 5,
-        "Accessori": 5,
-        "PLUS": 5
-      },
-      extra_discount: {
-        active: true,
-        type: "fisso", // "percentuale" o "fisso"
-        value: 100
-      },
-      usage_limit: 50,
-      usage_count: 25,
-      is_active: true
-    }
-    // Aggiungi altri codici sconto qui
-  };
-
-  if (codiciSconto[code] && codiciSconto[code].is_active) {
-    const codice = codiciSconto[code];
-    if (codice.usage_count < codice.usage_limit) {
-      return codice;
-    }
-  }
-  return null;
-}
 
 /* ----------------------------------------------
    Navigazione tra i vari step del configuratore
@@ -540,51 +484,19 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Controlli specifici per ogni step
-  if (stepCorrente === "AUTOMEZZI") {
-    if (!configurazione.selections["AUTOMEZZI"]) {
-      showWarningModal("Per continuare devi selezionare un'automezzo!");
-      return;
-    }
-  }
+  const requiredSelections = {
+    "AUTOMEZZI": "AUTOMEZZI",
+    "Allestimento": "Allestimento",
+    "GRU": "GRU",
+    "Compattatore": "Compattatore",
+    "Lavacontenitori": "Lavacontenitori",
+    "Accessori": "Accessori",
+    "PLUS": "PLUS"
+  };
 
-  if (stepCorrente === "Allestimento") {
-    if (!configurazione.selections["Allestimento"]) {
-      showWarningModal("Per continuare devi selezionare un allestimento!");
-      return;
-    }
-  }
-
-  if (stepCorrente === "GRU") {
-    if (!configurazione.selections["GRU"]) {
-      showWarningModal("Per continuare devi selezionare una GRU!");
-      return;
-    }
-  }
-
-  if (stepCorrente === "Compattatore") {
-    if (!configurazione.selections["Compattatore"]) {
-      showWarningModal("Per continuare devi selezionare un Compattatore!");
-      return;
-    }
-  }
-
-  if (stepCorrente === "Lavacontenitori") {
-    if (!configurazione.selections["Lavacontenitori"]) {
-      showWarningModal("Per continuare devi selezionare un Lavacontenitori!");
-      return;
-    }
-  }
-
-  if (stepCorrente === "Accessori") {
-    if (!configurazione.selections["Accessori"]) {
-      showWarningModal("Per continuare devi selezionare almeno un Accessorio!");
-      return;
-    }
-  }
-
-  if (stepCorrente === "PLUS") {
-    if (!configurazione.selections["PLUS"]) {
-      showWarningModal("Per continuare devi selezionare almeno un PLUS!");
+  if (requiredSelections[stepCorrente]) {
+    if (!configurazione.selections[requiredSelections[stepCorrente]]) {
+      showWarningModal(`Per continuare devi selezionare un ${requiredSelections[stepCorrente].toLowerCase()}!`);
       return;
     }
   }
@@ -696,7 +608,7 @@ function mostraResoconto() {
   const inviaOrdineBtn = document.getElementById("inviaOrdineBtn");
 
   // Quando clicca su "Conferma Quantità":
-  confermaQuantitaBtn.addEventListener("click", () => {
+  confermaQuantitaBtn.addEventListener("click", async () => {
     const q = parseInt(quantitaInput.value);
     if (!q || q < 1) {
       showWarningModal("Inserisci una quantità valida (>=1).");
@@ -757,9 +669,9 @@ function mostraResoconto() {
   });
 
   // Quando l'utente clicca su "Invia Ordine"
-  inviaOrdineBtn.addEventListener("click", () => {
+  inviaOrdineBtn.addEventListener("click", async () => {
     // Procedi con l'invio dell'ordine
-    inviaConfigurazione();
+    await inviaConfigurazione();
   });
 }
 
@@ -778,118 +690,130 @@ function modificaSelezione(categoria) {
 /* ----------------------------------------------
    Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
 ----------------------------------------------- */
-function inviaConfigurazione() {
+async function inviaConfigurazione() {
   const doc = new jsPDF();
   const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
 
   try {
     const img = new Image();
     img.src = logoURL;
-    img.onload = function () {
-      try {
-        doc.addImage(img, "JPEG", 10, 10, 50, 20);
-        doc.setFontSize(20);
-        doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
+    img.onload = async function () {
+      doc.addImage(img, "JPEG", 10, 10, 50, 20);
+      doc.setFontSize(20);
+      doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
 
-        // Dati utente
-        doc.setFontSize(12);
-        doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
-        doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
-        doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
-        doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
+      // Dati utente
+      doc.setFontSize(12);
+      doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
+      doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
+      doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
+      doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
 
-        // Selezioni
-        doc.setFontSize(16);
-        doc.text("Selezioni:", 20, 95);
-        doc.setFontSize(12);
+      // Selezioni
+      doc.setFontSize(16);
+      doc.text("Selezioni:", 20, 95);
+      doc.setFontSize(12);
 
-        let y = 105;
-        for (let categoria in configurazione.selections) {
-          const sel = configurazione.selections[categoria];
+      let y = 105;
+      for (let categoria in configurazione.selections) {
+        const sel = configurazione.selections[categoria];
+        doc.text(
+          `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
+          20,
+          y
+        );
+        y += 10;
+      }
+
+      // Sconti finali
+      if (
+        configurazione.customer.extra_discount.active &&
+        configurazione.scontoExtra > 0
+      ) {
+        if (configurazione.customer.extra_discount.type === "percentuale") {
           doc.text(
-            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
+            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
             20,
             y
           );
-          y += 10;
+        } else if (configurazione.customer.extra_discount.type === "fisso") {
+          doc.text(
+            `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
+            20,
+            y
+          );
         }
-
-        // Sconti finali
-        if (
-          configurazione.customer.extra_discount.active &&
-          configurazione.scontoExtra > 0
-        ) {
-          if (configurazione.customer.extra_discount.type === "percentuale") {
-            doc.text(
-              `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
-              20,
-              y
-            );
-          } else if (configurazione.customer.extra_discount.type === "fisso") {
-            doc.text(
-              `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
-              20,
-              y
-            );
-          }
-          y += 10;
-        }
-
-        doc.setFontSize(14);
-        doc.text(
-          `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
-          20,
-          y + 10
-        );
-
-        // Salva PDF
-        doc.save("resoconto_mezzo.pdf");
-
-        // Aggiorna l'uso del codice sconto (simulazione)
-        aggiornamentoUsoCodiceSconto(configurazione.customer.code);
-
-        // Prepara il mailto
-        const toEmail = "tuo.email@esempio.com"; // Sostituisci con la tua email
-        const subject = encodeURIComponent("Nuova Configurazione Mezzo");
-
-        let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
-
-        for (let categoria in configurazione.selections) {
-          const sel = configurazione.selections[categoria];
-          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
-        }
-
-        if (
-          configurazione.customer.extra_discount.active &&
-          configurazione.scontoExtra > 0
-        ) {
-          if (configurazione.customer.extra_discount.type === "percentuale") {
-            body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
-          } else if (configurazione.customer.extra_discount.type === "fisso") {
-            body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
-          }
-        }
-        body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
-
-        const encodedBody = encodeURIComponent(body);
-        const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
-        const emailLink = document.getElementById("emailLink");
-        if (emailLink) {
-          emailLink.href = mailtoLink;
-          emailLink.click(); // Avvia l'email client
-        } else {
-          // Se l'elemento non esiste, apri direttamente il mailto
-          window.location.href = mailtoLink;
-        }
-
-        openModal();
-      } catch (error) {
-        console.error("Errore durante la generazione del PDF:", error);
-        showWarningModal("Errore durante la generazione del PDF.");
+        y += 10;
       }
-    };
 
-    // Gestione degli errori di caricamento dell'immagine
+      doc.setFontSize(14);
+      doc.text(
+        `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
+        20,
+        y + 10
+      );
+
+      // Salva PDF
+      doc.save("resoconto_mezzo.pdf");
+
+      // Aggiorna l'uso del codice sconto sul server
+      try {
+        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code: configurazione.customer.code })
+        });
+
+        if (!updateResponse.ok) {
+          const errorData = await updateResponse.json();
+          throw new Error(errorData.message || 'Errore nell\'aggiornamento dell\'uso del codice sconto.');
+        }
+
+        console.log('Uso del codice sconto aggiornato con successo.');
+      } catch (error) {
+        console.error(error);
+        showWarningModal(`Errore: ${error.message}`);
+        return;
+      }
+
+      // Prepara il mailto
+      const toEmail = "tuo.email@esempio.com"; // Sostituisci con la tua email
+      const subject = encodeURIComponent("Nuova Configurazione Mezzo");
+
+      let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
+
+      for (let categoria in configurazione.selections) {
+        const sel = configurazione.selections[categoria];
+        body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
+      }
+
+      if (
+        configurazione.customer.extra_discount.active &&
+        configurazione.scontoExtra > 0
+      ) {
+        if (configurazione.customer.extra_discount.type === "percentuale") {
+          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+        } else if (configurazione.customer.extra_discount.type === "fisso") {
+          body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
+        }
+      }
+      body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
+
+      const encodedBody = encodeURIComponent(body);
+      const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
+      const emailLink = document.getElementById("emailLink");
+      if (emailLink) {
+        emailLink.href = mailtoLink;
+        emailLink.click(); // Avvia l'email client
+      } else {
+        // Se l'elemento non esiste, apri direttamente il mailto
+        window.location.href = mailtoLink;
+      }
+
+      openModal();
+    };
     img.onerror = function () {
       showWarningModal("Errore nel caricamento del logo.");
     };
@@ -900,19 +824,13 @@ function inviaConfigurazione() {
 }
 
 /* ----------------------------------------------
-   Funzione di Aggiornamento Uso Codice Sconto
-   In un contesto reale, questa logica dovrebbe essere gestita dal backend
+   Funzione per Ottenere il Volume Selezionato
 ----------------------------------------------- */
-function aggiornamentoUsoCodiceSconto(code) {
-  // Simulazione dell'aggiornamento dell'uso del codice sconto
-  // Puoi espandere questa funzione per integrare con il tuo sistema
-  console.log(`Aggiornato l'uso del codice sconto: ${code}`);
-  // Ad esempio, incrementa il contatore
-  configurazione.customer.usage_count += 1;
-  if (configurazione.customer.usage_count >= configurazione.customer.usage_limit) {
-    configurazione.customer.is_active = false;
-    console.log(`Il codice sconto ${code} è ora scaduto.`);
-  }
+function getSelectedVolume() {
+  const sel = configurazione.selections["AUTOMEZZI"];
+  if (!sel) return null;
+  // Adatta questa funzione se necessario per estrarre informazioni specifiche
+  return sel.nome;
 }
 
 /* ----------------------------------------------
@@ -962,4 +880,11 @@ window.onclick = function(event) {
   if (messageModal && event.target === messageModal) {
     messageModal.style.display = 'none';
   }
+}
+
+/* ----------------------------------------------
+   Funzione di Calcolo Prezzo Scontato
+----------------------------------------------- */
+function getPrezzoScontato(prezzo, sconto) {
+  return prezzo - (prezzo * sconto / 100);
 }
