@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Connessione a MongoDB
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://...tuo-database';
+const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://Ayoub_Majdouli:nI6Ds3JJEqqknaJ2@configuratore.hucwx.mongodb.net/?api/=true&w=majority&appName=Configuratore/tuo-database';
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
