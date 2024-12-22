@@ -682,6 +682,9 @@ function mostraResoconto() {
       <button id="confermaQuantitaBtn" class="invia">
         Conferma Quantità
       </button>
+      <button id="modificaQuantitaBtn" class="modifica" style="display: none;">
+        Modifica Quantità
+      </button>
     </div>
 
     <!-- Sezione prezzi finale (inizialmente vuota) -->
@@ -733,6 +736,7 @@ function mostraResoconto() {
   // Riferimenti ai vari elementi
   const quantitaInput = document.getElementById("quantitaInput");
   const confermaQuantitaBtn = document.getElementById("confermaQuantitaBtn");
+  const modificaQuantitaBtn = document.getElementById("modificaQuantitaBtn");
   const dettagliPrezzoFinale = document.getElementById("dettagliPrezzoFinale");
   const inviaOrdineBtn = document.getElementById("inviaOrdineBtn");
 
@@ -773,12 +777,28 @@ function mostraResoconto() {
     dettagliPrezzoFinale.innerHTML = htmlPrezzi;
 
     // Abilita il pulsante "Invia Ordine"
-    // configurazione.quantitaConfermata = true; // Rimosso
     inviaOrdineBtn.disabled = false;
 
     // Disabilita input e bottone per evitare modifiche successive
     quantitaInput.disabled = true;
     confermaQuantitaBtn.disabled = true;
+
+    // Mostra il pulsante "Modifica Quantità"
+    modificaQuantitaBtn.style.display = "inline-block";
+  });
+
+  // Quando l'utente clicca su "Modifica Quantità"
+  modificaQuantitaBtn.addEventListener("click", () => {
+    // Abilita l'input della quantità
+    quantitaInput.disabled = false;
+    // Disabilita il pulsante "Invia Ordine"
+    inviaOrdineBtn.disabled = true;
+    // Riabilita il pulsante "Conferma Quantità"
+    confermaQuantitaBtn.disabled = false;
+    // Nascondi il pulsante "Modifica Quantità"
+    modificaQuantitaBtn.style.display = "none";
+    // Rimuovi i dettagli del prezzo finale
+    dettagliPrezzoFinale.innerHTML = "";
   });
 
   // Quando l'utente clicca su "Invia Ordine"

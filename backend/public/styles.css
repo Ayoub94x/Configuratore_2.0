@@ -120,19 +120,23 @@ li {
 
 .modifica,
 .invia {
-  padding: 8px 12px;
-  background: #ff7f50;
-  color: #fff;
+  background-color: #f0ad4e;
   border: none;
-  border-radius: 3px;
+  color: white;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: background 0.3s;
-  font-size: 14px;
+  margin-top: 5px;
+  width: 150px; /* Larghezza fissa */
+  height: 40px; /* Altezza fissa */
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modifica:hover,
 .invia:hover {
-  background: #e67e22;
+  background-color: #ec971f;
 }
 
 /* Pulsanti Indietro e Avanti */
