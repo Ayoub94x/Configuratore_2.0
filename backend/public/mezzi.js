@@ -641,6 +641,11 @@ function validateAndNextStep(nextStepName) {
 }
 
 function prevStep(prevStepName) {
+  // **Nuova Modifica: Resetta la selezione del passaggio precedente**
+  // Questo assicura che l'utente debba effettuare una nuova selezione prima di poter procedere
+  if (configurazione.selections[prevStepName]) {
+    delete configurazione.selections[prevStepName];
+  }
   showStep(prevStepName);
 }
 
