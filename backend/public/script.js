@@ -621,38 +621,6 @@ function validateAndNextStep(nextStepName) {
     }
   }
 
-  // Controllo specifico per lo step 'bascule'
-  if (stepCorrente === "bascule") {
-    if (!configurazione.selections["bascule"]) {
-      showWarningModal("Per continuare devi selezionare la bascula!");
-      return;
-    }
-  }
-
-  // Controllo specifico per lo step 'gancio'
-  if (stepCorrente === "gancio") {
-    if (!configurazione.selections["gancio"]) {
-      showWarningModal("Per continuare devi selezionare il gancio!");
-      return;
-    }
-  }
-
-  // Controllo specifico per lo step 'bocche'
-  if (stepCorrente === "bocche") {
-    if (!configurazione.selections["bocche"]) {
-      showWarningModal("Per continuare devi selezionare le bocche!");
-      return;
-    }
-  }
-
-  // Controllo specifico per lo step 'guida'
-  if (stepCorrente === "guida") {
-    if (!configurazione.selections["guida_a_terra"]) {
-      showWarningModal("Per continuare devi selezionare la guida a terra!");
-      return;
-    }
-  }
-
   // Lo step 'adesivo' è opzionale, quindi nessuna validazione necessaria
 
   // Se tutto ok, passiamo allo step successivo
