@@ -1009,4 +1009,4 @@ window.onclick = function(event) {
   if (event.target === messageModal) {
     messageModal.style.display = "none";
   }
-}
+}}
