@@ -118,7 +118,29 @@ li {
   justify-content: space-between;
 }
 
+/* Stili per i prezzi */
+.prezzo-totale,
+#currentSelectionPrice,
+#dettagliPrezzoFinale p strong {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+  transition: color 0.3s ease, font-size 0.3s ease;
+}
 
+.prezzo-totale {
+  color: #28a745; /* Verde per i prezzi totali */
+}
+
+#currentSelectionPrice {
+  color: #17a2b8; /* Blu per i prezzi correnti */
+}
+
+#dettagliPrezzoFinale p strong {
+  color: #dc3545; /* Rosso per i dettagli sconti */
+}
+
+/* Stili per i bottoni di invio e modifica */
 .invia {
   padding: 8px 12px;
   background: #ff7f50;
@@ -148,6 +170,7 @@ li {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.3s;
 }
 
 .modifica:hover {
@@ -156,7 +179,7 @@ li {
 
 .modifica_quantita{
   padding: 8px 12px;
-  background: #ff7f50;
+  background: #e67e22; /* Corretto il doppio definire background */
   color: #fff;
   border: none;
   border-radius: 3px;
@@ -165,9 +188,7 @@ li {
   font-size: 14px;
   margin-top: 5px;
 }
-.modifica_quantita{
-  background: #e67e22;
-}
+
 /* Pulsanti Indietro e Avanti */
 .button-group {
   display: flex;
@@ -230,6 +251,7 @@ a.email-link:hover {
   border-radius: 10px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .close-button {
@@ -290,4 +312,35 @@ a.email-link:hover {
   .button-group button:last-child {
     margin-bottom: 0;
   }
+}
+
+/* Migliorare la visualizzazione dei prezzi */
+.prezzo-totale,
+#currentSelectionPrice,
+#dettagliPrezzoFinale p strong {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+  transition: color 0.3s ease, font-size 0.3s ease;
+}
+
+/* Aggiornamento per uniformare le dimensioni dei pulsanti "Modifica" */
+.modifica {
+  background-color: #f0ad4e;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-top: 5px;
+  width: 150px; /* Larghezza fissa */
+  height: 40px; /* Altezza fissa */
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.modifica:hover {
+  background-color: #ec971f;
 }

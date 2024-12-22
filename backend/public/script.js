@@ -3,6 +3,15 @@
 const { jsPDF } = window.jspdf;
 
 /**
+ * Funzione di formattazione della valuta Euro
+ * @param {number} value - Il valore numerico da formattare
+ * @returns {string} - Il valore formattato come valuta Euro
+ */
+function formatCurrency(value) {
+  return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value);
+}
+
+/**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
  */
@@ -27,9 +36,6 @@ let configurazione = {
   prezzoTotale: 0,               // Prezzo totale base (senza quantità/sconti finali)
   scontoExtra: 0,                // Valore in €
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
-  // quantità: 1,                   // Quantità default (Rimosso)
-  // scontoQuantità: 0,             // Valore in € dello sconto quantità (Rimosso)
-  // quantitaConfermata: false,     // Flag per sapere se l'utente ha confermato la quantità (Rimosso)
   currentStep: null              // Passo corrente
 };
 
@@ -230,9 +236,6 @@ document.getElementById("userForm").addEventListener("submit", async function (e
     configurazione.prezzoTotale = 0;
     configurazione.scontoExtra = 0;
     configurazione.prezzoTotaleScontato = 0;
-    // configurazione.quantità = 1; // Rimosso
-    // configurazione.scontoQuantità = 0; // Rimosso
-    // configurazione.quantitaConfermata = false; // Rimosso
 
     document.getElementById("registration").style.display = "none";
     document.getElementById("configurator").style.display = "block";
@@ -267,8 +270,8 @@ function showStep(step) {
             .map((v) => `<option value="${v}">${v}</option>`)
             .join("")}
         </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           ${avantiButton("bascule")}
         </div>
@@ -292,11 +295,11 @@ function showStep(step) {
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €${discountedPrice.toFixed(2)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
           } else {
             delete configurazione.selections["corpo_contenitore"];
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €0.00`;
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           // Aggiorna prezzo parziale (no sconto quantità né sconto extra)
           aggiornaPrezzo(false);
@@ -312,8 +315,8 @@ function showStep(step) {
           <option value="bascule ferro">Bascule Ferro</option>
           <option value="bascule hdpe">Bascule HDPE</option>
         </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           <button onclick="prevStep('contenitore')">
             <i class="fas fa-arrow-left"></i> Indietro
@@ -337,11 +340,11 @@ function showStep(step) {
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €${discountedPrice.toFixed(2)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
           } else {
             delete configurazione.selections["bascule"];
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €0.00`;
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           aggiornaPrezzo(false);
         });
@@ -356,8 +359,8 @@ function showStep(step) {
           <option value="gancio F90">Gancio F90</option>
           <option value="gancio ks">Gancio KS</option>
         </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           <button onclick="prevStep('bascule')">
             <i class="fas fa-arrow-left"></i> Indietro
@@ -381,11 +384,11 @@ function showStep(step) {
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €${discountedPrice.toFixed(2)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
           } else {
             delete configurazione.selections["gancio"];
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €0.00`;
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           aggiornaPrezzo(false);
         });
@@ -403,8 +406,8 @@ function showStep(step) {
           <option value="Tamburo">Tamburo</option>
           <option value="Oblò">Oblò</option>
         </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           <button onclick="prevStep('gancio')">
             <i class="fas fa-arrow-left"></i> Indietro
@@ -428,11 +431,11 @@ function showStep(step) {
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €${discountedPrice.toFixed(2)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
           } else {
             delete configurazione.selections["bocche"];
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €0.00`;
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           aggiornaPrezzo(false);
         });
@@ -447,8 +450,8 @@ function showStep(step) {
           <option value="guida a terra metallo">Guida a Terra Metallo</option>
           <option value="guida a terra hdpe">Guida a Terra HDPE</option>
         </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           <button onclick="prevStep('bocche')">
             <i class="fas fa-arrow-left"></i> Indietro
@@ -473,11 +476,11 @@ function showStep(step) {
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €${discountedPrice.toFixed(2)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
           } else {
             delete configurazione.selections["guida_a_terra"];
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €0.00`;
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           aggiornaPrezzo(false);
         });
@@ -491,8 +494,8 @@ function showStep(step) {
           <option value="">-- Seleziona --</option>
           <option value="adesivo">Adesivo Standard</option>
         </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           <button onclick="prevStep('guida')">
             <i class="fas fa-arrow-left"></i> Indietro
@@ -517,11 +520,11 @@ function showStep(step) {
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €${discountedPrice.toFixed(2)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
           } else {
             delete configurazione.selections["adesivo"];
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: €0.00`;
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
           aggiornaPrezzo(false);
         });
@@ -549,8 +552,8 @@ function showStep(step) {
             Sensore Volumetrico
           </label>
         </div>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: €0.00</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">0.00</span> €</p>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
           <button onclick="prevStep('adesivo')">
             <i class="fas fa-arrow-left"></i> Indietro
@@ -584,7 +587,7 @@ function showStep(step) {
           });
 
           document.getElementById("currentSelectionPrice").textContent =
-            `Prezzo Selezione Corrente: €${configurazione.selections["optional"].prezzo.toFixed(2)}`;
+            `Prezzo Selezione Corrente: ${formatCurrency(configurazione.selections["optional"].prezzo)}`;
           aggiornaPrezzo(false);
         });
       });
@@ -641,8 +644,6 @@ function aggiornaPrezzo(isFinal) {
     // Calcolo finale con la quantità effettiva
     configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
 
-    // Rimosso: Sconto quantità
-
     // Sconto extra
     if (configurazione.customer.extra_discount.active) {
       const extra = configurazione.customer.extra_discount;
@@ -662,7 +663,7 @@ function aggiornaPrezzo(isFinal) {
   const configuratorDiv = document.getElementById("configurator");
   const totElems = configuratorDiv.querySelectorAll(".prezzo-totale");
   totElems.forEach((el) => {
-    el.textContent = configurazione.prezzoTotaleScontato.toFixed(2);
+    el.textContent = formatCurrency(configurazione.prezzoTotaleScontato);
   });
 }
 
@@ -682,7 +683,7 @@ function mostraResoconto() {
       <button id="confermaQuantitaBtn" class="invia">
         Conferma Quantità
       </button>
-      <button id="modificaQuantitaBtn" class="modifica_quantita" style="display: none;">
+      <button id="modificaQuantitaBtn" class="modifica" style="display: none;">
         Modifica Quantità
       </button>
     </div>
@@ -703,7 +704,7 @@ function mostraResoconto() {
       if (configurazione.selections.optional.items.length > 0) {
         const itemsHTML = configurazione.selections.optional.items
           .map(
-            (item) => `<li>${item.nome} - €${item.prezzo.toFixed(2)}</li>`
+            (item) => `<li>${item.nome} - ${formatCurrency(item.prezzo)}</li>`
           )
           .join("");
         ul.innerHTML += `
@@ -722,7 +723,7 @@ function mostraResoconto() {
         <li>
           <div>
             <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - €${sel.prezzo.toFixed(2)}
+            ${sel.nome} - ${formatCurrency(sel.prezzo)}
           </div>
           <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
         </li>
@@ -758,20 +759,20 @@ function mostraResoconto() {
     } = configurazione;
 
     let htmlPrezzi = `
-      <p><strong>Prezzo Totale (${q} pz):</strong> €${prezzoTotale.toFixed(2)}</p>
+      <p><strong>Prezzo Totale (${q} pz):</strong> ${formatCurrency(prezzoTotale)}</p>
     `;
     if (configurazione.customer.extra_discount.active && scontoExtra > 0) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         htmlPrezzi += `
-          <p>Sconto Extra: -${extra.value}% ( €${scontoExtra.toFixed(2)} )</p>
+          <p>Sconto Extra: -${extra.value}% (${formatCurrency(scontoExtra)})</p>
         `;
       } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
-        htmlPrezzi += `<p>Sconto Extra: -€${scontoExtra.toFixed(2)}</p>`;
+        htmlPrezzi += `<p>Sconto Extra: -${formatCurrency(scontoExtra)}</p>`;
       }
     }
     htmlPrezzi += `
-      <p><strong>Prezzo Totale Scontato:</strong> €${prezzoTotaleScontato.toFixed(2)}</p>
+      <p><strong>Prezzo Totale Scontato:</strong> ${formatCurrency(prezzoTotaleScontato)}</p>
     `;
 
     dettagliPrezzoFinale.innerHTML = htmlPrezzi;
@@ -854,14 +855,14 @@ async function inviaConfigurazione() {
             doc.text(`${capitalize(categoria)}:`, 20, y);
             y += 10;
             configurazione.selections.optional.items.forEach((item) => {
-              doc.text(`- ${item.nome} - €${item.prezzo.toFixed(2)}`, 30, y);
+              doc.text(`- ${item.nome} - ${formatCurrency(item.prezzo)}`, 30, y);
               y += 10;
             });
           }
         } else {
           const sel = configurazione.selections[categoria];
           doc.text(
-            `${capitalize(categoria)}: ${sel.nome} - €${sel.prezzo.toFixed(2)}`,
+            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
             20,
             y
           );
@@ -870,23 +871,19 @@ async function inviaConfigurazione() {
       }
 
       // Sconti finali
-      // Rimosso: Sconto Quantità
-
       if (
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
         if (configurazione.customer.extra_discount.type === "percentuale") {
           doc.text(
-            `Sconto Extra: -${configurazione.customer.extra_discount.value}% ( €${configurazione.scontoExtra.toFixed(
-              2
-            )} )`,
+            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
             20,
             y
           );
         } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
           doc.text(
-            `Sconto Extra: -€${configurazione.scontoExtra.toFixed(2)}`,
+            `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
             20,
             y
           );
@@ -896,7 +893,7 @@ async function inviaConfigurazione() {
 
       doc.setFontSize(14);
       doc.text(
-        `Prezzo Totale Scontato: €${configurazione.prezzoTotaleScontato.toFixed(2)}`,
+        `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
         20,
         y + 10
       );
@@ -937,28 +934,26 @@ async function inviaConfigurazione() {
           if (configurazione.selections.optional.items.length > 0) {
             body += `${capitalize(categoria)}:\n`;
             configurazione.selections.optional.items.forEach((item) => {
-              body += `- ${item.nome} - €${item.prezzo.toFixed(2)}\n`;
+              body += `- ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
             });
           }
         } else {
           const sel = configurazione.selections[categoria];
-          body += `${capitalize(categoria)}: ${sel.nome} - €${sel.prezzo.toFixed(2)}\n`;
+          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
         }
       }
-
-      // Rimosso: Sconto Quantità
 
       if (
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
         if (configurazione.customer.extra_discount.type === "percentuale") {
-          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% ( €${configurazione.scontoExtra.toFixed(2)} )`;
+          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
         } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
-          body += `\nSconto Extra: -€${configurazione.scontoExtra.toFixed(2)}`;
+          body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
         }
       }
-      body += `\nPrezzo Totale Scontato: €${configurazione.prezzoTotaleScontato.toFixed(2)}`;
+      body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
 
       const encodedBody = encodeURIComponent(body);
       const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
