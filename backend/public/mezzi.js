@@ -833,7 +833,7 @@ async function inviaConfigurazione() {
       }
 
       // Prepara il mailto
-      const toEmail = "tuo.email@esempio.com"; // Sostituisci con la tua email
+      const toEmail = "ayoub.majdouli@esa-italy.com"; // Sostituisci con la tua email
       const subject = encodeURIComponent("Nuova Configurazione Mezzo");
 
       let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
