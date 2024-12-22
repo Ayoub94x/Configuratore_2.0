@@ -3,19 +3,6 @@
 const { jsPDF } = window.jspdf;
 
 /**
- * Configurazione degli sconti basati sulla quantità.
- * Puoi modificare liberamente questi valori.
- */
-const quantityDiscounts = [
-  { min: 1, max: 10, discount: 0 },     // 0% di sconto per 1-10 unità
-  { min: 11, max: 50, discount: 5 },    // 5% di sconto per 11-50 unità
-  { min: 51, max: 100, discount: 10 },  // 10% di sconto per 51-100 unità
-  { min: 101, max: Infinity, discount: 15 } // 15% di sconto per oltre 100 unità
-];
-
-/**
- * Mappa dei passaggi (categorie) usata per la navigazione
-/**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
  */
@@ -40,9 +27,9 @@ let configurazione = {
   prezzoTotale: 0,               // Prezzo totale base (senza quantità/sconti finali)
   scontoExtra: 0,                // Valore in €
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
-  quantità: 1,                   // Quantità default
-  scontoQuantità: 0,             // Valore in € dello sconto quantità
-  quantitaConfermata: false,     // Flag per sapere se l'utente ha confermato la quantità
+  // quantità: 1,                   // Quantità default (Rimosso)
+  // scontoQuantità: 0,             // Valore in € dello sconto quantità (Rimosso)
+  // quantitaConfermata: false,     // Flag per sapere se l'utente ha confermato la quantità (Rimosso)
   currentStep: null              // Passo corrente
 };
 
@@ -243,9 +230,9 @@ document.getElementById("userForm").addEventListener("submit", async function (e
     configurazione.prezzoTotale = 0;
     configurazione.scontoExtra = 0;
     configurazione.prezzoTotaleScontato = 0;
-    configurazione.quantità = 1;
-    configurazione.scontoQuantità = 0;
-    configurazione.quantitaConfermata = false;
+    // configurazione.quantità = 1; // Rimosso
+    // configurazione.scontoQuantità = 0; // Rimosso
+    // configurazione.quantitaConfermata = false; // Rimosso
 
     document.getElementById("registration").style.display = "none";
     document.getElementById("configurator").style.display = "block";
@@ -632,7 +619,7 @@ function prevStep(prevStepName) {
 /* ----------------------------------------------
    Aggiorna il prezzo
    isFinal = false => no sconto quantità, no sconto extra
-   isFinal = true  => sconto quantità e sconto extra
+   isFinal = true  => sconto extra
 ----------------------------------------------- */
 function aggiornaPrezzo(isFinal) {
   let prezzoUnitario = 0;
@@ -648,42 +635,26 @@ function aggiornaPrezzo(isFinal) {
 
   if (!isFinal) {
     // Calcolo "parziale" (1 pezzo, no sconto extra)
-    configurazione.quantità = 1;
-    configurazione.scontoQuantità = 0;
-    configurazione.scontoExtra = 0;
     configurazione.prezzoTotale = prezzoUnitario;
     configurazione.prezzoTotaleScontato = prezzoUnitario;
   } else {
     // Calcolo finale con la quantità effettiva
     configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
 
-    // Sconto quantità
-    let discountRate = 0;
-    for (const rule of quantityDiscounts) {
-      if (
-        configurazione.quantità >= rule.min &&
-        configurazione.quantità <= rule.max
-      ) {
-        discountRate = rule.discount;
-        break;
-      }
-    }
-    configurazione.scontoQuantità =
-      (configurazione.prezzoTotale * discountRate) / 100;
-    let tmpTot = configurazione.prezzoTotale - configurazione.scontoQuantità;
+    // Rimosso: Sconto quantità
 
     // Sconto extra
     if (configurazione.customer.extra_discount.active) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
-        configurazione.scontoExtra = tmpTot * (extra.value / 100);
+        configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
       } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
         configurazione.scontoExtra = extra.value;
       }
-      configurazione.prezzoTotaleScontato = tmpTot - configurazione.scontoExtra;
+      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale - configurazione.scontoExtra;
     } else {
       configurazione.scontoExtra = 0;
-      configurazione.prezzoTotaleScontato = tmpTot;
+      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale;
     }
   }
 
@@ -707,7 +678,7 @@ function mostraResoconto() {
     <!-- Sezione Quantità -->
     <div style="margin: 20px 0;">
       <label for="quantitaInput"><strong>Quantità:</strong></label>
-      <input type="number" id="quantitaInput" min="1" value="${configurazione.quantità}" />
+      <input type="number" id="quantitaInput" min="1" value="1" />
       <button id="confermaQuantitaBtn" class="invia">
         Conferma Quantità
       </button>
@@ -778,7 +749,6 @@ function mostraResoconto() {
     // Mostriamo i dettagli dei prezzi finali
     const {
       prezzoTotale,
-      scontoQuantità,
       scontoExtra,
       prezzoTotaleScontato
     } = configurazione;
@@ -786,9 +756,6 @@ function mostraResoconto() {
     let htmlPrezzi = `
       <p><strong>Prezzo Totale (${q} pz):</strong> €${prezzoTotale.toFixed(2)}</p>
     `;
-    if (scontoQuantità > 0) {
-      htmlPrezzi += `<p>Sconto Quantità: -€${scontoQuantità.toFixed(2)}</p>`;
-    }
     if (configurazione.customer.extra_discount.active && scontoExtra > 0) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
@@ -806,7 +773,7 @@ function mostraResoconto() {
     dettagliPrezzoFinale.innerHTML = htmlPrezzi;
 
     // Abilita il pulsante "Invia Ordine"
-    configurazione.quantitaConfermata = true;
+    // configurazione.quantitaConfermata = true; // Rimosso
     inviaOrdineBtn.disabled = false;
 
     // Disabilita input e bottone per evitare modifiche successive
@@ -816,10 +783,6 @@ function mostraResoconto() {
 
   // Quando l'utente clicca su "Invia Ordine"
   inviaOrdineBtn.addEventListener("click", async () => {
-    if (!configurazione.quantitaConfermata) {
-      showWarningModal("Devi prima confermare la quantità!");
-      return;
-    }
     // Procedi con l'invio dell'ordine
     await inviaConfigurazione();
   });
@@ -887,14 +850,8 @@ async function inviaConfigurazione() {
       }
 
       // Sconti finali
-      if (configurazione.scontoQuantità > 0) {
-        doc.text(
-          `Sconto Quantità: -€${configurazione.scontoQuantità.toFixed(2)}`,
-          20,
-          y
-        );
-        y += 10;
-      }
+      // Rimosso: Sconto Quantità
+
       if (
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
@@ -969,9 +926,8 @@ async function inviaConfigurazione() {
         }
       }
 
-      if (configurazione.scontoQuantità > 0) {
-        body += `\nSconto Quantità: -€${configurazione.scontoQuantità.toFixed(2)}`;
-      }
+      // Rimosso: Sconto Quantità
+
       if (
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
