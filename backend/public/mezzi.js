@@ -46,70 +46,70 @@ configurazione.data = {
     "AUTOMEZZI": {
       indicazioni: "Seleziona l'automezzo adatto alle tue esigenze.",
       opzioni: [
-        { nome: "2 assi (18 Ton)", prezzo: 88500.00, sconto: 0 },
-        { nome: "2 + 1 assi (22 Ton)", prezzo: 95000.00, sconto: 0 },
-        { nome: "3 assi (26 Ton)", prezzo: 108000.00, sconto: 0 },
-        { nome: "4 assi (32 Ton)", prezzo: 115000.00, sconto: 0 }
+        { nome: "2 assi (18 Ton)", prezzo: 88500.00 },
+        { nome: "2 + 1 assi (22 Ton)", prezzo: 95000.00 },
+        { nome: "3 assi (26 Ton)", prezzo: 108000.00 },
+        { nome: "4 assi (32 Ton)", prezzo: 115000.00 }
       ]
     },
     "Allestimento": {
       indicazioni: "Scegli il tipo di allestimento per il tuo automezzo.",
       opzioni: [
-        { nome: "Scarrabile 2 assi", prezzo: 37830.00, sconto: 0 },
-        { nome: "Scarrabile 2+1 assi", prezzo: 38500.00, sconto: 0 },
-        { nome: "Scarrabile 3 assi", prezzo: 40740.00, sconto: 0 },
-        { nome: "Scarrabile 4 assi", prezzo: 43500.00, sconto: 0 },
-        { nome: "Fisso 2 assi", prezzo: 25000.00, sconto: 0 },
-        { nome: "Fisso 2+1 assi", prezzo: 25000.00, sconto: 0 },
-        { nome: "Fisso 3 assi", prezzo: 25000.00, sconto: 0 },
-        { nome: "Fisso 4 assi", prezzo: 25000.00, sconto: 0 }
+        { nome: "Scarrabile 2 assi", prezzo: 37830.00 },
+        { nome: "Scarrabile 2+1 assi", prezzo: 38500.00 },
+        { nome: "Scarrabile 3 assi", prezzo: 40740.00 },
+        { nome: "Scarrabile 4 assi", prezzo: 43500.00 },
+        { nome: "Fisso 2 assi", prezzo: 25000.00 },
+        { nome: "Fisso 2+1 assi", prezzo: 25000.00 },
+        { nome: "Fisso 3 assi", prezzo: 25000.00 },
+        { nome: "Fisso 4 assi", prezzo: 25000.00 }
       ]
     },
     "GRU": {
       indicazioni: "Seleziona il modello di GRU.",
       opzioni: [
-        { nome: "2AS Kinshofer", prezzo: 125000.00, sconto: 0 },
-        { nome: "2AS F90", prezzo: 125000.00, sconto: 0 }
+        { nome: "2AS Kinshofer", prezzo: 125000.00 },
+        { nome: "2AS F90", prezzo: 125000.00 }
       ]
     },
     "Compattatore": {
       indicazioni: "Scegli il tipo di compattatore.",
       opzioni: [
-        { nome: "Scarrabili L=4500", prezzo: 55000.00, sconto: 0 },
-        { nome: "Scarrabili L=4800", prezzo: 55000.00, sconto: 0 },
-        { nome: "Scarrabili L=6200", prezzo: 55000.00, sconto: 0 },
-        { nome: "Scarrabili L=6600", prezzo: 55000.00, sconto: 0 },
-        { nome: "Fisso L=4500", prezzo: 55000.00, sconto: 0 },
-        { nome: "Fisso L=4800", prezzo: 55000.00, sconto: 0 },
-        { nome: "Fisso L=6200", prezzo: 55000.00, sconto: 0 },
-        { nome: "Fisso L=6600", prezzo: 55000.00, sconto: 0 }
+        { nome: "Scarrabili L=4500", prezzo: 55000.00 },
+        { nome: "Scarrabili L=4800", prezzo: 55000.00 },
+        { nome: "Scarrabili L=6200", prezzo: 55000.00 },
+        { nome: "Scarrabili L=6600", prezzo: 55000.00 },
+        { nome: "Fisso L=4500", prezzo: 55000.00 },
+        { nome: "Fisso L=4800", prezzo: 55000.00 },
+        { nome: "Fisso L=6200", prezzo: 55000.00 },
+        { nome: "Fisso L=6600", prezzo: 55000.00 }
       ]
     },
     "Lavacontenitori": {
       indicazioni: "Seleziona il sistema di lavacontenitori.",
       opzioni: [
-        { nome: "2 assi", prezzo: 135315.00, sconto: 0 },
-        { nome: "2 + 1 assi", prezzo: 142120.00, sconto: 0 },
-        { nome: "3 assi", prezzo: 149380.00, sconto: 0 },
-        { nome: "4 assi", prezzo: 153120.00, sconto: 0 }
+        { nome: "2 assi", prezzo: 135315.00 },
+        { nome: "2 + 1 assi", prezzo: 142120.00 },
+        { nome: "3 assi", prezzo: 149380.00 },
+        { nome: "4 assi", prezzo: 153120.00 }
       ]
     },
     "Accessori": {
       indicazioni: "Aggiungi accessori al tuo automezzo.",
       opzioni: [
-        { nome: "PTO", prezzo: 2300.00, sconto: 0 },
-        { nome: "Tracciamento percorso", prezzo: 5000.00, sconto: 0 },
-        { nome: "Antenna UHF", prezzo: 6693.00, sconto: 0 },
-        { nome: "Impianto di sanificazione", prezzo: 4400.00, sconto: 0 },
-        { nome: "Impianto di lubrificazione", prezzo: 4850.00, sconto: 0 },
-        { nome: "Centralina oleodinamica di emergenza (GRU)", prezzo: 3492.00, sconto: 0 },
-        { nome: "Connessione remota (1Y)", prezzo: 2910.00, sconto: 0 }
+        { nome: "PTO", prezzo: 2300.00 },
+        { nome: "Tracciamento percorso", prezzo: 5000.00 },
+        { nome: "Antenna UHF", prezzo: 6693.00 },
+        { nome: "Impianto di sanificazione", prezzo: 4400.00 },
+        { nome: "Impianto di lubrificazione", prezzo: 4850.00 },
+        { nome: "Centralina oleodinamica di emergenza (GRU)", prezzo: 3492.00 },
+        { nome: "Connessione remota (1Y)", prezzo: 2910.00 }
       ]
     },
     "PLUS": {
       indicazioni: "Aggiungi funzioni extra al tuo automezzo.",
       opzioni: [
-        { nome: "Trasporto", prezzo: 1000.00, sconto: 0 }
+        { nome: "Trasporto", prezzo: 1000.00 }
       ]
     }
   }
@@ -201,7 +201,7 @@ function showStep(step) {
         <select id="automezziCategoria">
           <option value="">-- Seleziona Categoria --</option>
           ${configurazione.data.categorie["AUTOMEZZI"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -216,13 +216,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["AUTOMEZZI"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["AUTOMEZZI"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["AUTOMEZZI"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -240,7 +239,7 @@ function showStep(step) {
         <select id="allestimentoCategoria">
           <option value="">-- Seleziona Allestimento --</option>
           ${configurazione.data.categorie["Allestimento"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -258,13 +257,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Allestimento"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["Allestimento"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["Allestimento"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -282,7 +280,7 @@ function showStep(step) {
         <select id="gruCategoria">
           <option value="">-- Seleziona GRU --</option>
           ${configurazione.data.categorie["GRU"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -300,13 +298,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["GRU"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["GRU"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["GRU"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -324,7 +321,7 @@ function showStep(step) {
         <select id="compattatoreCategoria">
           <option value="">-- Seleziona Compattatore --</option>
           ${configurazione.data.categorie["Compattatore"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -342,13 +339,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Compattatore"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["Compattatore"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["Compattatore"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -366,7 +362,7 @@ function showStep(step) {
         <select id="lavacontenitoriCategoria">
           <option value="">-- Seleziona Lavacontenitori --</option>
           ${configurazione.data.categorie["Lavacontenitori"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -384,13 +380,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Lavacontenitori"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["Lavacontenitori"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["Lavacontenitori"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -408,7 +403,7 @@ function showStep(step) {
         <select id="accessoriCategoria">
           <option value="">-- Seleziona Accessorio --</option>
           ${configurazione.data.categorie["Accessori"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -426,13 +421,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["Accessori"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["Accessori"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -450,7 +444,7 @@ function showStep(step) {
         <select id="plusCategoria">
           <option value="">-- Seleziona PLUS --</option>
           ${configurazione.data.categorie["PLUS"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(getPrezzoScontato(opzione.prezzo, opzione.sconto))}</option>`)
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome} - ${formatCurrency(opzione.prezzo)}</option>`)
             .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
@@ -468,13 +462,12 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["PLUS"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            const prezzoScontato = getPrezzoScontato(selectedOpzione.prezzo, selectedOpzione.sconto);
             configurazione.selections["PLUS"] = {
               nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2))
+              prezzo: selectedOpzione.prezzo
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
           } else {
             delete configurazione.selections["PLUS"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -534,7 +527,7 @@ function prevStep(prevStepName) {
 function aggiornaPrezzo(isFinal) {
   let prezzoUnitario = 0;
 
-  // Somma dei prezzi delle selezioni (scontati a livello di categoria)
+  // Somma dei prezzi delle selezioni
   for (let categoria in configurazione.selections) {
     prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
   }
@@ -900,11 +893,4 @@ window.onclick = function(event) {
   if (messageModal && event.target === messageModal) {
     messageModal.style.display = 'none';
   }
-}
-
-/* ----------------------------------------------
-   Funzione di Calcolo Prezzo Scontato
------------------------------------------------ */
-function getPrezzoScontato(prezzo, sconto) {
-  return prezzo - (prezzo * sconto / 100);
 }
