@@ -1,106 +1,162 @@
-<!-- public/admin/mezzi.html -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Gestione Mezzi</title>
-    <!-- Link al CSS personalizzato -->
-    <link rel="stylesheet" href="mezzi.css">
-    <!-- Google Fonts per una migliore tipografia -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"> 
+  <meta charset="UTF-8">
+  <title>Configuratore Mezzi</title>
+  <link rel="stylesheet" href="../admin_mezzi.css">
+  <!-- Includi Font Awesome per le icone -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Includi jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Gestione Mezzi</h1>
-        <button id="reloadButton" class="btn">Ricarica Elenco</button>
-        <button id="addMezzoButton" class="btn btn-add">Aggiungi Mezzo</button>
-        <table id="mezziTable">
-            <thead>
-                <tr>
-                    <th>Categoria</th>
-                    <th>Indicazioni</th>
-                    <th>Prezzo Base (€)</th>
-                    <th>Sconto (%)</th>
-                    <th>Prezzo Scontato (€)</th>
-                    <th>Selezionato</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Righe generate dinamicamente da JS -->
-            </tbody>
-        </table>
-    </div>
+  <!-- Sezione di Registrazione -->
+  <div id="registration">
+    <h1>Registrazione Utente</h1>
+    <form id="userForm">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
 
-    <!-- Modal per aggiungere/aggiornare un mezzo -->
-    <div id="mezzoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeMezzoModal">&times;</span>
-            <h2 id="mezzoModalTitle">Aggiungi Mezzo</h2>
-            <form id="mezzoForm">
-                <input type="hidden" id="mezzoId">
-                
-                <div class="form-group">
-                    <label for="categoria">Categoria</label>
-                    <select id="categoria" required>
-                        <option value="">Seleziona Categoria</option>
-                        <option value="AUTOMEZZI">AUTOMEZZI</option>
-                        <option value="Allestimento">Allestimento</option>
-                        <option value="GRU">GRU</option>
-                        <option value="Compattatore">Compattatore</option>
-                        <option value="Lavacontenitori">Lavacontenitori</option>
-                        <option value="Accessori">Accessori</option>
-                        <option value="PLUS">PLUS</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="indicazioni">Indicazioni</label>
-                    <input type="text" id="indicazioni" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="prezzo_base">Prezzo Base (€)</label>
-                    <input type="number" id="prezzo_base" min="0" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="sconto_percentuale">Sconto (%)</label>
-                    <input type="number" id="sconto_percentuale" min="0" max="100" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="selezionato">Selezionato</label>
-                    <input type="checkbox" id="selezionato">
-                </div>
-                
-                <button type="submit" class="btn btn-save">Salva</button>
-            </form>
-        </div>
-    </div>
+      <label for="cognome">Cognome:</label>
+      <input type="text" id="cognome" name="cognome" required>
 
-    <!-- Modal per i popup -->
-    <div id="popupModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closePopupModal">&times;</span>
-            <p id="popupMessageText"></p>
-        </div>
-    </div>
+      <label for="azienda">Azienda:</label>
+      <input type="text" id="azienda" name="azienda" required>
 
-    <!-- Modal per conferma eliminazione -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeDeleteModal">&times;</span>
-            <h2>Conferma Eliminazione</h2>
-            <p>Sei sicuro di voler eliminare questo mezzo?</p>
-            <p>Per confermare, inserisci il nome del mezzo:</p>
-            <input type="text" id="confirmDeleteName" placeholder="Inserisci il nome" required>
-            <button id="confirmDeleteButton" class="btn btn-delete" disabled>Elimina</button>
-        </div>
-    </div>
+      <label for="discountCode">Codice Sconto:</label>
+      <input type="text" id="discountCode" name="discountCode" required>
 
-    <!-- Link al JS personalizzato -->
-    <script src="mezzi.js"></script>
+      <button type="submit">Accedi</button>
+    </form>
+  </div>
+
+  <!-- Sezione Configuratore -->
+  <div id="configurator" style="display: none;"></div>
+
+  <!-- Modal di Avviso -->
+  <div id="warningModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeWarningModal()">&times;</span>
+      <p id="warningMessageText"></p>
+    </div>
+  </div>
+
+  <!-- Modal di Conferma -->
+  <div id="messageModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <p>Il tuo ordine è stato inviato con successo!</p>
+      <a id="emailLink" href="#">Apri Email</a>
+    </div>
+  </div>
+
+  <!-- Includi il tuo script -->
+  <script src="../mezzi_script.js"></script>
+
+  <style>
+    /* Stili di base per i modali */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    /* The Close Button */
+    .close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 25px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Stili per il bottone */
+    .button-group {
+      margin-top: 20px;
+    }
+
+    .button-group button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    /* Stili per i moduli */
+    form label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    form input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    /* Stili per le liste */
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+    }
+
+    /* Stili per i bottoni di modifica */
+    .modifica {
+      background-color: #f0ad4e;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .modifica:hover {
+      background-color: #ec971f;
+    }
+
+    /* Stili per i bottoni di invio */
+    .invia {
+      background-color: #5cb85c;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .invia:disabled {
+      background-color: #c3e6cb;
+      cursor: not-allowed;
+    }
+  </style>
 </body>
 </html>

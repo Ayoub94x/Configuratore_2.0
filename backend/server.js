@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Connessione a MongoDB
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://Ayoub_Majdouli:nI6Ds3JJEqqknaJ2@configuratore.hucwx.mongodb.net/tuo-database?retryWrites=true&w=majority';
+const mongoURI = process.env.MONGODB_URI;
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -28,7 +28,7 @@ mongoose.connect(mongoURI, {
 
 // Rotte API
 app.use('/api/customers', customersRoute);
-app.use('/api/mezzi', mezziRoute); // Aggiungi le rotte dei mezzi
+app.use('/api/mezzi', mezziRoute); // Usa le rotte dei mezzi
 
 /**
  * Sezione dedicata all'ADMIN
@@ -53,9 +53,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotta di fallback per l’admin
 // Se l’utente richiede un percorso /admin/... che non esiste, 
-// inviargli la pagina admin_mezzi.html
+// inviargli la pagina admin_list.html (o admin.html, come preferisci).
 app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'mezzi.html'));
+  res.sendFile(path.join(__dirname, 'public', 'admin_mezzi.html')); // Cambia in admin_mezzi.html
 });
 
 // Rotta di fallback per TUTTO il resto
