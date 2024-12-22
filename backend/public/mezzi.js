@@ -37,7 +37,8 @@ let configurazione = {
   scontoExtra: 0,                // Valore in €
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
   currentStep: null,             // Passo corrente
-  quantità: 1                     // Quantità selezionata
+  quantità: 1,                    // Quantità selezionata
+  isModifying: false             // Stato di modifica
 };
 
 // Dati di base per i mezzi
@@ -548,16 +549,220 @@ function validateAndNextStep(nextStepName) {
     }
   }
 
-  // Per le altre categorie, non mostrare il messaggio e procedi normalmente
-  showStep(nextStepName);
+  // Controlla se stiamo modificando una selezione
+  if (nextStepName === "resoconto" || configurazione.isModifying) {
+    showStep("resoconto");
+    configurazione.isModifying = false; // Resetta lo stato di modifica
+  } else {
+    // Per le altre categorie, procedi normalmente
+    showStep(nextStepName);
+  }
 }
 
 function prevStep(prevStepName) {
-  // **Nuova Modifica: Resetta la selezione del passaggio precedente**
-  // Questo assicura che l'utente debba effettuare una nuova selezione prima di poter procedere
-  if (configurazione.selections[prevStepName]) {
-    delete configurazione.selections[prevStepName];
+  // **Rimozione della cancellazione della selezione precedente**
+  // Questo permette di mantenere le selezioni già fatte
+  showStep(prevStepName);
+}
+
+/* ----------------------------------------------
+   Aggiorna il prezzo
+   isFinal = false => no sconto quantità, no sconto extra
+   isFinal = true  => sconto extra
+----------------------------------------------- */
+function aggiornaPrezzo(isFinal) {
+  let prezzoUnitario = 0;
+
+  // Somma dei prezzi delle selezioni
+  for (let categoria in configurazione.selections) {
+    prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
   }
+
+  if (!isFinal) {
+    // Calcolo "parziale" (1 pezzo, no sconto extra)
+    configurazione.prezzoTotale = prezzoUnitario;
+    configurazione.prezzoTotaleScontato = prezzoUnitario;
+  } else {
+    // Calcolo finale con la quantità effettiva
+    configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
+
+    // Sconto extra
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active) {
+      const extra = configurazione.customer.extra_discount;
+      if (extra.type === "percentuale") {
+        configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
+      } else if (extra.type === "fisso") {
+        configurazione.scontoExtra = extra.value;
+      }
+      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale - configurazione.scontoExtra;
+    } else {
+      configurazione.scontoExtra = 0;
+      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale;
+    }
+  }
+
+  // Aggiorna i .prezzo-totale (se presenti)
+  const configuratorDiv = document.getElementById("configurator");
+  const totElems = configuratorDiv.querySelectorAll(".prezzo-totale");
+  totElems.forEach((el) => {
+    el.textContent = formatCurrency(configurazione.prezzoTotaleScontato);
+  });
+}
+
+/* ----------------------------------------------
+   Schermata di Resoconto
+----------------------------------------------- */
+function mostraResoconto() {
+  const configuratorDiv = document.getElementById("configurator");
+  configuratorDiv.innerHTML = `
+    <h2><i class="fas fa-list-alt"></i> Riepilogo Selezioni</h2>
+    <ul id="riepilogoSelezioni"></ul>
+
+    <!-- Sezione Quantità -->
+    <div style="margin: 20px 0;">
+      <label for="quantitaInput"><strong>Quantità:</strong></label>
+      <input type="number" id="quantitaInput" min="1" value="1" />
+      <button id="confermaQuantitaBtn" class="invia">
+        Conferma Quantità
+      </button>
+      <button id="modificaQuantitaBtn" class="modifica_quantita" style="display: none;">
+        Modifica Quantità
+      </button>
+    </div>
+
+    <!-- Sezione prezzi finale (inizialmente vuota) -->
+    <div id="dettagliPrezzoFinale" style="margin-bottom: 20px;"></div>
+
+    <!-- Pulsante Invia Ordine (inizialmente disabilitato) -->
+    <button class="invia" id="inviaOrdineBtn" disabled>
+      Invia Ordine <i class="fas fa-check"></i>
+    </button>
+  `;
+
+  // Riempi la lista delle selezioni
+  const ul = document.getElementById("riepilogoSelezioni");
+  for (let categoria in configurazione.selections) {
+    const sel = configurazione.selections[categoria];
+    ul.innerHTML += `
+      <li>
+        <div>
+          <strong>${capitalize(categoria)}</strong>:
+          ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
+        </div>
+        <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+      </li>
+    `;
+  }
+
+  // Mostriamo il prezzo "parziale" per default
+  aggiornaPrezzo(false);
+
+  // Riferimenti ai vari elementi
+  const quantitaInput = document.getElementById("quantitaInput");
+  const confermaQuantitaBtn = document.getElementById("confermaQuantitaBtn");
+  const modificaQuantitaBtn = document.getElementById("modificaQuantitaBtn");
+  const dettagliPrezzoFinale = document.getElementById("dettagliPrezzoFinale");
+  const inviaOrdineBtn = document.getElementById("inviaOrdineBtn");
+
+  // Quando clicca su "Conferma Quantità":
+  confermaQuantitaBtn.addEventListener("click", async () => {
+    const q = parseInt(quantitaInput.value);
+    if (!q || q < 1) {
+      showWarningModal("Inserisci una quantità valida (>=1).");
+      return;
+    }
+    configurazione.quantità = q;
+    aggiornaPrezzo(true);
+
+    // Mostriamo i dettagli dei prezzi finali
+    const {
+      prezzoTotale,
+      scontoExtra,
+      prezzoTotaleScontato
+    } = configurazione;
+
+    let htmlPrezzi = `
+      <p><strong>Prezzo Totale (${q} pz):</strong> ${formatCurrency(prezzoTotale)}</p>
+    `;
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active && scontoExtra > 0) {
+      const extra = configurazione.customer.extra_discount;
+      if (extra.type === "percentuale") {
+        htmlPrezzi += `
+          <p>Sconto Extra: -${extra.value}% (${formatCurrency(scontoExtra)})</p>
+        `;
+      } else if (extra.type === "fisso") {
+        htmlPrezzi += `<p>Sconto Extra: -${formatCurrency(scontoExtra)}</p>`;
+      }
+    }
+    htmlPrezzi += `
+      <p><strong>Prezzo Totale Scontato:</strong> ${formatCurrency(prezzoTotaleScontato)}</p>
+    `;
+
+    dettagliPrezzoFinale.innerHTML = htmlPrezzi;
+
+    // Abilita il pulsante "Invia Ordine"
+    inviaOrdineBtn.disabled = false;
+
+    // Disabilita input e bottone per evitare modifiche successive
+    quantitaInput.disabled = true;
+    confermaQuantitaBtn.disabled = true;
+
+    // Mostra il pulsante "Modifica Quantità"
+    modificaQuantitaBtn.style.display = "inline-block";
+  });
+
+  // Quando l'utente clicca su "Modifica Quantità"
+  modificaQuantitaBtn.addEventListener("click", () => {
+    // Abilita l'input della quantità
+    quantitaInput.disabled = false;
+    // Disabilita il pulsante "Invia Ordine"
+    inviaOrdineBtn.disabled = true;
+    // Riabilita il pulsante "Conferma Quantità"
+    confermaQuantitaBtn.disabled = false;
+    // Nascondi il pulsante "Modifica Quantità"
+    modificaQuantitaBtn.style.display = "none";
+    // Rimuovi i dettagli del prezzo finale
+    dettagliPrezzoFinale.innerHTML = "";
+  });
+
+  // Quando l'utente clicca su "Invia Ordine"
+  inviaOrdineBtn.addEventListener("click", async () => {
+    // Procedi con l'invio dell'ordine
+    await inviaConfigurazione();
+  });
+}
+
+/* ----------------------------------------------
+   Passi successivi e precedenti
+----------------------------------------------- */
+function validateAndNextStep(nextStepName) {
+  const stepCorrente = configurazione.currentStep;
+
+  // Definisci le categorie per le quali mostrare il messaggio di avviso
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "GRU", "Compattatore"];
+
+  if (stepsConValidazione.includes(stepCorrente)) {
+    if (!configurazione.selections[stepCorrente]) {
+      // Converti la prima lettera della categoria in maiuscolo per il messaggio
+      const categoriaFormattata = capitalize(stepCorrente.toLowerCase());
+      showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
+      return;
+    }
+  }
+
+  // Controlla se stiamo modificando una selezione
+  if (nextStepName === "resoconto" || configurazione.isModifying) {
+    showStep("resoconto");
+    configurazione.isModifying = false; // Resetta lo stato di modifica
+  } else {
+    // Per le altre categorie, procedi normalmente
+    showStep(nextStepName);
+  }
+}
+
+function prevStep(prevStepName) {
+  // **Rimozione della cancellazione della selezione precedente**
+  // Questo permette di mantenere le selezioni già fatte
   showStep(prevStepName);
 }
 
@@ -734,6 +939,7 @@ function mostraResoconto() {
 function modificaSelezione(categoria) {
   const step = stepMap[categoria];
   if (step) {
+    configurazione.isModifying = true; // Imposta lo stato di modifica
     showStep(step);
   } else {
     alert("Passo non trovato per la modifica.");
