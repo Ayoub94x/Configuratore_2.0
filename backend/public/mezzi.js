@@ -113,18 +113,6 @@ configurazione.data = {
         { nome: "Trasporto", prezzo: 1000.00 }
       ]
     },
-    "Contenitori": { // Nuova categoria per Contenitori
-      indicazioni: "Seleziona i componenti del contenitore.",
-      opzioni: [
-        { nome: "corpo_contenitore", prezzo: 0 }, // Prezzo base sarà calcolato con lo sconto
-        { nome: "bascule", prezzo: 0 },
-        { nome: "gancio", prezzo: 0 },
-        { nome: "bocche", prezzo: 0 },
-        { nome: "guida_a_terra", prezzo: 0 },
-        { nome: "adesivo", prezzo: 0 },
-        { nome: "optional", prezzo: 0 }
-      ]
-    }
   }
 };
 
