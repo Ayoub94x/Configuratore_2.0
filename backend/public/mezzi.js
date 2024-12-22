@@ -481,7 +481,8 @@ function showStep(step) {
             const prezzo = prezzoBase - (prezzoBase * scontoCategoria / 100);
             prezzoScontato += prezzo;
 
-            // Aggiorna la label con il prezzo scontato
+            // Aggiorna la label con il prezzo scontato (solo se desideri mostrarlo)
+            // Se non desideri mostrare il prezzo nelle label, commenta o rimuovi questa parte
             const label = configuratorDiv.querySelector(`label[for="${opzioneNome}"]`);
             if (label) {
               label.textContent = `${capitalize(opzioneNome.replace('_', ' '))} - ${formatCurrency(prezzo)}`; // Aggiunto il prezzo solo nella label
@@ -623,25 +624,19 @@ function showStep(step) {
 function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
-  // Controlli specifici per ogni step
-  const requiredSelections = {
-    "AUTOMEZZI": "AUTOMEZZI",
-    "Allestimento": "Allestimento",
-    "GRU": "GRU",
-    "Compattatore": "Compattatore",
-    "Lavacontenitori": "Lavacontenitori",
-    "Contenitori": "Contenitori", // Nuovo controllo per Contenitori
-    "Accessori": "Accessori",
-    "PLUS": "PLUS"
-  };
+  // Definisci le categorie per le quali mostrare il messaggio di avviso
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "GRU", "Compattatore"];
 
-  if (requiredSelections[stepCorrente]) {
-    if (!configurazione.selections[requiredSelections[stepCorrente]]) {
-      showWarningModal(`Per continuare devi selezionare un ${requiredSelections[stepCorrente].toLowerCase()}!`);
+  if (stepsConValidazione.includes(stepCorrente)) {
+    if (!configurazione.selections[stepCorrente]) {
+      // Converti la prima lettera della categoria in maiuscolo per il messaggio
+      const categoriaFormattata = capitalize(stepCorrente.toLowerCase());
+      showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
       return;
     }
   }
 
+  // Per le altre categorie, non mostrare il messaggio e procedi normalmente
   showStep(nextStepName);
 }
 
