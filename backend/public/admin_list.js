@@ -311,7 +311,7 @@ function openDeleteModal(sconto) {
 // Carica i mezzi dal server
 async function loadMezzi() {
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/mezzi/');
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/');
         if (!response.ok) {
             const errorText = await response.text();
             console.error('Errore nel recupero dei mezzi:', errorText);
@@ -394,7 +394,7 @@ function renderMezzi(mezzi) {
 // Toggle stato mezzo
 async function toggleMezzoStatus(id, newStatus) {
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/mezzi/' + id, {
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + id, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ is_active: newStatus })
@@ -444,7 +444,7 @@ editMezzoForm.addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/mezzi/' + id, {
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + id, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -498,7 +498,7 @@ confirmDeleteMezzoButton.addEventListener('click', async () => {
     if (!mezzoIdToDelete) return;
 
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/mezzi/' + mezzoIdToDelete, {
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/costumers/' + mezzoIdToDelete, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
