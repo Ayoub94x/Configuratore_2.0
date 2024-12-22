@@ -16,28 +16,57 @@
         <label for="name">Nome Cliente:</label>
         <input type="text" id="name" name="name" required>
         
-        <h3>Sconti per Categoria (%)</h3>
+        <!-- Sezione Sconti per i Contenitori -->
+        <fieldset>
+            <legend>Sconti per i Contenitori (%)</legend>
+            
+            <label for="corpo_contenitore">Corpo Contenitore:</label>
+            <input type="number" id="corpo_contenitore" name="corpo_contenitore" min="0" max="100" required>
+            
+            <label for="bascule">Bascule:</label>
+            <input type="number" id="bascule" name="bascule" min="0" max="100" required>
+            
+            <label for="gancio">Gancio:</label>
+            <input type="number" id="gancio" name="gancio" min="0" max="100" required>
+            
+            <label for="bocche">Bocche:</label>
+            <input type="number" id="bocche" name="bocche" min="0" max="100" required>
+            
+            <label for="guida_a_terra">Guida a Terra:</label>
+            <input type="number" id="guida_a_terra" name="guida_a_terra" min="0" max="100" required>
+            
+            <label for="adesivo">Adesivo:</label>
+            <input type="number" id="adesivo" name="adesivo" min="0" max="100" required>
+            
+            <label for="optional">Optional:</label>
+            <input type="number" id="optional" name="optional" min="0" max="100" required>
+        </fieldset>
         
-        <label for="corpo_contenitore">Corpo Contenitore:</label>
-        <input type="number" id="corpo_contenitore" name="corpo_contenitore" min="0" max="100" required>
-        
-        <label for="bascule">Bascule:</label>
-        <input type="number" id="bascule" name="bascule" min="0" max="100" required>
-        
-        <label for="gancio">Gancio:</label>
-        <input type="number" id="gancio" name="gancio" min="0" max="100" required>
-        
-        <label for="bocche">Bocche:</label>
-        <input type="number" id="bocche" name="bocche" min="0" max="100" required>
-        
-        <label for="guida_a_terra">Guida a Terra:</label>
-        <input type="number" id="guida_a_terra" name="guida_a_terra" min="0" max="100" required>
-        
-        <label for="adesivo">Adesivo:</label>
-        <input type="number" id="adesivo" name="adesivo" min="0" max="100" required>
-        
-        <label for="optional">Optional:</label>
-        <input type="number" id="optional" name="optional" min="0" max="100" required>
+        <!-- Sezione Sconti per i Mezzi -->
+        <fieldset>
+            <legend>Sconti per i Mezzi (%)</legend>
+            
+            <label for="AUTOMEZZI">Automezzi:</label>
+            <input type="number" id="AUTOMEZZI" name="AUTOMEZZI" min="0" max="100" required>
+            
+            <label for="Allestimento">Allestimento:</label>
+            <input type="number" id="Allestimento" name="Allestimento" min="0" max="100" required>
+            
+            <label for="GRU">GRU:</label>
+            <input type="number" id="GRU" name="GRU" min="0" max="100" required>
+            
+            <label for="Compattatore">Compattatore:</label>
+            <input type="number" id="Compattatore" name="Compattatore" min="0" max="100" required>
+            
+            <label for="Lavacontenitori">Lavacontenitori:</label>
+            <input type="number" id="Lavacontenitori" name="Lavacontenitori" min="0" max="100" required>
+            
+            <label for="Accessori">Accessori:</label>
+            <input type="number" id="Accessori" name="Accessori" min="0" max="100" required>
+            
+            <label for="PLUS">PLUS:</label>
+            <input type="number" id="PLUS" name="PLUS" min="0" max="100" required>
+        </fieldset>
         
         <h3>Extra Sconto</h3>
         

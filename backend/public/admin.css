@@ -11,7 +11,7 @@ h1 {
 }
 
 form {
-    max-width: 600px;
+    max-width: 800px; /* Aumentato per accomodare entrambe le sezioni */
     margin: 0 auto;
     background: #fff;
     padding: 25px 30px;
@@ -55,6 +55,20 @@ button {
 
 button:hover {
     background: #5753d3;
+}
+
+/* Stili per Fieldset e Legend */
+fieldset {
+    border: 2px solid #6c63ff;
+    padding: 15px 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+legend {
+    padding: 0 10px;
+    font-size: 1.2em;
+    color: #6c63ff;
 }
 
 /* Modal */
