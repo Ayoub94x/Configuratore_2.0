@@ -1,162 +1,92 @@
-// routes/mezzoRoutes.js
+// routes/customerRoutes.js
 const express = require('express');
 const router = express.Router();
-const Mezzo = require('../models/Mezzo');
+const Customer = require('../models/Customer');
 const Joi = require('joi');
+const mongoose = require('mongoose'); // Assicurati di importare mongoose
 
-// Schema di validazione per le categorie e le opzioni
-const categoriaSchema = Joi.object({
-    nome: Joi.string().trim().required(),
-    indicazioni: Joi.string().trim().required(),
-    opzioni: Joi.array().items(
-        Joi.object({
-            nome: Joi.string().trim().required(),
-            prezzo: Joi.number().min(0).required(),
-            sconto: Joi.number().min(0).max(100).default(0),
-            prezzoScontato: Joi.number().min(0).optional()
-        })
-    ).required()
+// Schema di validazione per l'aggiunta di un nuovo cliente
+const customerSchema = Joi.object({
+    code: Joi.string().trim().required(),
+    name: Joi.string().trim().required(),
+    discounts: Joi.object({
+        // Sconti per Contenitori
+        corpo_contenitore: Joi.number().min(0).max(100).required(),
+        bascule: Joi.number().min(0).max(100).required(),
+        gancio: Joi.number().min(0).max(100).required(),
+        bocche: Joi.number().min(0).max(100).required(),
+        guida_a_terra: Joi.number().min(0).max(100).required(),
+        adesivo: Joi.number().min(0).max(100).required(),
+        optional: Joi.number().min(0).max(100).required(),
+        // Sconti per Mezzi
+        AUTOMEZZI: Joi.number().min(0).max(100).required(),
+        Allestimento: Joi.number().min(0).max(100).required(),
+        GRU: Joi.number().min(0).max(100).required(),
+        Compattatore: Joi.number().min(0).max(100).required(),
+        Lavacontenitori: Joi.number().min(0).max(100).required(),
+        Accessori: Joi.number().min(0).max(100).required(),
+        PLUS: Joi.number().min(0).max(100).required()
+    }).required(),
+    extra_discount: Joi.object({
+        type: Joi.string().valid('percentuale', 'fisso').required(),
+        value: Joi.number().min(0).required(),
+        active: Joi.boolean().required()
+    }).required(),
+    usage_limit: Joi.number().integer().min(0).allow(null),
+    is_active: Joi.boolean().required()
 });
 
-const mezzoSchema = Joi.object({
-    categoria: categoriaSchema.required()
-});
-
-// Ottenere tutti i mezzi
+// Ottenere tutti i clienti
 router.get('/', async (req, res) => {
     try {
-        const mezzi = await Mezzo.find({});
-        res.status(200).json(mezzi);
+        const customers = await Customer.find({});
+        res.status(200).json(customers);
     } catch (error) {
-        console.error('Errore nel recupero dei mezzi:', error);
-        res.status(500).json({ message: 'Errore nel recupero dei mezzi' });
-    }
-});
-// Ottenere le opzioni per una specifica categoria di automezzi
-router.get('/categoria/:categoria', async (req, res) => {
-    const { categoria } = req.params;
-    try {
-        const mezzo = await Mezzo.findOne({ 'categoria.nome': categoria });
-        if (!mezzo) {
-            return res.status(404).json({ message: 'Categoria non trovata.' });
-        }
-        res.status(200).json(mezzo);
-    } catch (error) {
-        console.error('Errore nel recupero della categoria:', error);
-        res.status(500).json({ message: 'Errore nel recupero della categoria.' });
+        console.error('Errore nel recupero dei clienti:', error);
+        res.status(500).json({ message: 'Errore nel recupero dei clienti' });
     }
 });
 
-// Ottenere le opzioni per Allestimento
-router.get('/allestimento/:tipo', async (req, res) => {
-    const { tipo } = req.params;
-    try {
-        const mezzo = await Mezzo.findOne({ 'categoria.nome': 'Allestimento', 'categoria.opzioni.nome': tipo });
-        if (!mezzo) {
-            return res.status(404).json({ message: 'Tipo di allestimento non trovato.' });
-        }
-        // Filtra le opzioni per tipo
-        const opzioni = mezzo.categoria.opzioni.filter(op => op.nome === tipo);
-        res.status(200).json({ categoria: mezzo.categoria.nome, opzioni });
-    } catch (error) {
-        console.error('Errore nel recupero del tipo di allestimento:', error);
-        res.status(500).json({ message: 'Errore nel recupero del tipo di allestimento.' });
-    }
-});
-
-// Aggiungere un nuovo mezzo
+// Aggiungere un nuovo cliente
 router.post('/', async (req, res) => {
-    console.log('Ricevuta richiesta POST /api/mezzi');
+    console.log('Ricevuta richiesta POST /api/customers');
     console.log('Corpo della richiesta:', req.body);
 
     try {
-        const { error, value } = mezzoSchema.validate(req.body);
+        const { error, value } = customerSchema.validate(req.body, { abortEarly: false });
         if (error) {
-            console.log('Errore di validazione:', error.details[0].message);
-            return res.status(400).json({ message: error.details[0].message });
+            const errorMessages = error.details.map(detail => detail.message).join(', ');
+            console.log('Errore di validazione:', errorMessages);
+            return res.status(400).json({ message: errorMessages });
         }
 
-        const { categoria } = value;
+        const { code, name, discounts, extra_discount, usage_limit, is_active } = value;
 
-        // Calcola il prezzo scontato per ogni opzione
-        categoria.opzioni = categoria.opzioni.map(opzione => ({
-            ...opzione,
-            prezzoScontato: opzione.prezzo - (opzione.prezzo * opzione.sconto) / 100
-        }));
+        const existingCustomer = await Customer.findOne({ code });
+        if (existingCustomer) {
+            console.log('Codice cliente esistente:', code);
+            return res.status(400).json({ message: 'Il codice cliente esiste già.' });
+        }
 
-        const newMezzo = new Mezzo({
-            categoria
+        const newCustomer = new Customer({
+            code,
+            name,
+            discounts,
+            extra_discount,
+            usage_limit,
+            is_active,
+            usage_count: 0
         });
 
-        await newMezzo.save();
-        console.log('Mezzo aggiunto con successo:', categoria.nome);
-        res.status(201).json({ message: 'Mezzo aggiunto con successo.' });
+        await newCustomer.save();
+        console.log('Cliente aggiunto con successo:', code);
+        res.status(201).json({ message: 'Cliente aggiunto con successo.' });
     } catch (error) {
-        console.error('Errore nell\'aggiunta del mezzo:', error);
-        res.status(500).json({ message: 'Errore del server durante l\'aggiunta del mezzo.' });
+        console.error('Errore nell\'aggiunta del cliente:', error);
+        res.status(500).json({ message: 'Errore del server durante l\'aggiunta del cliente.' });
     }
 });
 
-// Aggiornare un mezzo (categoria specifica)
-router.patch('/:id', async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body;
-
-    try {
-        // Validazione dell'ID
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID del mezzo non valido.' });
-        }
-
-        const { error, value } = mezzoSchema.validate(updateData);
-        if (error) {
-            console.log('Errore di validazione:', error.details[0].message);
-            return res.status(400).json({ message: error.details[0].message });
-        }
-
-        // Calcola il prezzo scontato per ogni opzione
-        value.categoria.opzioni = value.categoria.opzioni.map(opzione => ({
-            ...opzione,
-            prezzoScontato: opzione.prezzo - (opzione.prezzo * opzione.sconto) / 100
-        }));
-
-        const updatedMezzo = await Mezzo.findByIdAndUpdate(id, value, { new: true });
-        if (!updatedMezzo) {
-            return res.status(404).json({ message: 'Mezzo non trovato.' });
-        }
-
-        res.status(200).json({ message: 'Mezzo aggiornato con successo.', mezzo: updatedMezzo });
-    } catch (error) {
-        console.error('Errore nell\'aggiornamento del mezzo:', error);
-        res.status(500).json({ message: 'Errore del server durante l\'aggiornamento del mezzo.' });
-    }
-});
-
-// Eliminare un mezzo
-router.delete('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Verifica se l'ID è un ObjectId valido
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.log('ID del mezzo non valido:', id);
-            return res.status(400).json({ message: 'ID del mezzo non valido.' });
-        }
-
-        console.log(`Richiesta DELETE per il mezzo con ID: ${id}`);
-        const deletedMezzo = await Mezzo.findByIdAndDelete(id);
-
-        if (!deletedMezzo) {
-            console.log('Mezzo non trovato.');
-            return res.status(404).json({ message: 'Mezzo non trovato.' });
-        }
-
-        console.log('Mezzo eliminato con successo.');
-        res.json({ message: 'Mezzo eliminato con successo.' });
-    } catch (error) {
-        console.error('Errore durante l\'eliminazione del mezzo:', error);
-        res.status(500).json({ message: 'Errore interno del server.' });
-    }
-});
+// Altre rotte...
 
 module.exports = router;
