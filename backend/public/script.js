@@ -620,10 +620,6 @@ function validateAndNextStep(nextStepName) {
       return;
     }
   }
-
-  // Lo step 'adesivo' è opzionale, quindi nessuna validazione necessaria
-
-  // Se tutto ok, passiamo allo step successivo
   showStep(nextStepName);
 }
 
