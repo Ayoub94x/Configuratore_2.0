@@ -3,6 +3,11 @@
 const { jsPDF } = window.jspdf;
 
 /**
+ * Configurazione degli sconti basati sulla quantità.
+ * Puoi modificare liberamente questi valori.
+ */
+
+/**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
  */
@@ -643,36 +648,6 @@ function aggiornaPrezzo(isFinal) {
   } else {
     // Calcolo finale con la quantità effettiva
     configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
-
-    // Sconto quantità
-    let discountRate = 0;
-    for (const rule of quantityDiscounts) {
-      if (
-        configurazione.quantità >= rule.min &&
-        configurazione.quantità <= rule.max
-      ) {
-        discountRate = rule.discount;
-        break;
-      }
-    }
-    configurazione.scontoQuantità =
-      (configurazione.prezzoTotale * discountRate) / 100;
-    let tmpTot = configurazione.prezzoTotale - configurazione.scontoQuantità;
-
-    // Sconto extra
-    if (configurazione.customer.extra_discount.active) {
-      const extra = configurazione.customer.extra_discount;
-      if (extra.type === "percentuale") {
-        configurazione.scontoExtra = tmpTot * (extra.value / 100);
-      } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
-        configurazione.scontoExtra = extra.value;
-      }
-      configurazione.prezzoTotaleScontato = tmpTot - configurazione.scontoExtra;
-    } else {
-      configurazione.scontoExtra = 0;
-      configurazione.prezzoTotaleScontato = tmpTot;
-    }
-  }
 
   // Aggiorna i .prezzo-totale (se presenti)
   const configuratorDiv = document.getElementById("configurator");
