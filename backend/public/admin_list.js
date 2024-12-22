@@ -231,7 +231,7 @@ editForm.addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + id, {
+        const response = await fetch('http://localhost:10000/api/customers/' + id, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
