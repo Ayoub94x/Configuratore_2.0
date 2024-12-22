@@ -103,6 +103,18 @@
         </div>
     </div>
 
+    <!-- Modal per conferma eliminazione -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeDeleteModal">&times;</span>
+            <h2>Conferma Eliminazione</h2>
+            <p>Sei sicuro di voler eliminare questo codice sconto?</p>
+            <p>Per confermare, inserisci il codice sconto:</p>
+            <input type="text" id="confirmDeleteCode" placeholder="Inserisci il codice" required>
+            <button id="confirmDeleteButton" class="btn btn-delete" disabled>Elimina</button>
+        </div>
+    </div>
+
     <!-- Link al JS personalizzato -->
     <script src="admin_list.js"></script>
 </body>

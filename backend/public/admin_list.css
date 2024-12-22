@@ -1,21 +1,10 @@
-/* admin/admin_list.css */
+/* admin_list.css */
 
-/* Importazione del font */
+/* Stili Esistenti */
 body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
+    font-family: Arial, sans-serif;
+    margin: 20px;
     background-color: #f4f4f4;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding-bottom: 20px;
 }
 
 h1 {
@@ -24,35 +13,63 @@ h1 {
     margin-bottom: 20px;
 }
 
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #6c63ff;
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+    color: #6c63ff;
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 25px;
+    padding: 12px 20px;
+    background: #6c63ff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 20px;
-    transition: background-color 0.3s ease;
+    font-size: 16px;
 }
 
-.btn:hover {
-    background-color: #5753d3;
+button:hover {
+    background: #5753d3;
 }
 
-#reloadButton {
-    display: block;
-    margin: 0 auto 20px auto;
-}
-
+/* Tabella */
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
 }
 
 th, td {
-    padding: 12px 15px;
-    text-align: center;
+    padding: 12px;
+    text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
@@ -65,57 +82,74 @@ tr:hover {
     background-color: #f1f1f1;
 }
 
-.status-active {
-    color: green;
-    font-weight: bold;
+/* Bottoni Azioni */
+.action-buttons {
+    display: flex;
+    gap: 10px;
 }
 
-.status-inactive {
-    color: red;
-    font-weight: bold;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
-    font-weight: 500;
-}
-
-input[type="number"],
-select {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
+.btn-toggle,
+.btn-edit,
+.btn-delete {
+    padding: 8px 12px;
+    border: none;
     border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: background 0.3s;
 }
 
+.btn-toggle {
+    background-color: #17a2b8; /* Blu */
+}
+
+.btn-toggle:hover {
+    background-color: #138496;
+}
+
+.btn-edit {
+    background-color: #ffc107; /* Giallo */
+    color: #212529;
+}
+
+.btn-edit:hover {
+    background-color: #e0a800;
+}
+
+.btn-delete {
+    background-color: #dc3545; /* Rosso */
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* Modal */
 .modal {
     display: none; 
     position: fixed;
-    z-index: 1000;
+    z-index: 9999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
     background-color: rgba(0,0,0,0.4);
-    padding-top: 60px;
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 5% auto;
+    background-color: #fefefe;
+    margin: 10% auto;
     padding: 20px 30px;
     border: 1px solid #888;
-    width: 90%;
+    width: 80%;
     max-width: 500px;
-    border-radius: 8px;
+    border-radius: 10px;
     position: relative;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .close-button {
@@ -123,7 +157,7 @@ select {
     font-size: 28px;
     font-weight: bold;
     position: absolute;
-    right: 20px;
+    right: 15px;
     top: 10px;
     cursor: pointer;
 }
@@ -133,104 +167,75 @@ select {
     color: #000;
 }
 
-.modal-content h2 {
-    margin-top: 0;
-    color: #333;
-    margin-bottom: 20px;
+.modal-content.success {
+    border-color: #c3e6cb;
+    background-color: #d4edda;
 }
 
-.modal-content form button {
+.modal-content.error {
+    border-color: #f5c6cb;
+    background-color: #f8d7da;
+}
+
+.modal-content.success p {
+    color: #155724;
+}
+
+.modal-content.error p {
+    color: #721c24;
+}
+
+/* Modal Eliminazione */
+#deleteModal .modal-content {
+    background-color: #fff;
+    border-color: #dc3545;
+}
+
+#deleteModal .modal-content p {
+    color: #333;
+}
+
+#deleteModal .btn-delete {
+    background-color: #dc3545; /* Rosso */
+}
+
+#deleteModal .btn-delete:hover {
+    background-color: #c82333;
+}
+
+#confirmDeleteCode {
     width: 100%;
+    padding: 10px 12px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-#popupModal .modal-content p {
-    font-size: 1.1em;
-    color: #333;
+#confirmDeleteButton:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+    color: #888;
 }
 
-/* Pulsanti di Azione nella Tabella */
-td > .action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px; /* Spazio tra i pulsanti */
-}
-
-.btn-toggle {
-    background-color: #ff9800;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-toggle:hover {
-    background-color: #e68900;
-}
-
-.btn-edit {
-    background-color: #2196F3;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-edit:hover {
-    background-color: #0b7dda;
-}
-
-/* Pulsanti nel Modal di Salvataggio */
-.btn-save {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-save:hover {
-    background-color: #45a049;
-}
-
-/* Popup Modal Personalizzata */
-#popupModal .modal-content {
-    text-align: center;
-}
-
-#popupModal .modal-content.success {
-    border-top: 5px solid #28a745;
-}
-
-#popupModal .modal-content.error {
-    border-top: 5px solid #dc3545;
-}
-
-#popupModal .modal-content p {
-    font-size: 1.1em;
-}
-
-@media (max-width: 768px) {
+/* Responsive Design */
+@media (max-width: 600px) {
     .container {
-        margin: 20px;
-    }
-
-    th, td {
-        padding: 10px 8px;
-        font-size: 0.9em;
-    }
-
-    .btn {
-        padding: 8px 16px;
-        font-size: 0.9em;
+        padding: 10px;
     }
 
     .modal-content {
-        width: 95%;
+        width: 90%;
+        margin: 20% auto;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-toggle,
+    .btn-edit,
+    .btn-delete {
+        width: 100%;
     }
 }

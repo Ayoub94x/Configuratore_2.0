@@ -23,6 +23,16 @@ const editOptional = document.getElementById('editOptional');
 const editExtraType = document.getElementById('editExtraType');
 const editExtraValue = document.getElementById('editExtraValue');
 
+// Elementi per il Modal di Eliminazione
+const deleteModal = document.getElementById('deleteModal');
+const closeDeleteModalButton = document.getElementById('closeDeleteModal');
+const confirmDeleteCodeInput = document.getElementById('confirmDeleteCode');
+const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+// Variabile per memorizzare l'ID del cliente da eliminare
+let customerIdToDelete = null;
+let customerCodeToDelete = '';
+
 // Funzione per mostrare il popup
 function showPopup(message, isError = false) {
     popupMessageText.textContent = message;
@@ -42,6 +52,20 @@ closeEditModalButton.addEventListener('click', () => {
     editModal.style.display = 'none';
 });
 
+// Chiudi delete modal
+closeDeleteModalButton.addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+    resetDeleteModal();
+});
+
+// Reset del Modal di Eliminazione
+function resetDeleteModal() {
+    customerIdToDelete = null;
+    customerCodeToDelete = '';
+    confirmDeleteCodeInput.value = '';
+    confirmDeleteButton.disabled = true;
+}
+
 // Chiudi modali cliccando fuori
 window.addEventListener('click', (event) => {
     if (event.target === popupModal) {
@@ -49,6 +73,10 @@ window.addEventListener('click', (event) => {
     }
     if (event.target === editModal) {
         editModal.style.display = 'none';
+    }
+    if (event.target === deleteModal) {
+        deleteModal.style.display = 'none';
+        resetDeleteModal();
     }
 });
 
@@ -147,6 +175,13 @@ function renderCustomers(customers) {
         editButton.classList.add('btn-edit');
         editButton.addEventListener('click', () => openEditModal(customer));
         actionButtonsDiv.appendChild(editButton);
+
+        // Bottone elimina
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Elimina';
+        deleteButton.classList.add('btn-delete');
+        deleteButton.addEventListener('click', () => openDeleteModal(customer));
+        actionButtonsDiv.appendChild(deleteButton);
 
         tdActions.appendChild(actionButtonsDiv);
         tr.appendChild(tdActions);
@@ -259,6 +294,65 @@ editForm.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Errore nella modifica del cliente:', error);
         showPopup('Errore di connessione al server.', true);
+    }
+});
+
+// Funzione per aprire il modal di eliminazione
+function openDeleteModal(customer) {
+    customerIdToDelete = customer._id;
+    customerCodeToDelete = customer.code;
+    confirmDeleteCodeInput.value = '';
+    confirmDeleteButton.disabled = true;
+    deleteModal.style.display = 'block';
+}
+
+// Verifica il codice inserito per abilitare il pulsante di eliminazione
+confirmDeleteCodeInput.addEventListener('input', () => {
+    const enteredCode = confirmDeleteCodeInput.value.trim();
+    if (enteredCode === customerCodeToDelete) {
+        confirmDeleteButton.disabled = false;
+    } else {
+        confirmDeleteButton.disabled = true;
+    }
+});
+
+// Gestisci la conferma di eliminazione
+confirmDeleteButton.addEventListener('click', async () => {
+    if (!customerIdToDelete) return;
+
+    try {
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + customerIdToDelete, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        // Controlla il content-type prima di parsare come JSON
+        const contentType = response.headers.get('content-type');
+        let result;
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            const textResult = await response.text();
+            console.error('Risposta non JSON:', textResult);
+            showPopup('Errore nel server.', true);
+            deleteModal.style.display = 'none';
+            resetDeleteModal();
+            return;
+        }
+
+        if (response.ok) {
+            showPopup('Cliente eliminato con successo!');
+            deleteModal.style.display = 'none';
+            resetDeleteModal();
+            loadCustomers();
+        } else {
+            showPopup('Errore: ' + (result.message || 'Errore sconosciuto.'), true);
+        }
+    } catch (error) {
+        console.error('Errore nell\'eliminazione del cliente:', error);
+        showPopup('Errore di connessione al server.', true);
+        deleteModal.style.display = 'none';
+        resetDeleteModal();
     }
 });
 
