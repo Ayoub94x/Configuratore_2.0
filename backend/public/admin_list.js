@@ -1,14 +1,8 @@
 // admin/admin_list.js
 
-// Seleziona gli elementi HTML per Sconti
-const reloadScontiButton = document.getElementById('reloadScontiButton');
-const scontiTableBody = document.querySelector('#scontiTable tbody');
-
-// Seleziona gli elementi HTML per Mezzi
-const reloadMezziButton = document.getElementById('reloadMezziButton');
-const mezziTableBody = document.querySelector('#mezziTable tbody');
-
-// Seleziona gli elementi HTML dei Modali Sconto
+// Seleziona gli elementi HTML
+const reloadButton = document.getElementById('reloadButton');
+const customersTableBody = document.querySelector('#customersTable tbody');
 const popupModal = document.getElementById('popupModal');
 const popupMessageText = document.getElementById('popupMessageText');
 const popupCloseButton = document.getElementById('closePopupModal');
@@ -17,18 +11,27 @@ const editModal = document.getElementById('editModal');
 const closeEditModalButton = document.getElementById('closeEditModal');
 const editForm = document.getElementById('editForm');
 
-// Seleziona gli elementi HTML dei Modali Mezzo
-const editMezzoModal = document.getElementById('editMezzoModal');
-const closeEditMezzoModalButton = document.getElementById('closeEditMezzoModal');
-const editMezzoForm = document.getElementById('editMezzoForm');
+// Campi del form di modifica
+const editCustomerId = document.getElementById('editCustomerId');
+const editCorpoContenitore = document.getElementById('editCorpoContenitore');
+const editBascule = document.getElementById('editBascule');
+const editGancio = document.getElementById('editGancio');
+const editBocche = document.getElementById('editBocche');
+const editGuidaATerra = document.getElementById('editGuidaATerra');
+const editAdesivo = document.getElementById('editAdesivo');
+const editOptional = document.getElementById('editOptional');
+const editExtraType = document.getElementById('editExtraType');
+const editExtraValue = document.getElementById('editExtraValue');
 
-const deleteMezzoModal = document.getElementById('deleteMezzoModal');
-const closeDeleteMezzoModalButton = document.getElementById('closeDeleteMezzoModal');
-const confirmDeleteMezzoCodeInput = document.getElementById('confirmDeleteMezzoId');
-const confirmDeleteMezzoButton = document.getElementById('confirmDeleteMezzoButton');
+// Elementi per il Modal di Eliminazione
+const deleteModal = document.getElementById('deleteModal');
+const closeDeleteModalButton = document.getElementById('closeDeleteModal');
+const confirmDeleteCodeInput = document.getElementById('confirmDeleteCode');
+const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 
-// Variabile per memorizzare l'ID del mezzo da eliminare
-let mezzoIdToDelete = null;
+// Variabile per memorizzare l'ID del cliente da eliminare
+let customerIdToDelete = null;
+let customerCodeToDelete = '';
 
 // Funzione per mostrare il popup
 function showPopup(message, isError = false) {
@@ -49,22 +52,18 @@ closeEditModalButton.addEventListener('click', () => {
     editModal.style.display = 'none';
 });
 
-// Chiudi edit mezzo modal
-closeEditMezzoModalButton.addEventListener('click', () => {
-    editMezzoModal.style.display = 'none';
+// Chiudi delete modal
+closeDeleteModalButton.addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+    resetDeleteModal();
 });
 
-// Chiudi delete mezzo modal
-closeDeleteMezzoModalButton.addEventListener('click', () => {
-    deleteMezzoModal.style.display = 'none';
-    resetDeleteMezzoModal();
-});
-
-// Reset del Modal di Eliminazione Mezzo
-function resetDeleteMezzoModal() {
-    mezzoIdToDelete = null;
-    confirmDeleteMezzoCodeInput.value = '';
-    confirmDeleteMezzoButton.disabled = true;
+// Reset del Modal di Eliminazione
+function resetDeleteModal() {
+    customerIdToDelete = null;
+    customerCodeToDelete = '';
+    confirmDeleteCodeInput.value = '';
+    confirmDeleteButton.disabled = true;
 }
 
 // Chiudi modali cliccando fuori
@@ -75,17 +74,14 @@ window.addEventListener('click', (event) => {
     if (event.target === editModal) {
         editModal.style.display = 'none';
     }
-    if (event.target === editMezzoModal) {
-        editMezzoModal.style.display = 'none';
-    }
-    if (event.target === deleteMezzoModal) {
-        deleteMezzoModal.style.display = 'none';
-        resetDeleteMezzoModal();
+    if (event.target === deleteModal) {
+        deleteModal.style.display = 'none';
+        resetDeleteModal();
     }
 });
 
 // Carica i clienti dal server
-async function loadSconti() {
+async function loadCustomers() {
     try {
         const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/');
         if (!response.ok) {
@@ -94,8 +90,8 @@ async function loadSconti() {
             showPopup('Errore nel recupero dei clienti.', true);
             return;
         }
-        const sconti = await response.json();
-        renderSconti(sconti);
+        const customers = await response.json();
+        renderCustomers(customers);
     } catch (error) {
         console.error('Errore nel recupero dei clienti:', error);
         showPopup('Errore nel recupero dei clienti.', true);
@@ -103,24 +99,24 @@ async function loadSconti() {
 }
 
 // Renderizza i clienti nella tabella
-function renderSconti(sconti) {
-    scontiTableBody.innerHTML = '';
-    sconti.forEach(sconto => {
+function renderCustomers(customers) {
+    customersTableBody.innerHTML = '';
+    customers.forEach(customer => {
         const tr = document.createElement('tr');
 
         // Codice
         const tdCode = document.createElement('td');
-        tdCode.textContent = sconto.code;
+        tdCode.textContent = customer.code;
         tr.appendChild(tdCode);
 
         // Nome
         const tdName = document.createElement('td');
-        tdName.textContent = sconto.name;
+        tdName.textContent = customer.name;
         tr.appendChild(tdName);
 
         // Sconti (%)
         const tdDiscounts = document.createElement('td');
-        const d = sconto.discounts;
+        const d = customer.discounts;
         tdDiscounts.innerHTML = `
             Corpo: ${d.corpo_contenitore}%<br>
             Bascule: ${d.bascule}%<br>
@@ -134,7 +130,7 @@ function renderSconti(sconti) {
 
         // Extra sconto
         const tdExtra = document.createElement('td');
-        const ed = sconto.extra_discount;
+        const ed = customer.extra_discount;
         tdExtra.innerHTML = `
             <strong>Tipo:</strong> ${capitalizeFirstLetter(ed.type)}<br>
             <strong>Valore:</strong> ${ed.type === 'percentuale' ? ed.value + '%' : ed.value}<br>
@@ -145,16 +141,16 @@ function renderSconti(sconti) {
         // Utilizzi
         const tdUsage = document.createElement('td');
         tdUsage.innerHTML = `
-            <strong>Usati:</strong> ${sconto.usage_count}<br>
-            <strong>Limite:</strong> ${sconto.usage_limit !== null ? sconto.usage_limit : 'Illimitato'}
+            <strong>Usati:</strong> ${customer.usage_count}<br>
+            <strong>Limite:</strong> ${customer.usage_limit !== null ? customer.usage_limit : 'Illimitato'}
         `;
         tr.appendChild(tdUsage);
 
         // Stato
         const tdStatus = document.createElement('td');
         tdStatus.innerHTML = `
-            <span class="${sconto.is_active ? 'status-active' : 'status-inactive'}">
-                ${sconto.is_active ? 'Attivo' : 'Inattivo'}
+            <span class="${customer.is_active ? 'status-active' : 'status-inactive'}">
+                ${customer.is_active ? 'Attivo' : 'Inattivo'}
             </span>
         `;
         tr.appendChild(tdStatus);
@@ -168,29 +164,29 @@ function renderSconti(sconti) {
 
         // Bottone attiva/disattiva
         const toggleButton = document.createElement('button');
-        toggleButton.textContent = sconto.is_active ? 'Disattiva' : 'Attiva';
+        toggleButton.textContent = customer.is_active ? 'Disattiva' : 'Attiva';
         toggleButton.classList.add('btn-toggle');
-        toggleButton.addEventListener('click', () => toggleScontoStatus(sconto._id, !sconto.is_active));
+        toggleButton.addEventListener('click', () => toggleCustomerStatus(customer._id, !customer.is_active));
         actionButtonsDiv.appendChild(toggleButton);
 
         // Bottone modifica
         const editButton = document.createElement('button');
         editButton.textContent = 'Modifica';
         editButton.classList.add('btn-edit');
-        editButton.addEventListener('click', () => openEditModal(sconto));
+        editButton.addEventListener('click', () => openEditModal(customer));
         actionButtonsDiv.appendChild(editButton);
 
         // Bottone elimina
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Elimina';
         deleteButton.classList.add('btn-delete');
-        deleteButton.addEventListener('click', () => openDeleteModal(sconto));
+        deleteButton.addEventListener('click', () => openDeleteModal(customer));
         actionButtonsDiv.appendChild(deleteButton);
 
         tdActions.appendChild(actionButtonsDiv);
         tr.appendChild(tdActions);
 
-        scontiTableBody.appendChild(tr);
+        customersTableBody.appendChild(tr);
     });
 }
 
@@ -199,8 +195,8 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-// Toggle stato sconto
-async function toggleScontoStatus(id, newStatus) {
+// Toggle stato cliente
+async function toggleCustomerStatus(id, newStatus) {
     try {
         const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + id, {
             method: 'PATCH',
@@ -222,8 +218,7 @@ async function toggleScontoStatus(id, newStatus) {
 
         if (response.ok) {
             showPopup('Stato cliente aggiornato con successo!');
-            loadSconti();
-            loadMezzi(); // Aggiorna anche la sezione mezzi se necessario
+            loadCustomers();
         } else {
             showPopup('Errore: ' + (result.message || 'Errore sconosciuto.'), true);
         }
@@ -233,17 +228,23 @@ async function toggleScontoStatus(id, newStatus) {
     }
 }
 
-// Apri il modal di modifica sconto
-function openEditModal(sconto) {
-    editForm.reset();
-    editCustomerId.value = sconto._id;
-    // Imposta i valori dei campi
-    // ... (come nel tuo codice originale) ...
+// Apri il modal di modifica
+function openEditModal(customer) {
+    editCustomerId.value = customer._id;
+    editCorpoContenitore.value = customer.discounts.corpo_contenitore;
+    editBascule.value = customer.discounts.bascule;
+    editGancio.value = customer.discounts.gancio;
+    editBocche.value = customer.discounts.bocche;
+    editGuidaATerra.value = customer.discounts.guida_a_terra;
+    editAdesivo.value = customer.discounts.adesivo;
+    editOptional.value = customer.discounts.optional;
+    editExtraType.value = customer.extra_discount.type;
+    editExtraValue.value = customer.extra_discount.value;
 
     editModal.style.display = 'block';
 }
 
-// Gestisci la sottomissione del form di modifica sconto
+// Gestisci la sottomissione del form di modifica
 editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = editCustomerId.value;
@@ -286,7 +287,7 @@ editForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             showPopup('Cliente aggiornato con successo!');
             editModal.style.display = 'none';
-            loadSconti();
+            loadCustomers();
         } else {
             showPopup('Errore: ' + (result.message || 'Errore sconosciuto.'), true);
         }
@@ -296,209 +297,31 @@ editForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Apri il modal di eliminazione sconto
-function openDeleteModal(sconto) {
-    mezzoIdToDelete = null; // Reset della variabile
-    customerIdToDelete = null; // Mantiene per sconti
-    // Reimposta il campo di input
-    // ... (come nel tuo codice originale) ...
+// Funzione per aprire il modal di eliminazione
+function openDeleteModal(customer) {
+    customerIdToDelete = customer._id;
+    customerCodeToDelete = customer.code;
+    confirmDeleteCodeInput.value = '';
+    confirmDeleteButton.disabled = true;
     deleteModal.style.display = 'block';
 }
 
-// Gestisci la conferma di eliminazione sconto
-// ... (come nel tuo codice originale) ...
-
-// Carica i mezzi dal server
-async function loadMezzi() {
-    try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/');
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Errore nel recupero dei mezzi:', errorText);
-            showPopup('Errore nel recupero dei mezzi.', true);
-            return;
-        }
-        const mezzi = await response.json();
-        renderMezzi(mezzi);
-    } catch (error) {
-        console.error('Errore nel recupero dei mezzi:', error);
-        showPopup('Errore nel recupero dei mezzi.', true);
-    }
-}
-
-// Renderizza i mezzi nella tabella
-function renderMezzi(mezzi) {
-    mezziTableBody.innerHTML = '';
-    mezzi.forEach(mezzo => {
-        const tr = document.createElement('tr');
-
-        // ID
-        const tdId = document.createElement('td');
-        tdId.textContent = mezzo._id;
-        tr.appendChild(tdId);
-
-        // Nome
-        const tdNome = document.createElement('td');
-        tdNome.textContent = mezzo.nome;
-        tr.appendChild(tdNome);
-
-        // Prezzo
-        const tdPrezzo = document.createElement('td');
-        tdPrezzo.textContent = mezzo.prezzo.toFixed(2) + ' €';
-        tr.appendChild(tdPrezzo);
-
-        // Stato
-        const tdStato = document.createElement('td');
-        tdStato.innerHTML = `
-            <span class="${mezzo.is_active ? 'status-active' : 'status-inactive'}">
-                ${mezzo.is_active ? 'Attivo' : 'Inattivo'}
-            </span>
-        `;
-        tr.appendChild(tdStato);
-
-        // Azioni
-        const tdAzioni = document.createElement('td');
-        
-        // Contenitore Flex per i pulsanti
-        const actionButtonsDiv = document.createElement('div');
-        actionButtonsDiv.classList.add('action-buttons');
-
-        // Bottone attiva/disattiva
-        const toggleMezzoButton = document.createElement('button');
-        toggleMezzoButton.textContent = mezzo.is_active ? 'Disattiva' : 'Attiva';
-        toggleMezzoButton.classList.add('btn-toggle-mezzo');
-        toggleMezzoButton.addEventListener('click', () => toggleMezzoStatus(mezzo._id, !mezzo.is_active));
-        actionButtonsDiv.appendChild(toggleMezzoButton);
-
-        // Bottone modifica
-        const editMezzoButton = document.createElement('button');
-        editMezzoButton.textContent = 'Modifica';
-        editMezzoButton.classList.add('btn-edit-mezzo');
-        editMezzoButton.addEventListener('click', () => openEditMezzoModal(mezzo));
-        actionButtonsDiv.appendChild(editMezzoButton);
-
-        // Bottone elimina
-        const deleteMezzoButton = document.createElement('button');
-        deleteMezzoButton.textContent = 'Elimina';
-        deleteMezzoButton.classList.add('btn-delete-mezzo');
-        deleteMezzoButton.addEventListener('click', () => openDeleteMezzoModal(mezzo));
-        actionButtonsDiv.appendChild(deleteMezzoButton);
-
-        tdAzioni.appendChild(actionButtonsDiv);
-        tr.appendChild(tdAzioni);
-
-        mezziTableBody.appendChild(tr);
-    });
-}
-
-// Toggle stato mezzo
-async function toggleMezzoStatus(id, newStatus) {
-    try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + id, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_active: newStatus })
-        });
-
-        // Controlla il content-type prima di parsare come JSON
-        const contentType = response.headers.get('content-type');
-        let result;
-        if (contentType && contentType.includes('application/json')) {
-            result = await response.json();
-        } else {
-            const textResult = await response.text();
-            console.error('Risposta non JSON:', textResult);
-            showPopup('Errore nel server.', true);
-            return;
-        }
-
-        if (response.ok) {
-            showPopup('Stato mezzo aggiornato con successo!');
-            loadMezzi();
-        } else {
-            showPopup('Errore: ' + (result.message || 'Errore sconosciuto.'), true);
-        }
-    } catch (error) {
-        console.error('Errore nell\'aggiornamento dello stato del mezzo:', error);
-        showPopup('Errore di connessione al server.', true);
-    }
-}
-
-// Apri il modal di modifica mezzo
-function openEditMezzoModal(mezzo) {
-    editMezzoForm.reset();
-    document.getElementById('editMezzoId').value = mezzo._id;
-    document.getElementById('editMezzoNome').value = mezzo.nome;
-    document.getElementById('editMezzoPrezzo').value = mezzo.prezzo;
-
-    editMezzoModal.style.display = 'block';
-}
-
-// Gestisci la sottomissione del form di modifica mezzo
-editMezzoForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editMezzoId').value;
-    const body = {
-        nome: document.getElementById('editMezzoNome').value.trim(),
-        prezzo: parseFloat(document.getElementById('editMezzoPrezzo').value)
-    };
-
-    try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + id, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-
-        // Controlla il content-type prima di parsare come JSON
-        const contentType = response.headers.get('content-type');
-        let result;
-        if (contentType && contentType.includes('application/json')) {
-            result = await response.json();
-        } else {
-            const textResult = await response.text();
-            console.error('Risposta non JSON:', textResult);
-            showPopup('Errore nel server.', true);
-            return;
-        }
-
-        if (response.ok) {
-            showPopup('Mezzo aggiornato con successo!');
-            editMezzoModal.style.display = 'none';
-            loadMezzi();
-        } else {
-            showPopup('Errore: ' + (result.message || 'Errore sconosciuto.'), true);
-        }
-    } catch (error) {
-        console.error('Errore nella modifica del mezzo:', error);
-        showPopup('Errore di connessione al server.', true);
-    }
-});
-
-// Apri il modal di eliminazione mezzo
-function openDeleteMezzoModal(mezzo) {
-    mezzoIdToDelete = mezzo._id;
-    confirmDeleteMezzoCodeInput.value = '';
-    confirmDeleteMezzoButton.disabled = true;
-    deleteMezzoModal.style.display = 'block';
-}
-
-// Verifica l'ID inserito per abilitare il pulsante di eliminazione mezzo
-confirmDeleteMezzoCodeInput.addEventListener('input', () => {
-    const enteredId = confirmDeleteMezzoCodeInput.value.trim();
-    if (enteredId === mezzoIdToDelete) {
-        confirmDeleteMezzoButton.disabled = false;
+// Verifica il codice inserito per abilitare il pulsante di eliminazione
+confirmDeleteCodeInput.addEventListener('input', () => {
+    const enteredCode = confirmDeleteCodeInput.value.trim();
+    if (enteredCode === customerCodeToDelete) {
+        confirmDeleteButton.disabled = false;
     } else {
-        confirmDeleteMezzoButton.disabled = true;
+        confirmDeleteButton.disabled = true;
     }
 });
 
-// Gestisci la conferma di eliminazione mezzo
-confirmDeleteMezzoButton.addEventListener('click', async () => {
-    if (!mezzoIdToDelete) return;
+// Gestisci la conferma di eliminazione
+confirmDeleteButton.addEventListener('click', async () => {
+    if (!customerIdToDelete) return;
 
     try {
-        const response = await fetch('https://configuratore-2-0.onrender.com/api/costumers/' + mezzoIdToDelete, {
+        const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/' + customerIdToDelete, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -512,30 +335,27 @@ confirmDeleteMezzoButton.addEventListener('click', async () => {
             const textResult = await response.text();
             console.error('Risposta non JSON:', textResult);
             showPopup('Errore nel server.', true);
-            deleteMezzoModal.style.display = 'none';
-            resetDeleteMezzoModal();
+            deleteModal.style.display = 'none';
+            resetDeleteModal();
             return;
         }
 
         if (response.ok) {
-            showPopup('Mezzo eliminato con successo!');
-            deleteMezzoModal.style.display = 'none';
-            resetDeleteMezzoModal();
-            loadMezzi();
+            showPopup('Cliente eliminato con successo!');
+            deleteModal.style.display = 'none';
+            resetDeleteModal();
+            loadCustomers();
         } else {
             showPopup('Errore: ' + (result.message || 'Errore sconosciuto.'), true);
         }
     } catch (error) {
-        console.error('Errore nell\'eliminazione del mezzo:', error);
+        console.error('Errore nell\'eliminazione del cliente:', error);
         showPopup('Errore di connessione al server.', true);
-        deleteMezzoModal.style.display = 'none';
-        resetDeleteMezzoModal();
+        deleteModal.style.display = 'none';
+        resetDeleteModal();
     }
 });
 
-// Carica i mezzi all'avvio
-reloadMezziButton.addEventListener('click', loadMezzi);
-window.addEventListener('load', () => {
-    loadSconti();
-    loadMezzi();
-});
+// Carica i clienti all'avvio
+reloadButton.addEventListener('click', loadCustomers);
+window.addEventListener('load', loadCustomers);
