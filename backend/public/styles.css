@@ -118,8 +118,24 @@ li {
   justify-content: space-between;
 }
 
-.modifica,
+
 .invia {
+  padding: 8px 12px;
+  background: #ff7f50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 14px;
+}
+
+.invia:hover {
+  background: #e67e22;
+}
+
+/* Stili per i bottoni di modifica */
+.modifica {
   background-color: #f0ad4e;
   border: none;
   color: white;
@@ -134,10 +150,10 @@ li {
   justify-content: center;
 }
 
-.modifica:hover,
-.invia:hover {
+.modifica:hover {
   background-color: #ec971f;
 }
+
 
 /* Pulsanti Indietro e Avanti */
 .button-group {
