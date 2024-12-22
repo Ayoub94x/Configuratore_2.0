@@ -28,13 +28,22 @@ const CustomerSchema = new mongoose.Schema({
         required: true
     },
     discounts: {
+        // Sconti per Contenitori
         corpo_contenitore: { type: Number, required: true },
         bascule: { type: Number, required: true },
         gancio: { type: Number, required: true },
         bocche: { type: Number, required: true },
         guida_a_terra: { type: Number, required: true },
         adesivo: { type: Number, required: true },
-        optional: { type: Number, required: true }
+        optional: { type: Number, required: true },
+        // Sconti per Mezzi
+        AUTOMEZZI: { type: Number, required: true },
+        Allestimento: { type: Number, required: true },
+        GRU: { type: Number, required: true },
+        Compattatore: { type: Number, required: true },
+        Lavacontenitori: { type: Number, required: true },
+        Accessori: { type: Number, required: true },
+        PLUS: { type: Number, required: true }
     },
     extra_discount: {
         type: ExtraDiscountSchema,

@@ -5,19 +5,27 @@ const Customer = require('../models/Customer');
 const Joi = require('joi');
 const mongoose = require('mongoose'); // Assicurati di importare mongoose
 
-
 // Schema di validazione per l'aggiunta di un nuovo cliente
 const customerSchema = Joi.object({
     code: Joi.string().trim().required(),
     name: Joi.string().trim().required(),
     discounts: Joi.object({
+        // Sconti per Contenitori
         corpo_contenitore: Joi.number().min(0).max(100).required(),
         bascule: Joi.number().min(0).max(100).required(),
         gancio: Joi.number().min(0).max(100).required(),
         bocche: Joi.number().min(0).max(100).required(),
         guida_a_terra: Joi.number().min(0).max(100).required(),
         adesivo: Joi.number().min(0).max(100).required(),
-        optional: Joi.number().min(0).max(100).required()
+        optional: Joi.number().min(0).max(100).required(),
+        // Sconti per Mezzi
+        AUTOMEZZI: Joi.number().min(0).max(100).required(),
+        Allestimento: Joi.number().min(0).max(100).required(),
+        GRU: Joi.number().min(0).max(100).required(),
+        Compattatore: Joi.number().min(0).max(100).required(),
+        Lavacontenitori: Joi.number().min(0).max(100).required(),
+        Accessori: Joi.number().min(0).max(100).required(),
+        PLUS: Joi.number().min(0).max(100).required()
     }).required(),
     extra_discount: Joi.object({
         type: Joi.string().valid('percentuale', 'fisso').required(),
