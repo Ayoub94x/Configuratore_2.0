@@ -154,6 +154,20 @@ li {
   background-color: #ec971f;
 }
 
+.modifica_quantita{
+  padding: 8px 12px;
+  background: #ff7f50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 14px;
+  margin-top: 5px;
+}
+.modifica_quantita{
+  background: #e67e22;
+}
 /* Pulsanti Indietro e Avanti */
 .button-group {
   display: flex;
