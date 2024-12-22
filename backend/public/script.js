@@ -683,7 +683,7 @@ function mostraResoconto() {
       <button id="confermaQuantitaBtn" class="invia">
         Conferma Quantità
       </button>
-      <button id="modificaQuantitaBtn" class="modifica" style="display: none;">
+      <button id="modificaQuantitaBtn" class="modifica_quantita" style="display: none;">
         Modifica Quantità
       </button>
     </div>
