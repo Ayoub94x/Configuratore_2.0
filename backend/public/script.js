@@ -6,7 +6,15 @@ const { jsPDF } = window.jspdf;
  * Configurazione degli sconti basati sulla quantità.
  * Puoi modificare liberamente questi valori.
  */
+const quantityDiscounts = [
+  { min: 1, max: 10, discount: 0 },     // 0% di sconto per 1-10 unità
+  { min: 11, max: 50, discount: 5 },    // 5% di sconto per 11-50 unità
+  { min: 51, max: 100, discount: 10 },  // 10% di sconto per 51-100 unità
+  { min: 101, max: Infinity, discount: 15 } // 15% di sconto per oltre 100 unità
+];
 
+/**
+ * Mappa dei passaggi (categorie) usata per la navigazione
 /**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
@@ -649,6 +657,36 @@ function aggiornaPrezzo(isFinal) {
     // Calcolo finale con la quantità effettiva
     configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
 
+    // Sconto quantità
+    let discountRate = 0;
+    for (const rule of quantityDiscounts) {
+      if (
+        configurazione.quantità >= rule.min &&
+        configurazione.quantità <= rule.max
+      ) {
+        discountRate = rule.discount;
+        break;
+      }
+    }
+    configurazione.scontoQuantità =
+      (configurazione.prezzoTotale * discountRate) / 100;
+    let tmpTot = configurazione.prezzoTotale - configurazione.scontoQuantità;
+
+    // Sconto extra
+    if (configurazione.customer.extra_discount.active) {
+      const extra = configurazione.customer.extra_discount;
+      if (extra.type === "percentuale") {
+        configurazione.scontoExtra = tmpTot * (extra.value / 100);
+      } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
+        configurazione.scontoExtra = extra.value;
+      }
+      configurazione.prezzoTotaleScontato = tmpTot - configurazione.scontoExtra;
+    } else {
+      configurazione.scontoExtra = 0;
+      configurazione.prezzoTotaleScontato = tmpTot;
+    }
+  }
+
   // Aggiorna i .prezzo-totale (se presenti)
   const configuratorDiv = document.getElementById("configurator");
   const totElems = configuratorDiv.querySelectorAll(".prezzo-totale");
@@ -1009,4 +1047,4 @@ window.onclick = function(event) {
   if (event.target === messageModal) {
     messageModal.style.display = "none";
   }
-}}
+}
