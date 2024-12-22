@@ -22,7 +22,8 @@ const stepMap = {
   "Compattatore": "Compattatore",
   "Lavacontenitori": "Lavacontenitori",
   "Accessori": "Accessori",
-  "PLUS": "PLUS"
+  "PLUS": "PLUS",
+  "Contenitori": "Contenitori" // Nuovo step per Contenitori
 };
 
 /**
@@ -40,7 +41,7 @@ let configurazione = {
   quantità: 1                     // Quantità selezionata
 };
 
-// Dati di base per i mezzi
+// Dati di base per i mezzi e contenitori
 configurazione.data = {
   categorie: {
     "AUTOMEZZI": {
@@ -111,6 +112,18 @@ configurazione.data = {
       opzioni: [
         { nome: "Trasporto", prezzo: 1000.00 }
       ]
+    },
+    "Contenitori": { // Nuova categoria per Contenitori
+      indicazioni: "Seleziona i componenti del contenitore.",
+      opzioni: [
+        { nome: "corpo_contenitore", prezzo: 0 }, // Prezzo base sarà calcolato con lo sconto
+        { nome: "bascule", prezzo: 0 },
+        { nome: "gancio", prezzo: 0 },
+        { nome: "bocche", prezzo: 0 },
+        { nome: "guida_a_terra", prezzo: 0 },
+        { nome: "adesivo", prezzo: 0 },
+        { nome: "optional", prezzo: 0 }
+      ]
     }
   }
 };
@@ -160,7 +173,7 @@ document.getElementById("userForm").addEventListener("submit", async function (e
     configurazione.customer = {
       code: customerData.code,
       name: customerData.name,
-      discounts: customerData.discounts,
+      discounts: customerData.discounts, // Sconti per categoria
       extra_discount: customerData.extra_discount || { active: false, type: null, value: 0 },
       usage_limit: customerData.usage_limit,
       is_active: customerData.is_active,
@@ -216,12 +229,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["AUTOMEZZI"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria AUTOMEZZI se disponibile
+            const categoria = "AUTOMEZZI";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["AUTOMEZZI"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["AUTOMEZZI"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -257,12 +276,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Allestimento"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria Allestimento se disponibile
+            const categoria = "Allestimento";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["Allestimento"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["Allestimento"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -298,12 +323,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["GRU"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria GRU se disponibile
+            const categoria = "GRU";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["GRU"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["GRU"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -339,12 +370,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Compattatore"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria Compattatore se disponibile
+            const categoria = "Compattatore";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["Compattatore"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["Compattatore"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -371,7 +408,7 @@ function showStep(step) {
           <button onclick="prevStep('Compattatore')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
-          ${avantiButton("Accessori")}
+          ${avantiButton("Contenitori")}
         </div>
       `;
 
@@ -380,12 +417,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Lavacontenitori"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria Lavacontenitori se disponibile
+            const categoria = "Lavacontenitori";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["Lavacontenitori"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["Lavacontenitori"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -394,6 +437,80 @@ function showStep(step) {
           // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
+      break;
+
+    case "Contenitori": // Nuovo step per Contenitori
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-box-open"></i> Seleziona Contenitori</h2>
+        <p>${configurazione.data.categorie["Contenitori"].indicazioni}</p>
+        <div id="contenitoriOptions">
+          ${configurazione.data.categorie["Contenitori"].opzioni
+            .map((opzione) => `
+              <div>
+                <input type="checkbox" id="${opzione.nome}" name="contenitori" value="${opzione.nome}" />
+                <label for="${opzione.nome}">${capitalize(opzione.nome.replace('_', ' '))} - ${formatCurrency(0)}</label>
+              </div>
+            `)
+            .join("")}
+        </div>
+        <p id="currentSelectionPriceContenitori">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('Lavacontenitori')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("Accessori")}
+        </div>
+      `;
+
+      const contenitoriCheckboxes = configuratorDiv.querySelectorAll('#contenitoriOptions input[type="checkbox"]');
+      contenitoriCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+          const selectedOpzioni = Array.from(contenitoriCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+          let prezzoScontato = 0;
+
+          selectedOpzioni.forEach(opzioneNome => {
+            const categoria = opzioneNome;
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            // Assume che il prezzo base per i contenitori sia definito in un oggetto separato o calcolato
+            // Per questo esempio, assegnerò un prezzo fisso per ogni componente
+            const prezzoBase = getContenitorePrezzoBase(opzioneNome);
+            const prezzo = prezzoBase - (prezzoBase * scontoCategoria / 100);
+            prezzoScontato += prezzo;
+
+            // Aggiorna la label con il prezzo scontato
+            const label = configuratorDiv.querySelector(`label[for="${opzioneNome}"]`);
+            if (label) {
+              label.textContent = `${capitalize(opzioneNome.replace('_', ' '))} - ${formatCurrency(prezzo)}`;
+            }
+          });
+
+          if (selectedOpzioni.length > 0) {
+            configurazione.selections["Contenitori"] = {
+              nome: selectedOpzioni.join(', '),
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: "Varie" // Indica che sono stati applicati sconti variabili
+            };
+            configurazione.selections["Contenitori"].scontoDettaglio = selectedOpzioni.map(opzioneNome => {
+              const sconto = configurazione.customer.discounts[opzioneNome] || 0;
+              return `${capitalize(opzioneNome.replace('_', ' '))}: ${sconto}%`;
+            }).join(', ');
+
+            configuratorDiv.querySelector("#currentSelectionPriceContenitori").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`;
+          } else {
+            delete configurazione.selections["Contenitori"];
+            configuratorDiv.querySelector("#currentSelectionPriceContenitori").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+
+          // Aggiorna prezzo parziale
+          aggiornaPrezzo(false);
+        });
+      });
       break;
 
     case "Accessori":
@@ -409,7 +526,7 @@ function showStep(step) {
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
-          <button onclick="prevStep('Lavacontenitori')">
+          <button onclick="prevStep('Contenitori')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
           ${avantiButton("PLUS")}
@@ -421,12 +538,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria Accessori se disponibile
+            const categoria = "Accessori";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["Accessori"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["Accessori"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -462,12 +585,18 @@ function showStep(step) {
         .addEventListener("change", function () {
           const selectedOpzione = configurazione.data.categorie["PLUS"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
+            // Applica lo sconto per la categoria PLUS se disponibile
+            const categoria = "PLUS";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
+
             configurazione.selections["PLUS"] = {
               nome: selectedOpzione.nome,
-              prezzo: selectedOpzione.prezzo
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(selectedOpzione.prezzo)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)} (${scontoCategoria}% di sconto)`;
           } else {
             delete configurazione.selections["PLUS"];
             document.getElementById("currentSelectionPrice").textContent =
@@ -501,6 +630,7 @@ function validateAndNextStep(nextStepName) {
     "GRU": "GRU",
     "Compattatore": "Compattatore",
     "Lavacontenitori": "Lavacontenitori",
+    "Contenitori": "Contenitori", // Nuovo controllo per Contenitori
     "Accessori": "Accessori",
     "PLUS": "PLUS"
   };
@@ -517,6 +647,23 @@ function validateAndNextStep(nextStepName) {
 
 function prevStep(prevStepName) {
   showStep(prevStepName);
+}
+
+/* ----------------------------------------------
+   Funzione di Ottimizzazione dei Prezzi Base per Contenitori
+----------------------------------------------- */
+function getContenitorePrezzoBase(opzioneNome) {
+  // Definisci qui i prezzi base per ogni componente del contenitore
+  const prezziBase = {
+    "corpo_contenitore": 10000.00,
+    "bascule": 20000.00,
+    "gancio": 5000.00,
+    "bocche": 4000.00,
+    "guida_a_terra": 7000.00,
+    "adesivo": 9000.00,
+    "optional": 10000.00
+  };
+  return prezziBase[opzioneNome] || 0;
 }
 
 /* ----------------------------------------------
@@ -597,15 +744,27 @@ function mostraResoconto() {
   const ul = document.getElementById("riepilogoSelezioni");
   for (let categoria in configurazione.selections) {
     const sel = configurazione.selections[categoria];
-    ul.innerHTML += `
-      <li>
-        <div>
-          <strong>${capitalize(categoria)}</strong>:
-          ${sel.nome} - ${formatCurrency(sel.prezzo)}
-        </div>
-        <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-      </li>
-    `;
+    if (categoria === "Contenitori") {
+      ul.innerHTML += `
+        <li>
+          <div>
+            <strong>${capitalize(categoria)}</strong>:
+            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})
+          </div>
+          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+        </li>
+      `;
+    } else {
+      ul.innerHTML += `
+        <li>
+          <div>
+            <strong>${capitalize(categoria)}</strong>:
+            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
+          </div>
+          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+        </li>
+      `;
+    }
   }
 
   // Mostriamo il prezzo "parziale" per default
@@ -728,11 +887,19 @@ async function inviaConfigurazione() {
       let y = 105;
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        doc.text(
-          `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
-          20,
-          y
-        );
+        if (categoria === "Contenitori") {
+          doc.text(
+            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})`,
+            20,
+            y
+          );
+        } else {
+          doc.text(
+            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)`,
+            20,
+            y
+          );
+        }
         y += 10;
       }
 
@@ -798,7 +965,11 @@ async function inviaConfigurazione() {
 
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
+        if (categoria === "Contenitori") {
+          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})\n`;
+        } else {
+          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)\n`;
+        }
       }
 
       if (
@@ -837,13 +1008,15 @@ async function inviaConfigurazione() {
 }
 
 /* ----------------------------------------------
-   Funzione per Ottenere il Volume Selezionato
+   Funzione modificaSelezione: permette di modificare una selezione specifica
 ----------------------------------------------- */
-function getSelectedVolume() {
-  const sel = configurazione.selections["AUTOMEZZI"];
-  if (!sel) return null;
-  // Adatta questa funzione se necessario per estrarre informazioni specifiche
-  return sel.nome;
+function modificaSelezione(categoria) {
+  const step = stepMap[categoria];
+  if (step) {
+    showStep(step);
+  } else {
+    alert("Passo non trovato per la modifica.");
+  }
 }
 
 /* ----------------------------------------------
@@ -893,4 +1066,416 @@ window.onclick = function(event) {
   if (messageModal && event.target === messageModal) {
     messageModal.style.display = 'none';
   }
+}
+
+/* ----------------------------------------------
+   Funzione di Ottimizzazione dei Prezzi Base per Contenitori
+----------------------------------------------- */
+function getContenitorePrezzoBase(opzioneNome) {
+  // Definisci qui i prezzi base per ogni componente del contenitore
+  const prezziBase = {
+    "corpo_contenitore": 10000.00,
+    "bascule": 20000.00,
+    "gancio": 5000.00,
+    "bocche": 4000.00,
+    "guida_a_terra": 7000.00,
+    "adesivo": 9000.00,
+    "optional": 10000.00
+  };
+  return prezziBase[opzioneNome] || 0;
+}
+
+/* ----------------------------------------------
+   Aggiorna il prezzo
+   isFinal = false => no sconto quantità, no sconto extra
+   isFinal = true  => sconto extra
+----------------------------------------------- */
+function aggiornaPrezzo(isFinal) {
+  let prezzoUnitario = 0;
+
+  // Somma dei prezzi delle selezioni
+  for (let categoria in configurazione.selections) {
+    prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
+  }
+
+  if (!isFinal) {
+    // Calcolo "parziale" (1 pezzo, no sconto extra)
+    configurazione.prezzoTotale = prezzoUnitario;
+    configurazione.prezzoTotaleScontato = prezzoUnitario;
+  } else {
+    // Calcolo finale con la quantità effettiva
+    configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
+
+    // Sconto extra
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active) {
+      const extra = configurazione.customer.extra_discount;
+      if (extra.type === "percentuale") {
+        configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
+      } else if (extra.type === "fisso") {
+        configurazione.scontoExtra = extra.value;
+      }
+      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale - configurazione.scontoExtra;
+    } else {
+      configurazione.scontoExtra = 0;
+      configurazione.prezzoTotaleScontato = configurazione.prezzoTotale;
+    }
+  }
+
+  // Aggiorna i .prezzo-totale (se presenti)
+  const configuratorDiv = document.getElementById("configurator");
+  const totElems = configuratorDiv.querySelectorAll(".prezzo-totale");
+  totElems.forEach((el) => {
+    el.textContent = formatCurrency(configurazione.prezzoTotaleScontato);
+  });
+}
+
+/* ----------------------------------------------
+   Schermata di Resoconto
+----------------------------------------------- */
+function mostraResoconto() {
+  const configuratorDiv = document.getElementById("configurator");
+  configuratorDiv.innerHTML = `
+    <h2><i class="fas fa-list-alt"></i> Riepilogo Selezioni</h2>
+    <ul id="riepilogoSelezioni"></ul>
+
+    <!-- Sezione Quantità -->
+    <div style="margin: 20px 0;">
+      <label for="quantitaInput"><strong>Quantità:</strong></label>
+      <input type="number" id="quantitaInput" min="1" value="1" />
+      <button id="confermaQuantitaBtn" class="invia">
+        Conferma Quantità
+      </button>
+      <button id="modificaQuantitaBtn" class="modifica_quantita" style="display: none;">
+        Modifica Quantità
+      </button>
+    </div>
+
+    <!-- Sezione prezzi finale (inizialmente vuota) -->
+    <div id="dettagliPrezzoFinale" style="margin-bottom: 20px;"></div>
+
+    <!-- Pulsante Invia Ordine (inizialmente disabilitato) -->
+    <button class="invia" id="inviaOrdineBtn" disabled>
+      Invia Ordine <i class="fas fa-check"></i>
+    </button>
+  `;
+
+  // Riempi la lista delle selezioni
+  const ul = document.getElementById("riepilogoSelezioni");
+  for (let categoria in configurazione.selections) {
+    const sel = configurazione.selections[categoria];
+    if (categoria === "Contenitori") {
+      ul.innerHTML += `
+        <li>
+          <div>
+            <strong>${capitalize(categoria)}</strong>:
+            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})
+          </div>
+          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+        </li>
+      `;
+    } else {
+      ul.innerHTML += `
+        <li>
+          <div>
+            <strong>${capitalize(categoria)}</strong>:
+            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
+          </div>
+          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+        </li>
+      `;
+    }
+  }
+
+  // Mostriamo il prezzo "parziale" per default
+  aggiornaPrezzo(false);
+
+  // Riferimenti ai vari elementi
+  const quantitaInput = document.getElementById("quantitaInput");
+  const confermaQuantitaBtn = document.getElementById("confermaQuantitaBtn");
+  const modificaQuantitaBtn = document.getElementById("modificaQuantitaBtn");
+  const dettagliPrezzoFinale = document.getElementById("dettagliPrezzoFinale");
+  const inviaOrdineBtn = document.getElementById("inviaOrdineBtn");
+
+  // Quando clicca su "Conferma Quantità":
+  confermaQuantitaBtn.addEventListener("click", async () => {
+    const q = parseInt(quantitaInput.value);
+    if (!q || q < 1) {
+      showWarningModal("Inserisci una quantità valida (>=1).");
+      return;
+    }
+    configurazione.quantità = q;
+    aggiornaPrezzo(true);
+
+    // Mostriamo i dettagli dei prezzi finali
+    const {
+      prezzoTotale,
+      scontoExtra,
+      prezzoTotaleScontato
+    } = configurazione;
+
+    let htmlPrezzi = `
+      <p><strong>Prezzo Totale (${q} pz):</strong> ${formatCurrency(prezzoTotale)}</p>
+    `;
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active && scontoExtra > 0) {
+      const extra = configurazione.customer.extra_discount;
+      if (extra.type === "percentuale") {
+        htmlPrezzi += `
+          <p>Sconto Extra: -${extra.value}% (${formatCurrency(scontoExtra)})</p>
+        `;
+      } else if (extra.type === "fisso") {
+        htmlPrezzi += `<p>Sconto Extra: -${formatCurrency(scontoExtra)}</p>`;
+      }
+    }
+    htmlPrezzi += `
+      <p><strong>Prezzo Totale Scontato:</strong> ${formatCurrency(prezzoTotaleScontato)}</p>
+    `;
+
+    dettagliPrezzoFinale.innerHTML = htmlPrezzi;
+
+    // Abilita il pulsante "Invia Ordine"
+    inviaOrdineBtn.disabled = false;
+
+    // Disabilita input e bottone per evitare modifiche successive
+    quantitaInput.disabled = true;
+    confermaQuantitaBtn.disabled = true;
+
+    // Mostra il pulsante "Modifica Quantità"
+    modificaQuantitaBtn.style.display = "inline-block";
+  });
+
+  // Quando l'utente clicca su "Modifica Quantità"
+  modificaQuantitaBtn.addEventListener("click", () => {
+    // Abilita l'input della quantità
+    quantitaInput.disabled = false;
+    // Disabilita il pulsante "Invia Ordine"
+    inviaOrdineBtn.disabled = true;
+    // Riabilita il pulsante "Conferma Quantità"
+    confermaQuantitaBtn.disabled = false;
+    // Nascondi il pulsante "Modifica Quantità"
+    modificaQuantitaBtn.style.display = "none";
+    // Rimuovi i dettagli del prezzo finale
+    dettagliPrezzoFinale.innerHTML = "";
+  });
+
+  // Quando l'utente clicca su "Invia Ordine"
+  inviaOrdineBtn.addEventListener("click", async () => {
+    // Procedi con l'invio dell'ordine
+    await inviaConfigurazione();
+  });
+}
+
+/* ----------------------------------------------
+   Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
+----------------------------------------------- */
+async function inviaConfigurazione() {
+  const doc = new jsPDF();
+  const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
+
+  try {
+    const img = new Image();
+    img.src = logoURL;
+    img.onload = async function () {
+      doc.addImage(img, "JPEG", 10, 10, 50, 20);
+      doc.setFontSize(20);
+      doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
+
+      // Dati utente
+      doc.setFontSize(12);
+      doc.text(`Nome: ${configurazione.userInfo.nome}`, 20, 50);
+      doc.text(`Cognome: ${configurazione.userInfo.cognome}`, 20, 60);
+      doc.text(`Azienda: ${configurazione.userInfo.azienda}`, 20, 70);
+      doc.text(`Quantità: ${configurazione.quantità}`, 20, 80);
+
+      // Selezioni
+      doc.setFontSize(16);
+      doc.text("Selezioni:", 20, 95);
+      doc.setFontSize(12);
+
+      let y = 105;
+      for (let categoria in configurazione.selections) {
+        const sel = configurazione.selections[categoria];
+        if (categoria === "Contenitori") {
+          doc.text(
+            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})`,
+            20,
+            y
+          );
+        } else {
+          doc.text(
+            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)`,
+            20,
+            y
+          );
+        }
+        y += 10;
+      }
+
+      // Sconti finali
+      if (
+        configurazione.customer.extra_discount &&
+        configurazione.customer.extra_discount.active &&
+        configurazione.scontoExtra > 0
+      ) {
+        if (configurazione.customer.extra_discount.type === "percentuale") {
+          doc.text(
+            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
+            20,
+            y
+          );
+        } else if (configurazione.customer.extra_discount.type === "fisso") {
+          doc.text(
+            `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
+            20,
+            y
+          );
+        }
+        y += 10;
+      }
+
+      doc.setFontSize(14);
+      doc.text(
+        `Prezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`,
+        20,
+        y + 10
+      );
+
+      // Salva PDF
+      doc.save("resoconto_mezzo.pdf");
+
+      // Aggiorna l'uso del codice sconto sul server
+      try {
+        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code: configurazione.customer.code })
+        });
+
+        if (!updateResponse.ok) {
+          const errorData = await updateResponse.json();
+          throw new Error(errorData.message || 'Errore nell\'aggiornamento dell\'uso del codice sconto.');
+        }
+
+        console.log('Uso del codice sconto aggiornato con successo.');
+      } catch (error) {
+        console.error(error);
+        showWarningModal(`Errore: ${error.message}`);
+        return;
+      }
+
+      // Prepara il mailto
+      const toEmail = "tuo.email@esempio.com"; // Sostituisci con la tua email
+      const subject = encodeURIComponent("Nuova Configurazione Mezzo");
+
+      let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
+
+      for (let categoria in configurazione.selections) {
+        const sel = configurazione.selections[categoria];
+        if (categoria === "Contenitori") {
+          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})\n`;
+        } else {
+          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)\n`;
+        }
+      }
+
+      if (
+        configurazione.customer.extra_discount &&
+        configurazione.customer.extra_discount.active &&
+        configurazione.scontoExtra > 0
+      ) {
+        if (configurazione.customer.extra_discount.type === "percentuale") {
+          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+        } else if (configurazione.customer.extra_discount.type === "fisso") {
+          body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
+        }
+      }
+      body += `\nPrezzo Totale Scontato: ${formatCurrency(configurazione.prezzoTotaleScontato)}`;
+
+      const encodedBody = encodeURIComponent(body);
+      const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
+      const emailLink = document.getElementById("emailLink");
+      if (emailLink) {
+        emailLink.href = mailtoLink;
+        emailLink.click(); // Avvia l'email client
+      } else {
+        // Se l'elemento non esiste, apri direttamente il mailto
+        window.location.href = mailtoLink;
+      }
+
+      openModal();
+    };
+    img.onerror = function () {
+      showWarningModal("Errore nel caricamento del logo.");
+    };
+  } catch (error) {
+    console.error("Errore durante la generazione del PDF:", error);
+    showWarningModal("Errore durante la generazione del PDF.");
+  }
+}
+
+/* ----------------------------------------------
+   MODALS per avvisi e successi
+----------------------------------------------- */
+function showWarningModal(message) {
+  const warningModal = document.getElementById("warningModal");
+  const warningMessageText = document.getElementById("warningMessageText");
+  if (warningMessageText) {
+    warningMessageText.textContent = message;
+  }
+  if (warningModal) {
+    warningModal.style.display = "block";
+  }
+}
+
+function closeWarningModal() {
+  const warningModal = document.getElementById("warningModal");
+  if (warningModal) {
+    warningModal.style.display = "none";
+  }
+}
+
+function openModal() {
+  const modal = document.getElementById("messageModal");
+  if (modal) {
+    modal.style.display = "block";
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById("messageModal");
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+/* ----------------------------------------------
+   Event Listener per chiudere i Modal cliccando fuori
+----------------------------------------------- */
+window.onclick = function(event) {
+  const warningModal = document.getElementById("warningModal");
+  const messageModal = document.getElementById("messageModal");
+  if (warningModal && event.target === warningModal) {
+    warningModal.style.display = 'none';
+  }
+  if (messageModal && event.target === messageModal) {
+    messageModal.style.display = 'none';
+  }
+}
+
+/* ----------------------------------------------
+   Funzione di Ottimizzazione dei Prezzi Base per Contenitori
+----------------------------------------------- */
+function getContenitorePrezzoBase(opzioneNome) {
+  // Definisci qui i prezzi base per ogni componente del contenitore
+  const prezziBase = {
+    "corpo_contenitore": 10000.00,
+    "bascule": 20000.00,
+    "gancio": 5000.00,
+    "bocche": 4000.00,
+    "guida_a_terra": 7000.00,
+    "adesivo": 9000.00,
+    "optional": 10000.00
+  };
+  return prezziBase[opzioneNome] || 0;
 }
