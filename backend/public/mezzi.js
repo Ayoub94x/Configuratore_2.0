@@ -22,8 +22,7 @@ const stepMap = {
   "Compattatore": "Compattatore",
   "Lavacontenitori": "Lavacontenitori",
   "Accessori": "Accessori",
-  "PLUS": "PLUS",
-  "Contenitori": "Contenitori" // Nuovo step per Contenitori
+  "PLUS": "PLUS"
 };
 
 /**
@@ -41,7 +40,7 @@ let configurazione = {
   quantità: 1                     // Quantità selezionata
 };
 
-// Dati di base per i mezzi e contenitori
+// Dati di base per i mezzi
 configurazione.data = {
   categorie: {
     "AUTOMEZZI": {
@@ -112,7 +111,7 @@ configurazione.data = {
       opzioni: [
         { nome: "Trasporto", prezzo: 1000.00 }
       ]
-    },
+    }
   }
 };
 
@@ -396,7 +395,7 @@ function showStep(step) {
           <button onclick="prevStep('Compattatore')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
-          ${avantiButton("Contenitori")}
+          ${avantiButton("Accessori")}
         </div>
       `;
 
@@ -427,81 +426,6 @@ function showStep(step) {
         });
       break;
 
-    case "Contenitori": // Nuovo step per Contenitori
-      configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-box-open"></i> Seleziona Contenitori</h2>
-        <p>${configurazione.data.categorie["Contenitori"].indicazioni}</p>
-        <div id="contenitoriOptions">
-          ${configurazione.data.categorie["Contenitori"].opzioni
-            .map((opzione) => `
-              <div>
-                <input type="checkbox" id="${opzione.nome}" name="contenitori" value="${opzione.nome}" />
-                <label for="${opzione.nome}">${capitalize(opzione.nome.replace('_', ' '))}</label> <!-- Rimosso il prezzo -->
-              </div>
-            `)
-            .join("")}
-        </div>
-        <p id="currentSelectionPriceContenitori">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
-        <div class="button-group">
-          <button onclick="prevStep('Lavacontenitori')">
-            <i class="fas fa-arrow-left"></i> Indietro
-          </button>
-          ${avantiButton("Accessori")}
-        </div>
-      `;
-
-      const contenitoriCheckboxes = configuratorDiv.querySelectorAll('#contenitoriOptions input[type="checkbox"]');
-      contenitoriCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
-          const selectedOpzioni = Array.from(contenitoriCheckboxes)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
-
-          let prezzoScontato = 0;
-
-          selectedOpzioni.forEach(opzioneNome => {
-            const categoria = opzioneNome;
-            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
-            // Assume che il prezzo base per i contenitori sia definito in un oggetto separato o calcolato
-            // Per questo esempio, assegnerò un prezzo fisso per ogni componente
-            const prezzoBase = getContenitorePrezzoBase(opzioneNome);
-            const prezzo = prezzoBase - (prezzoBase * scontoCategoria / 100);
-            prezzoScontato += prezzo;
-
-            // Aggiorna la label con il prezzo scontato (solo se desideri mostrarlo)
-            // Se non desideri mostrare il prezzo nelle label, commenta o rimuovi questa parte
-            const label = configuratorDiv.querySelector(`label[for="${opzioneNome}"]`);
-            if (label) {
-              label.textContent = `${capitalize(opzioneNome.replace('_', ' '))} - ${formatCurrency(prezzo)}`; // Aggiunto il prezzo solo nella label
-            }
-          });
-
-          if (selectedOpzioni.length > 0) {
-            configurazione.selections["Contenitori"] = {
-              nome: selectedOpzioni.join(', '),
-              prezzo: parseFloat(prezzoScontato.toFixed(2)),
-              sconto: "Varie" // Indica che sono stati applicati sconti variabili
-            };
-            configurazione.selections["Contenitori"].scontoDettaglio = selectedOpzioni.map(opzioneNome => {
-              const sconto = configurazione.customer.discounts[opzioneNome] || 0;
-              return `${capitalize(opzioneNome.replace('_', ' '))}: ${sconto}%`;
-            }).join(', ');
-
-            configuratorDiv.querySelector("#currentSelectionPriceContenitori").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
-          } else {
-            delete configurazione.selections["Contenitori"];
-            configuratorDiv.querySelector("#currentSelectionPriceContenitori").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
-          }
-
-          // Aggiorna prezzo parziale
-          aggiornaPrezzo(false);
-        });
-      });
-      break;
-
     case "Accessori":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-cogs"></i> Seleziona Accessori</h2>
@@ -515,7 +439,7 @@ function showStep(step) {
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
-          <button onclick="prevStep('Contenitori')">
+          <button onclick="prevStep('Lavacontenitori')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
           ${avantiButton("PLUS")}
@@ -613,7 +537,7 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Definisci le categorie per le quali mostrare il messaggio di avviso
-  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "GRU", "Compattatore"];
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "GRU", "Compattatore", "Lavacontenitori", "Accessori", "PLUS"];
 
   if (stepsConValidazione.includes(stepCorrente)) {
     if (!configurazione.selections[stepCorrente]) {
@@ -635,23 +559,6 @@ function prevStep(prevStepName) {
     delete configurazione.selections[prevStepName];
   }
   showStep(prevStepName);
-}
-
-/* ----------------------------------------------
-   Funzione di Ottimizzazione dei Prezzi Base per Contenitori
------------------------------------------------ */
-function getContenitorePrezzoBase(opzioneNome) {
-  // Definisci qui i prezzi base per ogni componente del contenitore
-  const prezziBase = {
-    "corpo_contenitore": 10000.00,
-    "bascule": 20000.00,
-    "gancio": 5000.00,
-    "bocche": 4000.00,
-    "guida_a_terra": 7000.00,
-    "adesivo": 9000.00,
-    "optional": 10000.00
-  };
-  return prezziBase[opzioneNome] || 0;
 }
 
 /* ----------------------------------------------
@@ -732,27 +639,15 @@ function mostraResoconto() {
   const ul = document.getElementById("riepilogoSelezioni");
   for (let categoria in configurazione.selections) {
     const sel = configurazione.selections[categoria];
-    if (categoria === "Contenitori") {
-      ul.innerHTML += `
-        <li>
-          <div>
-            <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})
-          </div>
-          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-        </li>
-      `;
-    } else {
-      ul.innerHTML += `
-        <li>
-          <div>
-            <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
-          </div>
-          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-        </li>
-      `;
-    }
+    ul.innerHTML += `
+      <li>
+        <div>
+          <strong>${capitalize(categoria)}</strong>:
+          ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
+        </div>
+        <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+      </li>
+    `;
   }
 
   // Mostriamo il prezzo "parziale" per default
@@ -875,19 +770,11 @@ async function inviaConfigurazione() {
       let y = 105;
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        if (categoria === "Contenitori") {
-          doc.text(
-            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})`,
-            20,
-            y
-          );
-        } else {
-          doc.text(
-            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)`,
-            20,
-            y
-          );
-        }
+        doc.text(
+          `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)`,
+          20,
+          y
+        );
         y += 10;
       }
 
@@ -953,11 +840,7 @@ async function inviaConfigurazione() {
 
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        if (categoria === "Contenitori") {
-          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.scontoDettaglio})\n`;
-        } else {
-          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)\n`;
-        }
+        body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)\n`;
       }
 
       if (
