@@ -3,17 +3,6 @@
 const { jsPDF } = window.jspdf;
 
 /**
- * Configurazione degli sconti basati sulla quantità.
- * Puoi modificare liberamente questi valori.
- */
-const quantityDiscounts = [
-  { min: 1, max: 10, discount: 0 },     // 0% di sconto per 1-10 unità
-  { min: 11, max: 50, discount: 5 },    // 5% di sconto per 11-50 unità
-  { min: 51, max: 100, discount: 10 },  // 10% di sconto per 51-100 unità
-  { min: 101, max: Infinity, discount: 15 } // 15% di sconto per oltre 100 unità
-];
-
-/**
  * Mappa dei passaggi (categorie) usata per la navigazione
  * e per la modifica delle selezioni.
  */
