@@ -58,8 +58,8 @@ function showWarningModal(message) {
   document.getElementById("loginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
   
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const username = 'admin';
+    const password = '123';
   
     if (!username || !password) {
       showWarningModal("Per favore, inserisci username e password.");
