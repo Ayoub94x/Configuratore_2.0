@@ -2,66 +2,107 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Gestione Prezzi</title>
-
-  <!-- CSS personalizzato -->
+  <title>Admin Configuratori</title>
   <link rel="stylesheet" href="prezzi.css">
-
-  <!-- Includi Font Awesome per le icone (opzionale) -->
+  <!-- Includi Font Awesome per le icone -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Includi un font da Google Fonts (opzionale) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
 </head>
 <body>
-  <header class="admin-header">
+  <!-- Header -->
+  <header>
     <div class="container">
-      <img src="https://via.placeholder.com/100" alt="Logo" class="logo">
-      <h1>Gestione Prezzi Opzioni</h1>
+      <img src="Logo.jpg" alt="Logo" class="logo">
+      <h1>Pannello di Amministrazione</h1>
     </div>
   </header>
 
-  <main class="admin-main">
-    <section class="admin-section">
-      <div class="section-header">
-        <h2><i class="fas fa-tags"></i> Lista Opzioni & Prezzi</h2>
-        <button id="reloadBtn" class="btn btn-reload">
-          <i class="fas fa-sync"></i> Ricarica
-        </button>
+  <!-- Login Section -->
+  <main>
+    <section id="login-section" class="form-section">
+      <div class="form-container">
+        <div class="form-left">
+          <h2>Benvenuto Admin!</h2>
+          <p>Accedi per gestire i prezzi dei configuratori.</p>
+          <img src="admin.png" alt="Admin Image" class="access-image">
+        </div>
+        <div class="form-right">
+          <form id="loginForm" class="user-form">
+            <div class="form-group">
+              <label for="username"><i class="fas fa-user"></i> Username:</label>
+              <input type="text" id="username" name="username" required placeholder="Inserisci username">
+            </div>
+
+            <div class="form-group">
+              <label for="password"><i class="fas fa-lock"></i> Password:</label>
+              <input type="password" id="password" name="password" required placeholder="Inserisci password">
+            </div>
+
+            <button type="submit" class="btn-primary">Accedi <i class="fas fa-sign-in-alt"></i></button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gestione Prezzi -->
+    <section id="admin-section" class="admin-section" style="display: none;">
+      <div class="tabs">
+        <button class="tab-button active" data-target="contenitori">Contenitori</button>
+        <button class="tab-button" data-target="mezzi">Mezzi</button>
       </div>
 
-      <div id="optionsTable" class="options-table">
-        <!-- Verrà riempito dinamicamente da JS -->
+      <div id="contenitori" class="tab-content active">
+        <h2><i class="fas fa-box"></i> Gestione Prezzi Contenitori</h2>
+        <table id="contenitori-table">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Opzione</th>
+              <th>Prezzo (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+        <button id="save-contenitori" class="btn-secondary">Salva Modifiche <i class="fas fa-save"></i></button>
       </div>
 
-      <div class="section-footer">
-        <button id="saveBtn" class="btn btn-primary">
-          <i class="fas fa-save"></i> Salva Modifiche
-        </button>
+      <div id="mezzi" class="tab-content">
+        <h2><i class="fas fa-truck"></i> Gestione Prezzi Mezzi</h2>
+        <table id="mezzi-table">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Opzione</th>
+              <th>Prezzo (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+        <button id="save-mezzi" class="btn-secondary">Salva Modifiche <i class="fas fa-save"></i></button>
       </div>
     </section>
   </main>
 
-  <!-- Modal di conferma salvataggio -->
+  <!-- Modal di Avviso -->
+  <div id="warningModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeWarningModal()">&times;</span>
+      <p id="warningMessageText"></p>
+    </div>
+  </div>
+
+  <!-- Modal di Successo -->
   <div id="successModal" class="modal">
     <div class="modal-content">
-      <span class="close" id="closeModalBtn">&times;</span>
-      <h3>Salvataggio Completato</h3>
-      <p>I prezzi sono stati aggiornati correttamente!</p>
+      <span class="close" onclick="closeSuccessModal()">&times;</span>
+      <p id="successMessageText">I prezzi sono stati aggiornati con successo!</p>
     </div>
   </div>
 
-  <!-- Modal di avviso/errore -->
-  <div id="errorModal" class="modal">
-    <div class="modal-content error-content">
-      <span class="close" id="closeErrorModalBtn">&times;</span>
-      <h3>Errore</h3>
-      <p id="errorMessage"></p>
-    </div>
-  </div>
-
-  <!-- JS personalizzato -->
+  <!-- Includi il tuo script -->
   <script src="prezzi.js"></script>
 </body>
 </html>
