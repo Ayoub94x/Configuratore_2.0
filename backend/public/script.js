@@ -1,4 +1,4 @@
-// contenitori.js
+// script.js
 
 const { jsPDF } = window.jspdf;
 
@@ -36,8 +36,149 @@ let configurazione = {
   prezzoTotale: 0,               // Prezzo totale base (senza quantità/sconti finali)
   scontoExtra: 0,                // Valore in €
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
-  currentStep: null,             // Passo corrente
-  data: null                     // Dati dei prezzi caricati dinamicamente
+  currentStep: null              // Passo corrente
+};
+
+// Dati di base (volumi, prezzi, ecc.)
+configurazione.data = {
+  volumes: ["1750L", "2100L", "2500L", "2700L", "3000L", "3750L"],
+  configurazioni: {
+    "corpo_contenitore": {
+      prezzi: {
+        "1750L": 520.0,
+        "2100L": 550.0,
+        "2500L": 600.0,
+        "2700L": 650.0,
+        "3000L": 650.0,
+        "3750L": 710.0
+      }
+    },
+    "bascule ferro": {
+      prezzi: {
+        "1750L": 260.0,
+        "2100L": 290.0,
+        "2500L": 290.0,
+        "2700L": 320.0,
+        "3000L": 320.0,
+        "3750L": 350.0
+      }
+    },
+    "bascule hdpe": {
+      prezzi: {
+        "1750L": 120.0,
+        "2100L": 130.0,
+        "2500L": 135.0,
+        "2700L": 150.0,
+        "3000L": 155.0,
+        "3750L": 175.0
+      }
+    },
+    "gancio F90": {
+      prezzi: {
+        "1750L": 300.0,
+        "2100L": 310.0,
+        "2500L": 310.0,
+        "2700L": 320.0,
+        "3000L": 320.0,
+        "3750L": 330.0
+      }
+    },
+    "gancio ks": {
+      prezzi: {
+        "1750L": 300.0,
+        "2100L": 310.0,
+        "2500L": 310.0,
+        "2700L": 320.0,
+        "3000L": 320.0,
+        "3750L": 330.0
+      }
+    },
+    "Feritoia (metallo)": {
+      prezzi: {
+        "1750L": 195.0,
+        "2100L": 205.0,
+        "2500L": 195.0,
+        "2700L": 220.0,
+        "3000L": 205.0,
+        "3750L": 220.0
+      }
+    },
+    "Feritoia (Plastica)": {
+      prezzi: {
+        "1750L": 70.0,
+        "2100L": 80.0,
+        "2500L": 70.0,
+        "2700L": 90.0,
+        "3000L": 80.0,
+        "3750L": 90.0
+      }
+    },
+    "Cassetto": {
+      prezzi: {
+        "1750L": 295.0,
+        "2100L": 305.0,
+        "2500L": 295.0,
+        "2700L": 310.0,
+        "3000L": 305.0,
+        "3750L": 310.0
+      }
+    },
+    "Tamburo": {
+      prezzi: {
+        "1750L": 295.0,
+        "2100L": 305.0,
+        "2500L": 295.0,
+        "2700L": 310.0,
+        "3000L": 305.0,
+        "3750L": 310.0
+      }
+    },
+    "Oblò": {
+      prezzi: {
+        "1750L": 25.0,
+        "2100L": 25.0,
+        "2500L": 25.0,
+        "2700L": 25.0,
+        "3000L": 25.0,
+        "3750L": 25.0
+      }
+    },
+    "guida a terra metallo": {
+      prezzi: {
+        "1750L": 25.0,
+        "2100L": 28.0,
+        "2500L": 25.0,
+        "2700L": 31.0,
+        "3000L": 28.0,
+        "3750L": 31.0
+      }
+    },
+    "guida a terra hdpe": {
+      prezzi: {
+        "1750L": 16.0,
+        "2100L": 18.0,
+        "2500L": 16.0,
+        "2700L": 19.0,
+        "3000L": 18.0,
+        "3750L": 19.0
+      }
+    },
+    "adesivo": {
+      prezzi: {
+        "1750L": 26.4,
+        "2100L": 28.4,
+        "2500L": 26.4,
+        "2700L": 32.4,
+        "3000L": 28.4,
+        "3750L": 32.4
+      }
+    },
+    "optional": {
+      pedale: 77.0,
+      elettronica: 850.0,
+      "sensore volumetrico": 105.0
+    }
+  }
 };
 
 /* ----------------------------------------------
@@ -46,27 +187,6 @@ let configurazione = {
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
-/* ----------------------------------------------
-   Caricamento dei dati dei prezzi dal server
------------------------------------------------ */
-async function loadPrices() {
-  try {
-    const response = await fetch('https://configuratore-2-0.onrender.com/api/prices/contenitori');
-    if (!response.ok) {
-      throw new Error('Errore nel recupero dei dati dei prezzi.');
-    }
-    const data = await response.json();
-    configurazione.data = data;
-    console.log('Dati dei prezzi caricati:', configurazione.data);
-  } catch (error) {
-    console.error(error);
-    showWarningModal(`Errore: ${error.message}`);
-  }
-}
-
-// Carica i prezzi all'avvio
-loadPrices();
 
 /* ----------------------------------------------
    Registrazione: gestisce il form utente
@@ -139,11 +259,6 @@ function showStep(step) {
     return `<button onclick="validateAndNextStep('${nextStep}')">Avanti <i class="fas fa-arrow-right"></i></button>`;
   }
 
-  if (!configurazione.data) {
-    configuratorDiv.innerHTML = "<p>Caricamento dei dati in corso...</p>";
-    return;
-  }
-
   switch (step) {
     case "contenitore":
       configuratorDiv.innerHTML = `
@@ -166,9 +281,13 @@ function showStep(step) {
         .getElementById("contenitore")
         .addEventListener("change", function () {
           const volume = this.value;
-          if (volume && configurazione.data.configurazioni["corpo_contenitore"].prezzi[volume]) {
-            const basePrice = configurazione.data.configurazioni["corpo_contenitore"].prezzi[volume];
-            const discount = configurazione.customer.discounts["corpo_contenitore"] || 0;
+          if (volume) {
+            const basePrice =
+              configurazione.data.configurazioni["corpo_contenitore"].prezzi[
+                volume
+              ];
+            const discount =
+              configurazione.customer.discounts["corpo_contenitore"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["corpo_contenitore"] = {
@@ -186,8 +305,6 @@ function showStep(step) {
           aggiornaPrezzo(false);
         });
       break;
-
-    // Altri casi seguono la stessa logica, utilizzando configurazione.data.configurazioni per accedere ai prezzi dinamici
 
     case "bascule":
       configuratorDiv.innerHTML = `
@@ -233,15 +350,252 @@ function showStep(step) {
         });
       break;
 
-    // Continua con gli altri step (gancio, bocche, guida, adesivo, optional, resoconto) seguendo lo stesso schema
+    case "gancio":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-link"></i> Seleziona Gancio</h2>
+        <p>Scegli il tipo di gancio (F90 o KS).</p>
+        <select id="gancio">
+          <option value="">-- Seleziona --</option>
+          <option value="gancio F90">Gancio F90</option>
+          <option value="gancio ks">Gancio KS</option>
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('bascule')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("bocche")}
+        </div>
+      `;
+      document
+        .getElementById("gancio")
+        .addEventListener("change", function () {
+          const gancioType = this.value;
+          if (gancioType && configurazione.selections["corpo_contenitore"]) {
+            const volume = getSelectedVolume();
+            const basePrice =
+              configurazione.data.configurazioni[gancioType].prezzi[volume];
+            const discount = configurazione.customer.discounts["gancio"] || 0;
+            const discountedPrice = basePrice - (basePrice * discount) / 100;
+
+            configurazione.selections["gancio"] = {
+              nome: capitalize(gancioType),
+              prezzo: parseFloat(discountedPrice.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+          } else {
+            delete configurazione.selections["gancio"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "bocche":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-door-open"></i> Seleziona le Bocche</h2>
+        <p>Scegli tra Feritoia, Cassetto, Tamburo o Oblò.</p>
+        <select id="bocche">
+          <option value="">-- Seleziona --</option>
+          <option value="Feritoia (metallo)">Feritoia (Metallo)</option>
+          <option value="Feritoia (Plastica)">Feritoia (Plastica)</option>
+          <option value="Cassetto">Cassetto</option>
+          <option value="Tamburo">Tamburo</option>
+          <option value="Oblò">Oblò</option>
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('gancio')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("guida")}
+        </div>
+      `;
+      document
+        .getElementById("bocche")
+        .addEventListener("change", function () {
+          const boccaType = this.value;
+          if (boccaType && configurazione.selections["corpo_contenitore"]) {
+            const volume = getSelectedVolume();
+            const basePrice =
+              configurazione.data.configurazioni[boccaType].prezzi[volume];
+            const discount = configurazione.customer.discounts["bocche"] || 0;
+            const discountedPrice = basePrice - (basePrice * discount) / 100;
+
+            configurazione.selections["bocche"] = {
+              nome: boccaType,
+              prezzo: parseFloat(discountedPrice.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+          } else {
+            delete configurazione.selections["bocche"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "guida":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-road"></i> Seleziona Guida a Terra</h2>
+        <p>Scegli la guida a terra per il contenitore.</p>
+        <select id="guida">
+          <option value="">-- Seleziona --</option>
+          <option value="guida a terra metallo">Guida a Terra Metallo</option>
+          <option value="guida a terra hdpe">Guida a Terra HDPE</option>
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('bocche')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("adesivo")}
+        </div>
+      `;
+      document
+        .getElementById("guida")
+        .addEventListener("change", function () {
+          const guidaType = this.value;
+          if (guidaType && configurazione.selections["corpo_contenitore"]) {
+            const volume = getSelectedVolume();
+            const basePrice =
+              configurazione.data.configurazioni[guidaType].prezzi[volume];
+            const discount =
+              configurazione.customer.discounts["guida_a_terra"] || 0;
+            const discountedPrice = basePrice - (basePrice * discount) / 100;
+
+            configurazione.selections["guida_a_terra"] = {
+              nome: capitalize(guidaType),
+              prezzo: parseFloat(discountedPrice.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+          } else {
+            delete configurazione.selections["guida_a_terra"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "adesivo":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-sticky-note"></i> Seleziona l'Adesivo</h2>
+        <p>Aggiungi un adesivo personalizzato (opzionale).</p>
+        <select id="adesivo">
+          <option value="">-- Seleziona --</option>
+          <option value="adesivo">Adesivo Standard</option>
+        </select>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('guida')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("optional")}
+        </div>
+      `;
+      document
+        .getElementById("adesivo")
+        .addEventListener("change", function () {
+          const adesivoType = this.value;
+          if (adesivoType && configurazione.selections["corpo_contenitore"]) {
+            const volume = getSelectedVolume();
+            const basePrice =
+              configurazione.data.configurazioni[adesivoType].prezzi[volume];
+            const discount =
+              configurazione.customer.discounts["adesivo"] || 0;
+            const discountedPrice = basePrice - (basePrice * discount) / 100;
+
+            configurazione.selections["adesivo"] = {
+              nome: capitalize(adesivoType),
+              prezzo: parseFloat(discountedPrice.toFixed(2))
+            };
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+          } else {
+            delete configurazione.selections["adesivo"];
+            document.getElementById("currentSelectionPrice").textContent =
+              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
+          }
+          aggiornaPrezzo(false);
+        });
+      break;
+
+    case "optional":
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-plus-circle"></i> Seleziona Optional</h2>
+        <p>Aggiungi funzioni extra.</p>
+        <div class="optional-item">
+          <label>
+            <input type="checkbox" name="optional" value="pedale" />
+            Pedale (Apertura a Pedale)
+          </label>
+        </div>
+        <div class="optional-item">
+          <label>
+            <input type="checkbox" name="optional" value="elettronica" />
+            Elettronica (Monitoraggio)
+          </label>
+        </div>
+        <div class="optional-item">
+          <label>
+            <input type="checkbox" name="optional" value="sensore volumetrico" />
+            Sensore Volumetrico
+          </label>
+        </div>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('adesivo')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("resoconto")}
+        </div>
+      `;
+
+      configurazione.selections["optional"] = { items: [], prezzo: 0 };
+      const checkboxes = document.querySelectorAll('input[name="optional"]');
+      checkboxes.forEach((cb) => {
+        cb.addEventListener("change", function () {
+          configurazione.selections["optional"].items = [];
+          configurazione.selections["optional"].prezzo = 0;
+
+          checkboxes.forEach((box) => {
+            if (box.checked) {
+              const optName = box.value;
+              const basePrice =
+                configurazione.data.configurazioni.optional[optName];
+              const discount =
+                configurazione.customer.discounts["optional"] || 0;
+              const discountedPrice = basePrice - (basePrice * discount) / 100;
+
+              configurazione.selections["optional"].items.push({
+                nome: capitalize(optName),
+                prezzo: parseFloat(discountedPrice.toFixed(2))
+              });
+              configurazione.selections["optional"].prezzo += discountedPrice;
+            }
+          });
+
+          document.getElementById("currentSelectionPrice").textContent =
+            `Prezzo Selezione Corrente: ${formatCurrency(configurazione.selections["optional"].prezzo)}`;
+          aggiornaPrezzo(false);
+        });
+      });
+      break;
 
     case "resoconto":
       mostraResoconto();
       return;
-
-    default:
-      configuratorDiv.innerHTML = "<p>Step non riconosciuto.</p>";
-      break;
   }
 }
 
@@ -251,17 +605,13 @@ function showStep(step) {
 function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
-  // Controlli specifici per ogni step
-  const stepsConValidazione = ["contenitore", "bascule", "gancio", "bocche", "guida_a_terra", "adesivo"];
-
-  if (stepsConValidazione.includes(stepCorrente)) {
-    if (!configurazione.selections[stepCorrente]) {
-      const categoriaFormattata = capitalize(stepCorrente.replace('_a_terra', ' a Terra'));
-      showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
+  // Controllo specifico per lo step 'contenitore'
+  if (stepCorrente === "contenitore") {
+    if (!configurazione.selections["corpo_contenitore"]) {
+      showWarningModal("Per continuare devi selezionare il contenitore!");
       return;
     }
   }
-
   showStep(nextStepName);
 }
 
@@ -622,9 +972,50 @@ async function inviaConfigurazione() {
 }
 
 /* ----------------------------------------------
+   Funzione per Ottenere il Volume Selezionato
+----------------------------------------------- */
+function getSelectedVolume() {
+  const sel = configurazione.selections["corpo_contenitore"];
+  if (!sel) return null;
+  const match = sel.nome.match(/\((.*?)\)/);
+  return match ? match[1] : null;
+}
+
+/* ----------------------------------------------
    MODALS per avvisi e successi
 ----------------------------------------------- */
+function showWarningModal(message) {
+  const warningModal = document.getElementById("warningModal");
+  const warningMessageText = document.getElementById("warningMessageText");
+  warningMessageText.textContent = message;
+  warningModal.style.display = "block";
+}
+
+function closeWarningModal() {
+  const warningModal = document.getElementById("warningModal");
+  warningModal.style.display = "none";
+}
+
 function openModal() {
-  const modal = document.getElementById("successModal");
+  const modal = document.getElementById("messageModal");
   modal.style.display = "block";
+}
+
+function closeModal() {
+  const modal = document.getElementById("messageModal");
+  modal.style.display = "none";
+}
+
+/* ----------------------------------------------
+   Event Listener per chiudere i Modal cliccando fuori
+----------------------------------------------- */
+window.onclick = function(event) {
+  const warningModal = document.getElementById("warningModal");
+  const messageModal = document.getElementById("messageModal");
+  if (event.target === warningModal) {
+    warningModal.style.display = "none";
+  }
+  if (event.target === messageModal) {
+    messageModal.style.display = "none";
+  }
 }
