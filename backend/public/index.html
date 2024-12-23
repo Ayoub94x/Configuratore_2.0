@@ -1,162 +1,58 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Configuratore Contenitori</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Includi Font Awesome per le icone -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Includi jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benvenuto - La Tua Azienda</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHq+6g+ZjO4+4J4E4o3EYk1Z1e+4PZGh8FYH7AqI0A9QHRD+jz9eN5PAK7vG48E7ywZb5XBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-  <!-- Sezione di Registrazione -->
-  <div id="registration">
-    <h1>Accesso Utente</h1>
-    <form id="userForm">
-      <label for="nome">Nome:</label>
-      <input type="text" id="nome" name="nome" required>
+    <div class="overlay"></div>
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo Aziendale" class="logo">
+        </div>
+        <div class="description">
+            <h1>La Tua Soluzione per Contenitori, Camion e Ricambi</h1>
+            <p>Personalizza i tuoi prodotti con facilità.</p>
+        </div>
+    </header>
 
-      <label for="cognome">Cognome:</label>
-      <input type="text" id="cognome" name="cognome" required>
+    <main>
+        <section class="products">
+            <div class="product-card" id="cassonetti-card" data-aos="fade-up">
+                <div class="image-container">
+                    <img src="cassonetti.png" alt="Cassonetti" class="product-image_cassonetti" loading="lazy">
+                </div>
+                <h2>Contenitori</h2>
+                <p>Scopri la nostra gamma di contenitori robusti e affidabili.</p>
+                <a href="https://www.tuosito-cassonetti.com" class="button">Scopri di più</a>
+            </div>
+            <div class="product-card" id="camion-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="image-container">
+                    <img src="camion.png" alt="Camion" class="product-image" loading="lazy">
+                </div>
+                <h2>Camion</h2>
+                <p>I nostri camion sono progettati per massima efficienza e durata.</p>
+                <a href="https://www.tuosito-camion.com" class="button">Scopri di più</a>
+            </div>
+            <div class="product-card" id="ricambi-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="image-container">
+                    <img src="ricambi.png" alt="Ricambi" class="product-image_ricambi" loading="lazy">
+                </div>
+                <h2>Ricambi</h2>
+                <p>Trova tutti i ricambi di cui hai bisogno per i tuoi camion e Contenitori.</p>
+                <a href="https://www.tuosito-ricambi.com" class="button">Scopri di più</a>
+            </div>
+        </section>
+    </main>
 
-      <label for="azienda">Azienda:</label>
-      <input type="text" id="azienda" name="azienda" required>
-
-      <label for="discountCode">Codice Sconto:</label>
-      <input type="text" id="discountCode" name="discountCode" required>
-
-      <button type="submit">Accedi</button>
-    </form>
-  </div>
-
-  <!-- Sezione Configuratore -->
-  <div id="configurator" style="display: none;"></div>
-
-  <!-- Modal di Avviso -->
-  <div id="warningModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeWarningModal()">&times;</span>
-      <p id="warningMessageText"></p>
-    </div>
-  </div>
-
-  <!-- Modal di Conferma -->
-  <div id="messageModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <p>Il tuo ordine è stato inviato con successo!</p>
-      <a id="emailLink" href="#">Apri Email</a>
-    </div>
-  </div>
-
-  <!-- Includi il tuo script -->
-  <script src="script.js"></script>
-
-  <style>
-    /* Stili di base per i modali */
-    .modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1; /* Sit on top */
-      padding-top: 100px; /* Location of the box */
-      left: 0;
-      top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-
-    /* Modal Content */
-    .modal-content {
-      background-color: #fefefe;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 500px;
-      position: relative;
-    }
-
-    /* The Close Button */
-    .close {
-      color: #aaa;
-      position: absolute;
-      top: 10px;
-      right: 25px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    /* Stili per il bottone */
-    .button-group {
-      margin-top: 20px;
-    }
-
-    .button-group button {
-      padding: 10px 20px;
-      margin-right: 10px;
-      cursor: pointer;
-    }
-
-    /* Stili per i moduli */
-    form label {
-      display: block;
-      margin-top: 10px;
-    }
-
-    form input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-    }
-
-    /* Stili per le liste */
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    ul li {
-      margin-bottom: 10px;
-    }
-
-    /* Stili per i bottoni di modifica */
-    .modifica {
-      background-color: #f0ad4e;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-
-    .modifica:hover {
-      background-color: #ec971f;
-    }
-
-    /* Stili per i bottoni di invio */
-    .invia {
-      background-color: #5cb85c;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-
-    .invia:disabled {
-      background-color: #c3e6cb;
-      cursor: not-allowed;
-    }
-  </style>
+    <!-- AOS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
