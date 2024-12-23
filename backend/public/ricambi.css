@@ -1,0 +1,50 @@
+/* styles.css */
+
+/* Imposta il box-sizing per includere padding e border nel calcolo delle dimensioni */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Stili per il body */
+body {
+    font-family: 'Roboto', sans-serif; /* Font moderno e leggibile */
+    background: linear-gradient(135deg, #6c63ff, #ff7f50); /* Sfondo con gradiente */
+    height: 100vh; /* Altezza completa della viewport */
+    display: flex;
+    justify-content: center; /* Centra orizzontalmente */
+    align-items: center; /* Centra verticalmente */
+    color: #ffffff; /* Colore del testo */
+}
+
+/* Stili per il contenitore */
+.container {
+    text-align: center;
+}
+
+/* Stili per l'intestazione */
+.container h1 {
+    font-size: 3rem;
+    animation: fadeIn 0.5s ease-in-out; /* Animazione di fade-in */
+}
+
+/* Animazione per il testo */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container h1 {
+        font-size: 2rem;
+        padding: 0 20px;
+    }
+}
