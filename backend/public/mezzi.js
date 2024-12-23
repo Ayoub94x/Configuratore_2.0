@@ -427,53 +427,75 @@ function showStep(step) {
         });
       break;
 
-    case "Accessori":
-      configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-cogs"></i> Seleziona Accessori</h2>
-        <p>${configurazione.data.categorie["Accessori"].indicazioni}</p>
-        <select id="accessoriCategoria">
-          <option value="">-- Seleziona Accessorio --</option>
-          ${configurazione.data.categorie["Accessori"].opzioni
-            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
-            .join("")}
-        </select>
-        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
-        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
-        <div class="button-group">
-          <button onclick="prevStep('Lavacontenitori')">
-            <i class="fas fa-arrow-left"></i> Indietro
-          </button>
-          ${avantiButton("PLUS")}
-        </div>
-      `;
-
-      document
-        .getElementById("accessoriCategoria")
-        .addEventListener("change", function () {
-          const selectedOpzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
-          if (selectedOpzione) {
-            // Applica lo sconto per la categoria Accessori se disponibile
+      case "Accessori":
+        const accessoriOpzioni = configurazione.data.categorie["Accessori"].opzioni;
+        configuratorDiv.innerHTML = `
+          <h2><i class="fas fa-cogs"></i> Seleziona Optional</h2>
+          <p>${configurazione.data.categorie["Accessori"].indicazioni}</p>
+          <div id="accessoriChecklist">
+            ${accessoriOpzioni
+              .map((opzione, index) => `
+                <div class="optional-item">
+                  <label>
+                    <input type="checkbox" name="accessori" value="${opzione.nome}" data-prezzo="${opzione.prezzo}" /> ${opzione.nome} (${formatCurrency(opzione.prezzo)})
+                  </label>
+                </div>
+              `)
+              .join("")}
+          </div>
+          <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+          <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+          <div class="button-group">
+            <button onclick="prevStep('Lavacontenitori')">
+              <i class="fas fa-arrow-left"></i> Indietro
+            </button>
+            ${avantiButton("PLUS")}
+          </div>
+        `;
+      
+        // Event Listener per le checkbox multiple
+        const accessoriCheckboxes = document.querySelectorAll('input[name="accessori"]');
+        accessoriCheckboxes.forEach(checkbox => {
+          checkbox.addEventListener("change", function () {
             const categoria = "Accessori";
-            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
-            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
-
-            configurazione.selections["Accessori"] = {
-              nome: selectedOpzione.nome,
-              prezzo: parseFloat(prezzoScontato.toFixed(2)),
-              sconto: scontoCategoria
-            };
+            if (!configurazione.selections[categoria]) {
+              configurazione.selections[categoria] = [];
+            }
+      
+            if (this.checked) {
+              const opzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
+              if (opzione) {
+                // Applica lo sconto per la categoria Accessori se disponibile
+                const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+                const prezzoScontato = opzione.prezzo - (opzione.prezzo * scontoCategoria / 100);
+                
+                configurazione.selections[categoria].push({
+                  nome: opzione.nome,
+                  prezzo: parseFloat(prezzoScontato.toFixed(2)),
+                  sconto: scontoCategoria
+                });
+              }
+            } else {
+              // Rimuove l'opzione deselezionata
+              configurazione.selections[categoria] = configurazione.selections[categoria].filter(sel => sel.nome !== this.value);
+              if (configurazione.selections[categoria].length === 0) {
+                delete configurazione.selections[categoria];
+              }
+            }
+      
+            // Aggiorna il prezzo
+            aggiornaPrezzo(false);
+      
+            // Aggiorna la visualizzazione del prezzo corrente
+            const prezzoCorrente = configurazione.selections[categoria]
+              ? configurazione.selections[categoria].reduce((acc, curr) => acc + curr.prezzo, 0)
+              : 0;
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
-          } else {
-            delete configurazione.selections["Accessori"];
-            document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
-          }
-          // Aggiorna prezzo parziale
-          aggiornaPrezzo(false);
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoCorrente)}`;
+          });
         });
-      break;
-
+        break;
+      
     case "PLUS":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-plus-circle"></i> Seleziona PLUS</h2>
