@@ -1,0 +1,268 @@
+/* admin.css */
+
+/* 
+  Font "Poppins" importato in admin.html da Google Fonts
+  Tutto il layout usa rim e percentuali per essere responsive
+  e look & feel 'modern'.
+*/
+
+/* :root, per variabili globali (colori, spazi, ecc.) */
+:root {
+    --primary-color: #6c63ff;
+    --secondary-color: #ff7f50;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --dark-color: #333;
+    --light-color: #f9f9f9;
+    --white-color: #fff;
+  
+    --font-family: 'Poppins', sans-serif;
+    --transition-speed: 0.3s;
+  }
+  
+  /* Reset di base */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-family);
+    background: linear-gradient(to right, #f1f1f1, #fafafa);
+    min-height: 100vh;
+    color: var(--dark-color);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header */
+  .admin-header {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    padding: 1rem 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .admin-header .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    text-align: center;
+  }
+  
+  .admin-header h1 {
+    color: var(--white-color);
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  /* Logo */
+  .logo {
+    width: 60px;
+    position: absolute;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  /* Main */
+  .admin-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .admin-section {
+    background-color: var(--white-color);
+    width: 100%;
+    max-width: 900px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Sezione Header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+  }
+  
+  .section-header h2 i {
+    margin-right: 0.5rem;
+    color: var(--secondary-color);
+    font-size: 1.3rem;
+  }
+  
+  .btn-reload {
+    background-color: var(--info-color);
+    color: var(--white-color);
+  }
+  
+  .btn-reload:hover {
+    background-color: #138496;
+  }
+  
+  /* Tabella opzioni */
+  .options-table {
+    overflow-x: auto;
+    margin-bottom: 2rem;
+  }
+  
+  .options-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .options-table th,
+  .options-table td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .options-table th {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    position: sticky;
+    top: 0;
+  }
+  
+  .price-input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color var(--transition-speed);
+  }
+  
+  .price-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+  }
+  
+  /* Bottone Salva */
+  .section-footer {
+    text-align: right;
+  }
+  
+  .btn {
+    padding: 0.8rem 1.2rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn i {
+    margin-right: 0.5rem;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: var(--white-color);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+  
+  /* Modal */
+  .modal {
+    display: none; /* di default hidden */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.5);
+    animation: fadeIn var(--transition-speed) forwards;
+  }
+  
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  
+  .modal-content {
+    background: var(--white-color);
+    margin: 5% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+    animation: slideDown var(--transition-speed) forwards;
+  }
+  
+  @keyframes slideDown {
+    from {transform: translateY(-20px);}
+    to {transform: translateY(0);}
+  }
+  
+  .modal-content h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+  }
+  
+  .close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    transition: color var(--transition-speed);
+  }
+  
+  .close:hover {
+    color: var(--danger-color);
+  }
+  
+  /* Modal con errori */
+  .error-content h3 {
+    color: var(--danger-color);
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .admin-section {
+      padding: 1rem;
+    }
+  
+    .section-header h2 {
+      font-size: 1.2rem;
+    }
+  
+    .btn {
+      font-size: 0.9rem;
+    }
+  
+    .options-table th,
+    .options-table td {
+      padding: 0.6rem;
+    }
+  }
+  

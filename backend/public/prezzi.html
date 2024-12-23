@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Gestione Prezzi</title>
+
+  <!-- CSS personalizzato -->
+  <link rel="stylesheet" href="prezzi.css">
+
+  <!-- Includi Font Awesome per le icone (opzionale) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Includi un font da Google Fonts (opzionale) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+</head>
+<body>
+  <header class="admin-header">
+    <div class="container">
+      <img src="https://via.placeholder.com/100" alt="Logo" class="logo">
+      <h1>Gestione Prezzi Opzioni</h1>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="admin-section">
+      <div class="section-header">
+        <h2><i class="fas fa-tags"></i> Lista Opzioni & Prezzi</h2>
+        <button id="reloadBtn" class="btn btn-reload">
+          <i class="fas fa-sync"></i> Ricarica
+        </button>
+      </div>
+
+      <div id="optionsTable" class="options-table">
+        <!-- Verrà riempito dinamicamente da JS -->
+      </div>
+
+      <div class="section-footer">
+        <button id="saveBtn" class="btn btn-primary">
+          <i class="fas fa-save"></i> Salva Modifiche
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal di conferma salvataggio -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModalBtn">&times;</span>
+      <h3>Salvataggio Completato</h3>
+      <p>I prezzi sono stati aggiornati correttamente!</p>
+    </div>
+  </div>
+
+  <!-- Modal di avviso/errore -->
+  <div id="errorModal" class="modal">
+    <div class="modal-content error-content">
+      <span class="close" id="closeErrorModalBtn">&times;</span>
+      <h3>Errore</h3>
+      <p id="errorMessage"></p>
+    </div>
+  </div>
+
+  <!-- JS personalizzato -->
+  <script src="prezzi.js"></script>
+</body>
+</html>
