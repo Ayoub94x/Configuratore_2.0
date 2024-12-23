@@ -18,7 +18,7 @@ function formatCurrency(value) {
 const stepMap = {
   "AUTOMEZZI": "AUTOMEZZI",
   "Allestimento": "Allestimento",
-  "GRU": "GRU",
+  "ROBOT": "ROBOT",
   "Compattatore": "Compattatore",
   "Lavacontenitori": "Lavacontenitori",
   "Accessori": "Accessori",
@@ -66,8 +66,8 @@ configurazione.data = {
         { nome: "Fisso 4 assi", prezzo: 25000.00 }
       ]
     },
-    "GRU": {
-      indicazioni: "Seleziona il modello di GRU.",
+    "ROBOT": {
+      indicazioni: "Seleziona il modello di ROBOT.",
       opzioni: [
         { nome: "2AS Kinshofer", prezzo: 125000.00 },
         { nome: "2AS F90", prezzo: 125000.00 }
@@ -103,7 +103,7 @@ configurazione.data = {
         { nome: "Antenna UHF", prezzo: 6693.00 },
         { nome: "Impianto di sanificazione", prezzo: 4400.00 },
         { nome: "Impianto di lubrificazione", prezzo: 4850.00 },
-        { nome: "Centralina oleodinamica di emergenza (GRU)", prezzo: 3492.00 },
+        { nome: "Centralina oleodinamica di emergenza (ROBOT)", prezzo: 3492.00 },
         { nome: "Connessione remota (1Y)", prezzo: 2910.00 }
       ]
     },
@@ -255,7 +255,7 @@ function showStep(step) {
           <button onclick="prevStep('AUTOMEZZI')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
-          ${avantiButton("GRU")}
+          ${avantiButton("ROBOT")}
         </div>
       `;
 
@@ -286,13 +286,13 @@ function showStep(step) {
         });
       break;
 
-    case "GRU":
+    case "ROBOT":
       configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-crane"></i> Seleziona la GRU</h2>
-        <p>${configurazione.data.categorie["GRU"].indicazioni}</p>
-        <select id="gruCategoria">
-          <option value="">-- Seleziona GRU --</option>
-          ${configurazione.data.categorie["GRU"].opzioni
+        <h2><i class="fas fa-crane"></i> Seleziona la ROBOT</h2>
+        <p>${configurazione.data.categorie["ROBOT"].indicazioni}</p>
+        <select id="ROBOTCategoria">
+          <option value="">-- Seleziona ROBOT --</option>
+          ${configurazione.data.categorie["ROBOT"].opzioni
             .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
             .join("")}
         </select>
@@ -307,16 +307,16 @@ function showStep(step) {
       `;
 
       document
-        .getElementById("gruCategoria")
+        .getElementById("ROBOTCategoria")
         .addEventListener("change", function () {
-          const selectedOpzione = configurazione.data.categorie["GRU"].opzioni.find(op => op.nome === this.value);
+          const selectedOpzione = configurazione.data.categorie["ROBOT"].opzioni.find(op => op.nome === this.value);
           if (selectedOpzione) {
-            // Applica lo sconto per la categoria GRU se disponibile
-            const categoria = "GRU";
+            // Applica lo sconto per la categoria ROBOT se disponibile
+            const categoria = "ROBOT";
             const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
             const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
-            configurazione.selections["GRU"] = {
+            configurazione.selections["ROBOT"] = {
               nome: selectedOpzione.nome,
               prezzo: parseFloat(prezzoScontato.toFixed(2)),
               sconto: scontoCategoria
@@ -324,7 +324,7 @@ function showStep(step) {
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
-            delete configurazione.selections["GRU"];
+            delete configurazione.selections["ROBOT"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
@@ -346,7 +346,7 @@ function showStep(step) {
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
         <div class="button-group">
-          <button onclick="prevStep('GRU')">
+          <button onclick="prevStep('ROBOT')">
             <i class="fas fa-arrow-left"></i> Indietro
           </button>
           ${avantiButton("Lavacontenitori")}
@@ -538,7 +538,7 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Definisci le categorie per le quali mostrare il messaggio di avviso
-  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "GRU", "Compattatore"];
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "ROBOT", "Compattatore"];
 
   if (stepsConValidazione.includes(stepCorrente)) {
     if (!configurazione.selections[stepCorrente]) {
