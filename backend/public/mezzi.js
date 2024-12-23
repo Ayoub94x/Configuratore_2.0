@@ -288,7 +288,7 @@ function showStep(step) {
 
     case "ROBOT":
       configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-crane"></i> Seleziona la ROBOT</h2>
+        <h2><i class="fa-solid fa-robot"></i> Seleziona la ROBOT</h2>
         <p>${configurazione.data.categorie["ROBOT"].indicazioni}</p>
         <select id="ROBOTCategoria">
           <option value="">-- Seleziona ROBOT --</option>
@@ -382,7 +382,7 @@ function showStep(step) {
 
     case "Lavacontenitori":
       configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-washer"></i> Seleziona Lavacontenitori</h2>
+        <h2><i class="fas fa-soap"></i> Seleziona Lavacontenitori</h2>
         <p>${configurazione.data.categorie["Lavacontenitori"].indicazioni}</p>
         <select id="lavacontenitoriCategoria">
           <option value="">-- Seleziona Lavacontenitori --</option>
