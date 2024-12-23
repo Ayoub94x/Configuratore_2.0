@@ -10,28 +10,54 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <img src="Logo.jpg" alt="Logo" class="logo">
+      <h1>Configuratore Mezzi</h1>
+    </div>
+  </header>
+
   <!-- Sezione di Registrazione -->
-  <div id="registration">
-    <h1>Accesso Utente</h1>
-    <form id="userForm">
-      <label for="nome">Nome:</label>
-      <input type="text" id="nome" name="nome" required>
+  <main>
+    <section id="registration" class="form-section">
+      <div class="form-container">
+        <div class="form-left">
+          <h2>Benvenuto!</h2>
+          <p>Accedi per configurare il tuo mezzo personalizzato.</p>
+          <img src="camion.png" alt="Access Image" class="access-image">
+        </div>
+        <div class="form-right">
+          <form id="userForm" class="user-form">
+            <div class="form-group">
+              <label for="nome"><i class="fas fa-user"></i> Nome:</label>
+              <input type="text" id="nome" name="nome" required placeholder="Inserisci il tuo nome">
+            </div>
 
-      <label for="cognome">Cognome:</label>
-      <input type="text" id="cognome" name="cognome" required>
+            <div class="form-group">
+              <label for="cognome"><i class="fas fa-user-tag"></i> Cognome:</label>
+              <input type="text" id="cognome" name="cognome" required placeholder="Inserisci il tuo cognome">
+            </div>
 
-      <label for="azienda">Azienda:</label>
-      <input type="text" id="azienda" name="azienda" required>
+            <div class="form-group">
+              <label for="azienda"><i class="fas fa-building"></i> Azienda:</label>
+              <input type="text" id="azienda" name="azienda" required placeholder="Inserisci il nome della tua azienda">
+            </div>
 
-      <label for="discountCode">Codice Sconto:</label>
-      <input type="text" id="discountCode" name="discountCode" required>
+            <div class="form-group">
+              <label for="discountCode"><i class="fas fa-tags"></i> Codice Sconto:</label>
+              <input type="text" id="discountCode" name="discountCode" required placeholder="Inserisci il tuo codice sconto">
+            </div>
 
-      <button type="submit">Accedi</button>
-    </form>
-  </div>
+            <button type="submit" class="btn-primary">Accedi <i class="fas fa-sign-in-alt"></i></button>
+          </form>
+        </div>
+      </div>
+    </section>
 
-  <!-- Sezione Configuratore -->
-  <div id="configurator" style="display: none;"></div>
+    <!-- Sezione Configuratore -->
+    <section id="configurator" class="configurator-section" style="display: none;"></section>
+  </main>
 
   <!-- Modal di Avviso -->
   <div id="warningModal" class="modal">
@@ -46,7 +72,7 @@
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
       <p>Il tuo ordine è stato inviato con successo!</p>
-      <a id="emailLink" href="#">Apri Email</a>
+      <a id="emailLink" href="#" class="btn-secondary">Apri Email <i class="fas fa-envelope"></i></a>
     </div>
   </div>
 

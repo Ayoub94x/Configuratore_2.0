@@ -1,135 +1,543 @@
-/* styles.css */
+/* mezzi.css */
 
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 20px;
-    background-color: #f4f4f4;
-}
-
-h1, h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-form {
-    max-width: 500px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-form label {
-    display: block;
-    margin-top: 10px;
-}
-
-form input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
+/* Variabili CSS per la palette di colori */
+:root {
+    --primary-color: #6c63ff;
+    --secondary-color: #ff7f50;
+    --accent-color: #17a2b8;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --light-bg: #f4f4f4;
+    --white: #ffffff;
+    --gray: #6c757d;
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --overlay-color: rgba(0, 0, 0, 0.6);
+  }
+  
+  * {
     box-sizing: border-box;
-}
-
-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: url('background.jpg') no-repeat center center fixed; /* Aggiungi un'immagine di sfondo */
+    background-size: cover;
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header */
+  header {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  header .container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centra il contenuto */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative; /* Per posizionare elementi assoluti */
+  }
+  
+  .logo {
+    width: 100px;
+    height: auto;
+    position: absolute; /* Posiziona il logo assolutamente */
+    left: 20px;
+  }
+  
+  header h1 {
+    font-size: 28px;
+    color: var(--primary-color);
+    text-align: center;
+  }
+  
+  /* Sezioni principali */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  /* Sezione di Registrazione */
+  .form-section {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+  }
+  
+  .form-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center; /* Centra il contenuto */
+  }
+  
+  .form-left,
+  .form-right {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+  }
+  
+  .form-left {
+    text-align: center;
+  }
+  
+  .form-left h2 {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+  }
+  
+  .form-left p {
     font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
+    color: #555;
+    margin-bottom: 30px;
+  }
+  
+  .access-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease; /* Aggiunta della transizione */
+  }
+  
+  .access-image:hover {
+    transform: scale(1.1); /* Effetto zoom al passaggio del mouse */
+  }
+  
+  .user-form .form-group {
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .user-form label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .user-form label i {
+    margin-right: 8px;
+    color: var(--primary-color);
+  }
+  
+  .user-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
+    background: var(--input-bg);
+  }
+  
+  .user-form input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--primary-color);
+    outline: none;
+  }
+  
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .btn-primary i {
+    margin-left: 8px;
+    transition: transform 0.3s;
+  }
+  
+  .btn-primary:hover i {
+    transform: translateX(5px);
+  }
+  
+  /* Sezione Configuratore */
+  .configurator-section {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  /* Form Steps */
+  .configurator-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .configurator-section h2 i {
+    margin-right: 10px;
+  }
+  
+  .configurator-section p {
+    margin-bottom: 15px;
+    color: #555;
+  }
+  
+  .configurator-section select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background: var(--input-bg);
+  }
+  
+  .configurator-section select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--primary-color);
+    outline: none;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+  }
+  
+  .button-group button {
+    flex: 1;
+    padding: 12px;
+    margin: 0 5px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .button-group button:first-child {
+    background-color: var(--secondary-color);
+  }
+  
+  .button-group button:first-child:hover {
+    background-color: #e67e22;
+  }
+  
+  .button-group button:last-child:hover {
     background-color: #5753d3;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Stili per i modali */
-.modal {
+  }
+  
+  .button-group button i {
+    margin-left: 8px;
+    transition: transform 0.3s;
+  }
+  
+  .button-group button:hover i {
+    transform: translateX(5px);
+  }
+  
+  /* Liste e Bottoni */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  ul li {
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+  }
+  
+  ul li:hover {
+    background: #e6e6e6;
+  }
+  
+  ul li div {
+    max-width: 80%;
+  }
+  
+  ul li strong {
+    color: var(--primary-color);
+  }
+  
+  .modifica,
+  .invia,
+  .modifica_quantita {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    font-size: 14px;
+  }
+  
+  .modifica {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    margin-left: 10px;
+  }
+  
+  .modifica:hover {
+    background-color: #ec971f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .invia {
+    background-color: var(--success-color);
+    color: var(--white);
+  }
+  
+  .invia:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modifica_quantita {
+    background-color: var(--accent-color);
+    color: var(--white);
+    margin-top: 10px;
+  }
+  
+  .modifica_quantita:hover {
+    background-color: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Link Email */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: linear-gradient(45deg, var(--accent-color), #117a8b);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  }
+  
+  .btn-secondary:hover {
+    background: linear-gradient(45deg, #117a8b, var(--accent-color));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .btn-secondary i {
+    margin-left: 8px;
+  }
+  
+  /* Prezzi */
+  .prezzo-totale,
+  #currentSelectionPrice,
+  #dettagliPrezzoFinale p strong {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    transition: color 0.3s ease, font-size 0.3s ease;
+  }
+  
+  .prezzo-totale {
+    color: var(--success-color);
+  }
+  
+  #currentSelectionPrice {
+    color: var(--accent-color);
+  }
+  
+  #dettagliPrezzoFinale p strong {
+    color: var(--danger-color);
+  }
+  
+  /* Modal Styles */
+  .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    z-index: 1000; /* Sit on top */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    overflow: auto;
+    background-color: var(--overlay-color);
+    animation: fadeIn 0.3s;
+  }
+  
+  .modal-content {
+    background-color: var(--white);
+    margin: 10% auto;
+    padding: 30px;
+    border: none;
+    width: 90%;
     max-width: 500px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     position: relative;
-    border-radius: 10px;
-}
-
-.close {
+    animation: slideIn 0.3s;
+  }
+  
+  .close {
     color: #aaa;
     position: absolute;
-    top: 10px;
-    right: 25px;
+    top: 15px;
+    right: 20px;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
+    transition: color 0.3s;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: var(--danger-color);
+  }
+  
+  .modal p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .modal a {
     text-decoration: none;
-    cursor: pointer;
-}
-
-/* Stili per il configuratore */
-#configurator {
-    max-width: 800px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.button-group {
-    margin-top: 20px;
+  }
+  
+  /* Optional Items */
+  .optional-item {
+    margin-bottom: 15px;
+  }
+  
+  .optional-item label {
     display: flex;
-    justify-content: space-between;
-}
-
-.button-group button {
-    width: 48%;
-}
-
-.prezzo-totale {
-    font-weight: bold;
-    color: #6c63ff;
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    color: #555;
+  }
+  
+  .optional-item input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+  
+  /* Animazioni */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(-20px); }
+    to { transform: translateY(0); }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .form-container {
+      flex-direction: column;
+    }
+  
+    .form-left,
+    .form-right {
+      padding: 10px;
+    }
+  
+    .access-image {
+      max-width: 200px;
+    }
+  }
+  
+  @media (max-width: 768px) {
     .button-group {
-        flex-direction: column;
+      flex-direction: column;
     }
-
+  
     .button-group button {
-        width: 100%;
-        margin-bottom: 10px;
+      width: 100%;
+      margin: 5px 0;
     }
-}
+  
+    header .container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    header h1 {
+      margin-top: 10px;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .form-section {
+      padding: 20px;
+    }
+  
+    .btn-primary, .btn-secondary {
+      font-size: 16px;
+      padding: 12px 15px;
+    }
+  
+    .form-left h2 {
+      font-size: 24px;
+    }
+  
+    .form-left p {
+      font-size: 14px;
+    }
+  
+    .access-image {
+      max-width: 150px;
+    }
+  }
+  
