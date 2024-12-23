@@ -8,9 +8,8 @@ const cors = require('cors');
 const basicAuth = require('express-basic-auth');
 const path = require('path');
 
-const customerRoutes = require('./routes/customerRoutes');
-const mezzoRoutes = require('./routes/mezzoRoutes'); // Rotte dei mezzi
-const contenitoreRoutes = require('./routes/contenitoreRoutes'); // Rotte dei contenitori
+const customersRoute = require('./routes/customerRoutes');
+const mezziRoute = require('./routes/mezzoRoutes'); // Importa le rotte dei mezzi
 
 const app = express();
 
@@ -28,9 +27,8 @@ mongoose.connect(mongoURI, {
   .catch(err => console.error('Errore di connessione a MongoDB Atlas:', err));
 
 // Rotte API
-app.use('/api/customers', customerRoutes);
-app.use('/api/mezzi', mezzoRoutes); // Usa le rotte dei mezzi
-app.use('/api/contenitori', contenitoreRoutes); // Usa le rotte dei contenitori
+app.use('/api/customers', customersRoute);
+app.use('/api/mezzi', mezziRoute); // Usa le rotte dei mezzi
 
 /**
  * Sezione dedicata all'ADMIN
@@ -55,7 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotta di fallback per l’admin
 // Se l’utente richiede un percorso /admin/... che non esiste, 
-// inviargli la pagina admin_mezzi.html (o admin.html, come preferisci).
+// inviargli la pagina admin_list.html (o admin.html, come preferisci).
 app.get('/admin/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin_mezzi.html')); // Cambia in admin_mezzi.html
 });

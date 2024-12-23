@@ -2,8 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Gestione Prezzi</title>
-  <link rel="stylesheet" href="admin.css">
+  <title>Admin Configuratori</title>
+  <link rel="stylesheet" href="prezzi.css">
   <!-- Includi Font Awesome per le icone -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,28 +12,78 @@
   <header>
     <div class="container">
       <img src="Logo.jpg" alt="Logo" class="logo">
-      <h1>Admin - Gestione Prezzi</h1>
+      <h1>Pannello di Amministrazione</h1>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Login Section -->
   <main>
-    <div class="tabs">
-      <button class="tab-button active" data-tab="contenitori">Contenitori</button>
-      <button class="tab-button" data-tab="mezzi">Mezzi</button>
-    </div>
+    <section id="login-section" class="form-section">
+      <div class="form-container">
+        <div class="form-left">
+          <h2>Benvenuto Admin!</h2>
+          <p>Accedi per gestire i prezzi dei configuratori.</p>
+          <img src="admin.png" alt="Admin Image" class="access-image">
+        </div>
+        <div class="form-right">
+          <form id="loginForm" class="user-form">
+            <div class="form-group">
+              <label for="username"><i class="fas fa-user"></i> Username:</label>
+              <input type="text" id="username" name="username" required placeholder="Inserisci username">
+            </div>
 
-    <div class="tab-content active" id="contenitori">
-      <h2>Contenitori</h2>
-      <div id="contenitori-config"></div>
-      <button id="saveContenitoriBtn" class="btn-primary">Salva Contenitori <i class="fas fa-save"></i></button>
-    </div>
+            <div class="form-group">
+              <label for="password"><i class="fas fa-lock"></i> Password:</label>
+              <input type="password" id="password" name="password" required placeholder="Inserisci password">
+            </div>
 
-    <div class="tab-content" id="mezzi">
-      <h2>Mezzi</h2>
-      <div id="mezzi-config"></div>
-      <button id="saveMezziBtn" class="btn-primary">Salva Mezzi <i class="fas fa-save"></i></button>
-    </div>
+            <button type="submit" class="btn-primary">Accedi <i class="fas fa-sign-in-alt"></i></button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gestione Prezzi -->
+    <section id="admin-section" class="admin-section" style="display: none;">
+      <div class="tabs">
+        <button class="tab-button active" data-target="contenitori">Contenitori</button>
+        <button class="tab-button" data-target="mezzi">Mezzi</button>
+      </div>
+
+      <div id="contenitori" class="tab-content active">
+        <h2><i class="fas fa-box"></i> Gestione Prezzi Contenitori</h2>
+        <table id="contenitori-table">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Opzione</th>
+              <th>Prezzo (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+        <button id="save-contenitori" class="btn-secondary">Salva Modifiche <i class="fas fa-save"></i></button>
+      </div>
+
+      <div id="mezzi" class="tab-content">
+        <h2><i class="fas fa-truck"></i> Gestione Prezzi Mezzi</h2>
+        <table id="mezzi-table">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Opzione</th>
+              <th>Prezzo (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+        <button id="save-mezzi" class="btn-secondary">Salva Modifiche <i class="fas fa-save"></i></button>
+      </div>
+    </section>
   </main>
 
   <!-- Modal di Avviso -->
@@ -48,11 +98,11 @@
   <div id="successModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeSuccessModal()">&times;</span>
-      <p id="successMessageText"></p>
+      <p id="successMessageText">I prezzi sono stati aggiornati con successo!</p>
     </div>
   </div>
 
-  <!-- Includi admin.js -->
-  <script src="admin_mezzi.js"></script>
+  <!-- Includi il tuo script -->
+  <script src="prezzi.js"></script>
 </body>
 </html>
