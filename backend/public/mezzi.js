@@ -686,7 +686,7 @@ function mostraResoconto() {
       <li>
         <div>
           <strong>${capitalize(categoria)}</strong>:
-          ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)
+          ${sel.nome} - ${formatCurrency(sel.prezzo)} 
         </div>
         <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
       </li>
@@ -812,7 +812,7 @@ async function inviaConfigurazione() {
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
         doc.text(
-          `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)`,
+          `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
           20,
           y
         );
@@ -881,7 +881,7 @@ async function inviaConfigurazione() {
 
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)} (${sel.sconto}% di sconto)\n`;
+        body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
       }
 
       if (
