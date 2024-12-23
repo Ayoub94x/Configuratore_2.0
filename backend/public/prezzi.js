@@ -1,237 +1,287 @@
-// admin.js
+// public/admin_mezzi.js
 
-/**
- * Funzione per mostrare il modal di avviso
- * @param {string} message - Il messaggio da mostrare
- */
-function showWarningModal(message) {
-  const warningModal = document.getElementById("warningModal");
-  const warningMessageText = document.getElementById("warningMessageText");
-  warningMessageText.textContent = message;
-  warningModal.style.display = "block";
-}
+// URL del backend
+const API_URL = 'http://localhost:10000/api';
 
-/**
-* Funzione per chiudere il modal di avviso
-*/
-function closeWarningModal() {
-  const warningModal = document.getElementById("warningModal");
-  warningModal.style.display = "none";
-}
+// Elementi DOM
+const contenitoriConfigDiv = document.getElementById('contenitori-config');
+const mezziConfigDiv = document.getElementById('mezzi-config');
+const saveContenitoriBtn = document.getElementById('saveContenitoriBtn');
+const saveMezziBtn = document.getElementById('saveMezziBtn');
 
-/**
-* Funzione per mostrare il modal di successo
-* @param {string} message - Il messaggio da mostrare
-*/
-function showSuccessModal(message) {
-  const successModal = document.getElementById("successModal");
-  const successMessageText = document.getElementById("successMessageText");
-  successMessageText.textContent = message;
-  successModal.style.display = "block";
-}
+// Modal
+const warningModal = document.getElementById('warningModal');
+const warningMessageText = document.getElementById('warningMessageText');
+const successModal = document.getElementById('successModal');
+const successMessageText = document.getElementById('successMessageText');
 
-/**
-* Funzione per chiudere il modal di successo
-*/
-function closeSuccessModal() {
-  const successModal = document.getElementById("successModal");
-  successModal.style.display = "none";
-}
-
-/**
-* Event Listener per chiudere i modali cliccando fuori
-*/
-window.onclick = function(event) {
-  const warningModal = document.getElementById("warningModal");
-  const successModal = document.getElementById("successModal");
-  if (warningModal && event.target === warningModal) {
-      warningModal.style.display = 'none';
-  }
-  if (successModal && event.target === successModal) {
-      successModal.style.display = 'none';
-  }
-}
-
-/**
-* Carica i prezzi dalle API e popola le tabelle
-*/
-document.addEventListener("DOMContentLoaded", () => {
-  // Nascondi la sezione di login se presente
-  const loginSection = document.getElementById("login-section");
-  if (loginSection) {
-      loginSection.style.display = "none";
-  }
-
-  // Mostra la sezione admin
-  const adminSection = document.getElementById("admin-section");
-  if (adminSection) {
-      adminSection.style.display = "block";
-  }
-
-  // Carica i prezzi
-  loadPrices();
-});
-
-/**
-* Carica i prezzi dalle API e popola le tabelle
-*/
-async function loadPrices() {
-  try {
-      // Chiamata al server per ottenere i prezzi dei Contenitori
-      const responseContenitori = await fetch('https://configuratore-2-0.onrender.com/api/Prezzi/get-contenitori-prices', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json'
-          }
-      });
-
-      if (!responseContenitori.ok) {
-          const errorData = await responseContenitori.json();
-          throw new Error(errorData.message || 'Errore nel recupero dei prezzi dei Contenitori.');
-      }
-
-      const contenitoriData = await responseContenitori.json();
-      populateTable('contenitori-table', contenitoriData);
-
-      // Chiamata al server per ottenere i prezzi dei Mezzi
-      const responseMezzi = await fetch('https://configuratore-2-0.onrender.com/api/Prezzi/get-mezzi-prices', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json'
-          }
-      });
-
-      if (!responseMezzi.ok) {
-          const errorData = await responseMezzi.json();
-          throw new Error(errorData.message || 'Errore nel recupero dei prezzi dei Mezzi.');
-      }
-
-      const mezziData = await responseMezzi.json();
-      populateTable('mezzi-table', mezziData);
-  } catch (error) {
-      console.error(error);
-      showWarningModal(`Errore: ${error.message}`);
-  }
-}
-
-/**
-* Popola una tabella con i dati dei prezzi
-* @param {string} tableId - L'ID della tabella da popolare
-* @param {object} data - I dati dei prezzi
-*/
-function populateTable(tableId, data) {
-  const tableBody = document.querySelector(`#${tableId} tbody`);
-  tableBody.innerHTML = ""; // Svuota la tabella
-
-  for (let categoria in data) {
-      const opzioni = data[categoria];
-      for (let opzione in opzioni) {
-          const prezzo = opzioni[opzione];
-          const row = document.createElement('tr');
-
-          const categoriaCell = document.createElement('td');
-          categoriaCell.textContent = categoria;
-
-          const opzioneCell = document.createElement('td');
-          opzioneCell.textContent = opzione;
-
-          const prezzoCell = document.createElement('td');
-          const input = document.createElement('input');
-          input.type = 'number';
-          input.min = '0';
-          input.step = '0.01';
-          input.value = prezzo;
-          input.classList.add('table-input');
-          input.dataset.categoria = categoria;
-          input.dataset.opzione = opzione;
-          prezzoCell.appendChild(input);
-
-          row.appendChild(categoriaCell);
-          row.appendChild(opzioneCell);
-          row.appendChild(prezzoCell);
-
-          tableBody.appendChild(row);
-      }
-  }
-}
-
-/**
-* Salva le modifiche ai prezzi
-*/
-document.getElementById("save-contenitori").addEventListener("click", async () => {
-  await savePrices('contenitori-table', 'contenitori');
-});
-
-document.getElementById("save-mezzi").addEventListener("click", async () => {
-  await savePrices('mezzi-table', 'mezzi');
-});
-
-/**
-* Salva i prezzi aggiornati al server
-* @param {string} tableId - L'ID della tabella da salvare
-* @param {string} tipo - 'contenitori' o 'mezzi'
-*/
-async function savePrices(tableId, tipo) {
-  const table = document.getElementById(tableId);
-  const inputs = table.querySelectorAll('input.table-input');
-
-  let updatedPrices = {};
-
-  inputs.forEach(input => {
-      const categoria = input.dataset.categoria;
-      const opzione = input.dataset.opzione;
-      const prezzo = parseFloat(input.value);
-
-      if (!updatedPrices[categoria]) {
-          updatedPrices[categoria] = {};
-      }
-      updatedPrices[categoria][opzione] = prezzo;
-  });
-
-  try {
-      const endpoint = tipo === 'contenitori' 
-          ? 'https://configuratore-2-0.onrender.com/api/Prezzi/update-contenitori-prices'
-          : 'https://configuratore-2-0.onrender.com/api/Prezzi/update-mezzi-prices';
-
-      const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-              // Rimosso l'header 'Authorization'
-          },
-          body: JSON.stringify(updatedPrices)
-      });
-
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Errore nel salvataggio dei prezzi.');
-      }
-
-      showSuccessModal("I prezzi sono stati aggiornati con successo!");
-  } catch (error) {
-      console.error(error);
-      showWarningModal(`Errore: ${error.message}`);
-  }
-}
-
-/**
-* Gestisce la navigazione tra le tab
-*/
+// Gestione dei Tab
 const tabButtons = document.querySelectorAll('.tab-button');
 const tabContents = document.querySelectorAll('.tab-content');
 
 tabButtons.forEach(button => {
   button.addEventListener('click', () => {
-      // Rimuovi la classe active da tutti i bottoni
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      // Aggiungi la classe active al bottone cliccato
-      button.classList.add('active');
+    const target = button.getAttribute('data-tab');
 
-      const target = button.dataset.target;
+    // Rimuovi attivi
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
 
-      // Nascondi tutti i contenuti delle tab
-      tabContents.forEach(content => content.classList.remove('active'));
-      // Mostra il contenuto della tab selezionata
-      document.getElementById(target).classList.add('active');
+    // Aggiungi attivo
+    button.classList.add('active');
+    document.getElementById(target).classList.add('active');
   });
+});
+
+// Funzione per mostrare il modal di avviso
+function showWarningModal(message) {
+  warningMessageText.textContent = message;
+  warningModal.style.display = 'block';
+}
+
+// Funzione per chiudere il modal di avviso
+function closeWarningModal() {
+  warningModal.style.display = 'none';
+}
+
+// Funzione per mostrare il modal di successo
+function showSuccessModal(message) {
+  successMessageText.textContent = message;
+  successModal.style.display = 'block';
+}
+
+// Funzione per chiudere il modal di successo
+function closeSuccessModal() {
+  successModal.style.display = 'none';
+}
+
+// Event Listener per chiudere i Modal cliccando fuori
+window.onclick = function(event) {
+  if (event.target === warningModal) {
+    warningModal.style.display = 'none';
+  }
+  if (event.target === successModal) {
+    successModal.style.display = 'none';
+  }
+}
+
+// Caricamento delle configurazioni dei Contenitori
+async function loadContenitoriConfig() {
+  try {
+    const response = await fetch(`${API_URL}/contenitori`);
+    const data = await response.json();
+    if (data.length === 0) {
+      contenitoriConfigDiv.innerHTML = '<p>Nessuna configurazione trovata.</p>';
+      return;
+    }
+    const contenitore = data[0]; // Assumiamo un solo documento
+
+    contenitore.categorie.forEach(categoria => {
+      const group = document.createElement('div');
+      group.classList.add('section-group');
+
+      const title = document.createElement('h3');
+      title.textContent = capitalize(categoria.nome);
+      group.appendChild(title);
+
+      categoria.prezzi.forEach(prezzo => {
+        const label = document.createElement('label');
+        label.textContent = `Prezzo per ${prezzo.volume}:`;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.step = '0.01';
+        input.value = prezzo.prezzo;
+        input.dataset.categoria = categoria.nome;
+        input.dataset.volume = prezzo.volume;
+
+        group.appendChild(label);
+        group.appendChild(input);
+      });
+
+      contenitoriConfigDiv.appendChild(group);
+    });
+
+    // Gestione degli Optional
+    if (contenitore.optional && contenitore.optional.length > 0) {
+      const group = document.createElement('div');
+      group.classList.add('section-group');
+
+      const title = document.createElement('h3');
+      title.textContent = 'Optional';
+      group.appendChild(title);
+
+      contenitore.optional.forEach(opt => {
+        const label = document.createElement('label');
+        label.textContent = `Prezzo per ${capitalize(opt.nome)}:`;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.step = '0.01';
+        input.value = opt.prezzo;
+        input.dataset.categoria = 'optional';
+        input.dataset.opzione = opt.nome;
+
+        group.appendChild(label);
+        group.appendChild(input);
+      });
+
+      contenitoriConfigDiv.appendChild(group);
+    }
+  } catch (error) {
+    showWarningModal('Errore nel caricamento delle configurazioni dei contenitori.');
+    console.error(error);
+  }
+}
+
+// Caricamento delle configurazioni dei Mezzi
+async function loadMezziConfig() {
+  try {
+    const response = await fetch(`${API_URL}/mezzi`);
+    const data = await response.json();
+    if (data.length === 0) {
+      mezziConfigDiv.innerHTML = '<p>Nessuna configurazione trovata.</p>';
+      return;
+    }
+    const mezzo = data[0]; // Assumiamo un solo documento
+
+    mezzo.categorie.forEach(categoria => {
+      const group = document.createElement('div');
+      group.classList.add('section-group');
+
+      const title = document.createElement('h3');
+      title.textContent = capitalize(categoria.nome.toLowerCase());
+      group.appendChild(title);
+
+      const indicazioni = document.createElement('p');
+      indicazioni.textContent = categoria.indicazioni;
+      group.appendChild(indicazioni);
+
+      categoria.opzioni.forEach(opzione => {
+        const label = document.createElement('label');
+        label.textContent = `Prezzo per ${capitalize(opzione.nome)}:`;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.step = '0.01';
+        input.value = opzione.prezzo;
+        input.dataset.categoria = categoria.nome;
+        input.dataset.opzione = opzione.nome;
+
+        group.appendChild(label);
+        group.appendChild(input);
+      });
+
+      mezziConfigDiv.appendChild(group);
+    });
+  } catch (error) {
+    showWarningModal('Errore nel caricamento delle configurazioni dei mezzi.');
+    console.error(error);
+  }
+}
+
+// Funzione di capitalizzazione
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Inizializza le configurazioni all'avvio
+document.addEventListener('DOMContentLoaded', () => {
+  loadContenitoriConfig();
+  loadMezziConfig();
+});
+
+// Salva le configurazioni dei Contenitori
+saveContenitoriBtn.addEventListener('click', async () => {
+  try {
+    const categorie = [];
+    const groups = contenitoriConfigDiv.querySelectorAll('.section-group');
+    groups.forEach(group => {
+      const nome = group.querySelector('h3').textContent;
+      if (nome === 'Optional') return; // Gestire gli optional separatamente
+
+      const prezzi = [];
+      const inputs = group.querySelectorAll('input');
+      inputs.forEach(input => {
+        prezzi.push({
+          volume: input.dataset.volume,
+          prezzo: parseFloat(input.value)
+        });
+      });
+
+      categorie.push({ nome, prezzi });
+    });
+
+    // Gestione degli Optional
+    const optionalGroup = Array.from(contenitoriConfigDiv.querySelectorAll('.section-group')).find(group => group.querySelector('h3').textContent === 'Optional');
+    let optional = [];
+    if (optionalGroup) {
+      const optionalInputs = optionalGroup.querySelectorAll('input');
+      optionalInputs.forEach(input => {
+        optional.push({
+          nome: input.dataset.opzione,
+          prezzo: parseFloat(input.value)
+        });
+      });
+    }
+
+    // Aggiorna il backend
+    for (const categoria of categorie) {
+      await fetch(`${API_URL}/contenitori/categoria`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoria)
+      });
+    }
+
+    // Aggiorna gli optional
+    for (const opt of optional) {
+      await fetch(`${API_URL}/contenitori/optional`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(opt)
+      });
+    }
+
+    showSuccessModal('Configurazioni dei contenitori salvate con successo!');
+  } catch (error) {
+    showWarningModal('Errore nel salvataggio delle configurazioni dei contenitori.');
+    console.error(error);
+  }
+});
+
+// Salva le configurazioni dei Mezzi
+saveMezziBtn.addEventListener('click', async () => {
+  try {
+    const categorie = [];
+    const groups = mezziConfigDiv.querySelectorAll('.section-group');
+    groups.forEach(group => {
+      const nome = group.querySelector('h3').textContent;
+      const indicazioni = group.querySelector('p').textContent;
+      const opzioni = [];
+      const inputs = group.querySelectorAll('input');
+      inputs.forEach(input => {
+        opzioni.push({
+          nome: input.dataset.opzione,
+          prezzo: parseFloat(input.value)
+        });
+      });
+
+      categorie.push({ nome, indicazioni, opzioni });
+    });
+
+    // Aggiorna il backend
+    for (const categoria of categorie) {
+      await fetch(`${API_URL}/mezzi/categoria`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoria)
+      });
+    }
+
+    showSuccessModal('Configurazioni dei mezzi salvate con successo!');
+  } catch (error) {
+    showWarningModal('Errore nel salvataggio delle configurazioni dei mezzi.');
+    console.error(error);
+  }
 });
