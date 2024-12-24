@@ -427,75 +427,75 @@ function showStep(step) {
         });
       break;
 
-      case "Accessori":
-        const accessoriOpzioni = configurazione.data.categorie["Accessori"].opzioni;
-        configuratorDiv.innerHTML = `
-          <h2><i class="fas fa-cogs"></i> Seleziona Optional</h2>
-          <p>${configurazione.data.categorie["Accessori"].indicazioni}</p>
-          <div id="accessoriChecklist">
-            ${accessoriOpzioni
-              .map((opzione, index) => `
-                <div class="optional-item">
-                  <label>
-                    <input type="checkbox" name="accessori" value="${opzione.nome}" data-prezzo="${opzione.prezzo}" /> ${opzione.nome} (${formatCurrency(opzione.prezzo)})
-                  </label>
-                </div>
-              `)
-              .join("")}
-          </div>
-          <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
-          <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
-          <div class="button-group">
-            <button onclick="prevStep('Lavacontenitori')">
-              <i class="fas fa-arrow-left"></i> Indietro
-            </button>
-            ${avantiButton("PLUS")}
-          </div>
-        `;
-      
-        // Event Listener per le checkbox multiple
-        const accessoriCheckboxes = document.querySelectorAll('input[name="accessori"]');
-        accessoriCheckboxes.forEach(checkbox => {
-          checkbox.addEventListener("change", function () {
-            const categoria = "Accessori";
-            if (!configurazione.selections[categoria]) {
-              configurazione.selections[categoria] = [];
+    case "Accessori":
+      const accessoriOpzioni = configurazione.data.categorie["Accessori"].opzioni;
+      configuratorDiv.innerHTML = `
+        <h2><i class="fas fa-cogs"></i> Seleziona Optional</h2>
+        <p>${configurazione.data.categorie["Accessori"].indicazioni}</p>
+        <div id="accessoriChecklist">
+          ${accessoriOpzioni
+            .map((opzione, index) => `
+              <div class="optional-item">
+                <label>
+                  <input type="checkbox" name="accessori" value="${opzione.nome}" data-prezzo="${opzione.prezzo}" /> ${opzione.nome} (${formatCurrency(opzione.prezzo)})
+                </label>
+              </div>
+            `)
+            .join("")}
+        </div>
+        <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
+        <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
+        <div class="button-group">
+          <button onclick="prevStep('Lavacontenitori')">
+            <i class="fas fa-arrow-left"></i> Indietro
+          </button>
+          ${avantiButton("PLUS")}
+        </div>
+      `;
+
+      // Event Listener per le checkbox multiple
+      const accessoriCheckboxes = document.querySelectorAll('input[name="accessori"]');
+      accessoriCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+          const categoria = "Accessori";
+          if (!configurazione.selections[categoria]) {
+            configurazione.selections[categoria] = [];
+          }
+
+          if (this.checked) {
+            const opzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
+            if (opzione) {
+              // Applica lo sconto per la categoria Accessori se disponibile
+              const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+              const prezzoScontato = opzione.prezzo - (opzione.prezzo * scontoCategoria / 100);
+              
+              configurazione.selections[categoria].push({
+                nome: opzione.nome,
+                prezzo: parseFloat(prezzoScontato.toFixed(2)),
+                sconto: scontoCategoria
+              });
             }
-      
-            if (this.checked) {
-              const opzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
-              if (opzione) {
-                // Applica lo sconto per la categoria Accessori se disponibile
-                const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
-                const prezzoScontato = opzione.prezzo - (opzione.prezzo * scontoCategoria / 100);
-                
-                configurazione.selections[categoria].push({
-                  nome: opzione.nome,
-                  prezzo: parseFloat(prezzoScontato.toFixed(2)),
-                  sconto: scontoCategoria
-                });
-              }
-            } else {
-              // Rimuove l'opzione deselezionata
-              configurazione.selections[categoria] = configurazione.selections[categoria].filter(sel => sel.nome !== this.value);
-              if (configurazione.selections[categoria].length === 0) {
-                delete configurazione.selections[categoria];
-              }
+          } else {
+            // Rimuove l'opzione deselezionata
+            configurazione.selections[categoria] = configurazione.selections[categoria].filter(sel => sel.nome !== this.value);
+            if (configurazione.selections[categoria].length === 0) {
+              delete configurazione.selections[categoria];
             }
-      
-            // Aggiorna il prezzo
-            aggiornaPrezzo(false);
-      
-            // Aggiorna la visualizzazione del prezzo corrente
-            const prezzoCorrente = configurazione.selections[categoria]
-              ? configurazione.selections[categoria].reduce((acc, curr) => acc + curr.prezzo, 0)
-              : 0;
-            document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(prezzoCorrente)}`;
-          });
+          }
+
+          // Aggiorna il prezzo
+          aggiornaPrezzo(false);
+
+          // Aggiorna la visualizzazione del prezzo corrente
+          const prezzoCorrente = configurazione.selections[categoria]
+            ? configurazione.selections[categoria].reduce((acc, curr) => acc + curr.prezzo, 0)
+            : 0;
+          document.getElementById("currentSelectionPrice").textContent =
+            `Prezzo Selezione Corrente: ${formatCurrency(prezzoCorrente)}`;
         });
-        break;
-      
+      });
+      break;
+    
     case "PLUS":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-plus-circle"></i> Seleziona PLUS</h2>
@@ -560,14 +560,21 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Definisci le categorie per le quali mostrare il messaggio di avviso
-  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "ROBOT", "Compattatore"];
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "ROBOT", "Compattatore", "Lavacontenitori", "PLUS"];
 
   if (stepsConValidazione.includes(stepCorrente)) {
-    if (!configurazione.selections[stepCorrente]) {
-      // Converti la prima lettera della categoria in maiuscolo per il messaggio
-      const categoriaFormattata = capitalize(stepCorrente.toLowerCase());
-      showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
-      return;
+    if (stepCorrente === "Accessori") {
+      // "Accessori" ora può avere selezioni multiple o nessuna
+      // Non è obbligatorio selezionare almeno un accessorio
+      // Puoi decidere se renderlo obbligatorio o meno
+      // In questo esempio, non è obbligatorio
+    } else {
+      if (!configurazione.selections[stepCorrente] || (stepCorrente === "Accessori" && configurazione.selections[stepCorrente].length === 0)) {
+        // Converti la prima lettera della categoria in maiuscolo per il messaggio
+        const categoriaFormattata = capitalize(stepCorrente.toLowerCase());
+        showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
+        return;
+      }
     }
   }
 
@@ -614,7 +621,15 @@ function aggiornaPrezzo(isFinal) {
 
   // Somma dei prezzi delle selezioni
   for (let categoria in configurazione.selections) {
-    prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
+    if (Array.isArray(configurazione.selections[categoria])) {
+      // Se la selezione è un array (es. Accessori), somma tutti i prezzi
+      configurazione.selections[categoria].forEach(sel => {
+        prezzoUnitario += sel.prezzo || 0;
+      });
+    } else {
+      // Se la selezione è un oggetto singolo
+      prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
+    }
   }
 
   if (!isFinal) {
@@ -682,15 +697,31 @@ function mostraResoconto() {
   const ul = document.getElementById("riepilogoSelezioni");
   for (let categoria in configurazione.selections) {
     const sel = configurazione.selections[categoria];
-    ul.innerHTML += `
-      <li>
-        <div>
-          <strong>${capitalize(categoria)}</strong>:
-          ${sel.nome} - ${formatCurrency(sel.prezzo)} 
-        </div>
-        <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
-      </li>
-    `;
+    if (Array.isArray(sel)) {
+      // Se la selezione è un array (es. Accessori)
+      sel.forEach((item, index) => {
+        ul.innerHTML += `
+          <li>
+            <div>
+              <strong>${capitalize(categoria)} ${index + 1}</strong>:
+              ${item.nome} - ${formatCurrency(item.prezzo)} 
+            </div>
+            <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+          </li>
+        `;
+      });
+    } else {
+      // Se la selezione è un oggetto singolo
+      ul.innerHTML += `
+        <li>
+          <div>
+            <strong>${capitalize(categoria)}</strong>:
+            ${sel.nome} - ${formatCurrency(sel.prezzo)} 
+          </div>
+          <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
+        </li>
+      `;
+    }
   }
 
   // Mostriamo il prezzo "parziale" per default
@@ -772,16 +803,6 @@ function mostraResoconto() {
 }
 
 /* ----------------------------------------------
-   Passi successivi e precedenti
------------------------------------------------ */
-// Nota: La funzione `validateAndNextStep` è già stata definita sopra
-
-/* ----------------------------------------------
-   Funzione modificaSelezione: permette di modificare una selezione specifica
------------------------------------------------ */
-// Nota: La funzione `modificaSelezione` è già stata aggiornata sopra
-
-/* ----------------------------------------------
    Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
 ----------------------------------------------- */
 async function inviaConfigurazione() {
@@ -811,12 +832,25 @@ async function inviaConfigurazione() {
       let y = 105;
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        doc.text(
-          `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
-          20,
-          y
-        );
-        y += 10;
+        if (Array.isArray(sel)) {
+          // Se la selezione è un array (es. Accessori)
+          sel.forEach((item, index) => {
+            doc.text(
+              `${capitalize(categoria)} ${index + 1}: ${item.nome} - ${formatCurrency(item.prezzo)}`,
+              20,
+              y
+            );
+            y += 10;
+          });
+        } else {
+          // Se la selezione è un oggetto singolo
+          doc.text(
+            `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
+            20,
+            y
+          );
+          y += 10;
+        }
       }
 
       // Sconti finali
@@ -881,7 +915,13 @@ async function inviaConfigurazione() {
 
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
+        if (Array.isArray(sel)) {
+          sel.forEach((item, index) => {
+            body += `${capitalize(categoria)} ${index + 1}: ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
+          });
+        } else {
+          body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
+        }
       }
 
       if (
