@@ -560,7 +560,7 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Definisci le categorie per le quali mostrare il messaggio di avviso
-  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "ROBOT", "Compattatore", "Lavacontenitori", "PLUS"];
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "ROBOT", "Compattatore"];
 
   if (stepsConValidazione.includes(stepCorrente)) {
     if (stepCorrente === "Accessori") {
