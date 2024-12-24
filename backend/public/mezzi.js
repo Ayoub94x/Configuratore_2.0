@@ -1,4 +1,4 @@
-// public/js/mezzi.js
+// mezzi_script.js
 
 const { jsPDF } = window.jspdf;
 
@@ -38,26 +38,83 @@ let configurazione = {
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
   currentStep: null,             // Passo corrente
   quantità: 1,                    // Quantità selezionata
-  isModifying: false,            // Stato di modifica
-  data: {
-    categorie: {} // Sarà popolato dinamicamente
-  }
+  isModifying: false             // Stato di modifica
 };
 
-// Carica i prezzi dal server all'avvio
-document.addEventListener('DOMContentLoaded', async () => {
-  const prezzi = await fetchPrezzi();
-  
-  // Popola configurazione.data.categorie con i prezzi
-  configurazione.data.categorie = {};
-
-  prezzi.forEach(p => {
-    configurazione.data.categorie[p.categoria] = p.prezzo;
-  });
-
-  // Inizializza la prima step
-  showStep("AUTOMEZZI");
-});
+// Dati di base per i mezzi
+configurazione.data = {
+  categorie: {
+    "AUTOMEZZI": {
+      indicazioni: "Seleziona l'automezzo adatto alle tue esigenze.",
+      opzioni: [
+        { nome: "2 assi (18 Ton)", prezzo: 88500.00 },
+        { nome: "2 + 1 assi (22 Ton)", prezzo: 95000.00 },
+        { nome: "3 assi (26 Ton)", prezzo: 108000.00 },
+        { nome: "4 assi (32 Ton)", prezzo: 115000.00 }
+      ]
+    },
+    "Allestimento": {
+      indicazioni: "Scegli il tipo di allestimento per il tuo automezzo.",
+      opzioni: [
+        { nome: "Scarrabile 2 assi", prezzo: 37830.00 },
+        { nome: "Scarrabile 2+1 assi", prezzo: 38500.00 },
+        { nome: "Scarrabile 3 assi", prezzo: 40740.00 },
+        { nome: "Scarrabile 4 assi", prezzo: 43500.00 },
+        { nome: "Fisso 2 assi", prezzo: 25000.00 },
+        { nome: "Fisso 2+1 assi", prezzo: 25000.00 },
+        { nome: "Fisso 3 assi", prezzo: 25000.00 },
+        { nome: "Fisso 4 assi", prezzo: 25000.00 }
+      ]
+    },
+    "ROBOT": {
+      indicazioni: "Seleziona il modello di ROBOT.",
+      opzioni: [
+        { nome: "2AS Kinshofer", prezzo: 125000.00 },
+        { nome: "2AS F90", prezzo: 125000.00 }
+      ]
+    },
+    "Compattatore": {
+      indicazioni: "Scegli il tipo di compattatore.",
+      opzioni: [
+        { nome: "Scarrabili L=4500", prezzo: 55000.00 },
+        { nome: "Scarrabili L=4800", prezzo: 55000.00 },
+        { nome: "Scarrabili L=6200", prezzo: 55000.00 },
+        { nome: "Scarrabili L=6600", prezzo: 55000.00 },
+        { nome: "Fisso L=4500", prezzo: 55000.00 },
+        { nome: "Fisso L=4800", prezzo: 55000.00 },
+        { nome: "Fisso L=6200", prezzo: 55000.00 },
+        { nome: "Fisso L=6600", prezzo: 55000.00 }
+      ]
+    },
+    "Lavacontenitori": {
+      indicazioni: "Seleziona il sistema di lavacontenitori.",
+      opzioni: [
+        { nome: "2 assi", prezzo: 135315.00 },
+        { nome: "2 + 1 assi", prezzo: 142120.00 },
+        { nome: "3 assi", prezzo: 149380.00 },
+        { nome: "4 assi", prezzo: 153120.00 }
+      ]
+    },
+    "Accessori": {
+      indicazioni: "Aggiungi accessori al tuo automezzo.",
+      opzioni: [
+        { nome: "PTO", prezzo: 2300.00 },
+        { nome: "Tracciamento percorso", prezzo: 5000.00 },
+        { nome: "Antenna UHF", prezzo: 6693.00 },
+        { nome: "Impianto di sanificazione", prezzo: 4400.00 },
+        { nome: "Impianto di lubrificazione", prezzo: 4850.00 },
+        { nome: "Centralina oleodinamica di emergenza (ROBOT)", prezzo: 3492.00 },
+        { nome: "Connessione remota (1Y)", prezzo: 2910.00 }
+      ]
+    },
+    "PLUS": {
+      indicazioni: "Aggiungi funzioni extra al tuo automezzo.",
+      opzioni: [
+        { nome: "Trasporto", prezzo: 1000.00 }
+      ]
+    }
+  }
+};
 
 /* ----------------------------------------------
    Funzione di capitalizzazione di una stringa
@@ -84,7 +141,7 @@ document.getElementById("userForm").addEventListener("submit", async function (e
 
   try {
     // Chiamata reale al server per verificare il codice sconto
-    const response = await fetch('/api/customers/validate-code', { // Endpoint corretto
+    const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/validate-code', { // Endpoint corretto
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -141,10 +198,12 @@ function showStep(step) {
     case "AUTOMEZZI":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-truck"></i> Seleziona l'Automezzo</h2>
-        <p>${configurazione.data.categorie["AUTOMEZZI"].indicazioni || "Seleziona l'automezzo adatto alle tue esigenze."}</p>
+        <p>${configurazione.data.categorie["AUTOMEZZI"].indicazioni}</p>
         <select id="automezziCategoria">
           <option value="">-- Seleziona Categoria --</option>
-          ${getCategorieOptions("AUTOMEZZI")}
+          ${configurazione.data.categorie["AUTOMEZZI"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -156,25 +215,26 @@ function showStep(step) {
       document
         .getElementById("automezziCategoria")
         .addEventListener("change", function () {
-          const selectedOpzioneNome = this.value;
-          if (selectedOpzioneNome) {
-            const categoria = `AUTOMEZZI_${selectedOpzioneNome.replace(/ /g, '_')}`;
-            const basePrice = configurazione.data.categorie[categoria] || 0;
-            const discount = configurazione.customer.discounts["AUTOMEZZI"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
+          const selectedOpzione = configurazione.data.categorie["AUTOMEZZI"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            // Applica lo sconto per la categoria AUTOMEZZI se disponibile
+            const categoria = "AUTOMEZZI";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
             configurazione.selections["AUTOMEZZI"] = {
-              nome: selectedOpzioneNome,
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["AUTOMEZZI"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale (no sconto quantità né sconto extra)
           aggiornaPrezzo(false);
         });
       break;
@@ -182,10 +242,12 @@ function showStep(step) {
     case "Allestimento":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-tools"></i> Seleziona Allestimento</h2>
-        <p>${configurazione.data.categorie["Allestimento"].indicazioni || "Scegli il tipo di allestimento per il tuo automezzo."}</p>
+        <p>${configurazione.data.categorie["Allestimento"].indicazioni}</p>
         <select id="allestimentoCategoria">
           <option value="">-- Seleziona Allestimento --</option>
-          ${getCategorieOptions("Allestimento")}
+          ${configurazione.data.categorie["Allestimento"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -200,25 +262,26 @@ function showStep(step) {
       document
         .getElementById("allestimentoCategoria")
         .addEventListener("change", function () {
-          const selectedOpzioneNome = this.value;
-          if (selectedOpzioneNome) {
-            const categoria = `Allestimento_${selectedOpzioneNome.replace(/ /g, '_')}`;
-            const basePrice = configurazione.data.categorie[categoria] || 0;
-            const discount = configurazione.customer.discounts["Allestimento"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
+          const selectedOpzione = configurazione.data.categorie["Allestimento"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            // Applica lo sconto per la categoria Allestimento se disponibile
+            const categoria = "Allestimento";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
             configurazione.selections["Allestimento"] = {
-              nome: selectedOpzioneNome,
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Allestimento"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
@@ -226,10 +289,12 @@ function showStep(step) {
     case "ROBOT":
       configuratorDiv.innerHTML = `
         <h2><i class="fa-solid fa-robot"></i> Seleziona la ROBOT</h2>
-        <p>${configurazione.data.categorie["ROBOT"].indicazioni || "Seleziona il modello di ROBOT."}</p>
+        <p>${configurazione.data.categorie["ROBOT"].indicazioni}</p>
         <select id="ROBOTCategoria">
           <option value="">-- Seleziona ROBOT --</option>
-          ${getCategorieOptions("ROBOT")}
+          ${configurazione.data.categorie["ROBOT"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -244,25 +309,26 @@ function showStep(step) {
       document
         .getElementById("ROBOTCategoria")
         .addEventListener("change", function () {
-          const selectedOpzioneNome = this.value;
-          if (selectedOpzioneNome) {
-            const categoria = `ROBOT_${selectedOpzioneNome.replace(/ /g, '_')}`;
-            const basePrice = configurazione.data.categorie[categoria] || 0;
-            const discount = configurazione.customer.discounts["ROBOT"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
+          const selectedOpzione = configurazione.data.categorie["ROBOT"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            // Applica lo sconto per la categoria ROBOT se disponibile
+            const categoria = "ROBOT";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
             configurazione.selections["ROBOT"] = {
-              nome: selectedOpzioneNome,
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["ROBOT"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
@@ -270,10 +336,12 @@ function showStep(step) {
     case "Compattatore":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-trash"></i> Seleziona Compattatore</h2>
-        <p>${configurazione.data.categorie["Compattatore"].indicazioni || "Scegli il tipo di compattatore."}</p>
+        <p>${configurazione.data.categorie["Compattatore"].indicazioni}</p>
         <select id="compattatoreCategoria">
           <option value="">-- Seleziona Compattatore --</option>
-          ${getCategorieOptions("Compattatore")}
+          ${configurazione.data.categorie["Compattatore"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -288,25 +356,26 @@ function showStep(step) {
       document
         .getElementById("compattatoreCategoria")
         .addEventListener("change", function () {
-          const selectedOpzioneNome = this.value;
-          if (selectedOpzioneNome) {
-            const categoria = `Compattatore_${selectedOpzioneNome.replace(/ /g, '_')}`;
-            const basePrice = configurazione.data.categorie[categoria] || 0;
-            const discount = configurazione.customer.discounts["Compattatore"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
+          const selectedOpzione = configurazione.data.categorie["Compattatore"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            // Applica lo sconto per la categoria Compattatore se disponibile
+            const categoria = "Compattatore";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
             configurazione.selections["Compattatore"] = {
-              nome: selectedOpzioneNome,
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Compattatore"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
@@ -314,10 +383,12 @@ function showStep(step) {
     case "Lavacontenitori":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-soap"></i> Seleziona Lavacontenitori</h2>
-        <p>${configurazione.data.categorie["Lavacontenitori"].indicazioni || "Seleziona il sistema di lavacontenitori."}</p>
+        <p>${configurazione.data.categorie["Lavacontenitori"].indicazioni}</p>
         <select id="lavacontenitoriCategoria">
           <option value="">-- Seleziona Lavacontenitori --</option>
-          ${getCategorieOptions("Lavacontenitori")}
+          ${configurazione.data.categorie["Lavacontenitori"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -332,41 +403,41 @@ function showStep(step) {
       document
         .getElementById("lavacontenitoriCategoria")
         .addEventListener("change", function () {
-          const selectedOpzioneNome = this.value;
-          if (selectedOpzioneNome) {
-            const categoria = `Lavacontenitori_${selectedOpzioneNome.replace(/ /g, '_')}`;
-            const basePrice = configurazione.data.categorie[categoria] || 0;
-            const discount = configurazione.customer.discounts["Lavacontenitori"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
+          const selectedOpzione = configurazione.data.categorie["Lavacontenitori"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            // Applica lo sconto per la categoria Lavacontenitori se disponibile
+            const categoria = "Lavacontenitori";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
             configurazione.selections["Lavacontenitori"] = {
-              nome: selectedOpzioneNome,
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["Lavacontenitori"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
 
     case "Accessori":
-      const accessoriOpzioni = getAccessoriOpzioni();
+      const accessoriOpzioni = configurazione.data.categorie["Accessori"].opzioni;
       configuratorDiv.innerHTML = `
-        <h2><i class="fas fa-cogs"></i> Seleziona Accessori</h2>
-        <p>${configurazione.data.categorie["Accessori"].indicazioni || "Aggiungi accessori al tuo automezzo."}</p>
+        <h2><i class="fas fa-cogs"></i> Seleziona Optional</h2>
+        <p>${configurazione.data.categorie["Accessori"].indicazioni}</p>
         <div id="accessoriChecklist">
           ${accessoriOpzioni
-            .map((opzione) => `
+            .map((opzione, index) => `
               <div class="optional-item">
                 <label>
-                  <input type="checkbox" name="accessori" value="${opzione.categoria}" />
-                  ${capitalize(opzione.nome)} (${formatCurrency(opzione.prezzo)})
+                  <input type="checkbox" name="accessori" value="${opzione.nome}" data-prezzo="${opzione.prezzo}" /> ${opzione.nome} (${formatCurrency(opzione.prezzo)})
                 </label>
               </div>
             `)
@@ -392,19 +463,21 @@ function showStep(step) {
           }
 
           if (this.checked) {
-            const opzioneNome = this.value;
-            const basePrice = configurazione.data.configurazioni[opzioneNome] || 0;
-            const discount = configurazione.customer.discounts["Accessori"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
-
-            configurazione.selections[categoria].push({
-              nome: capitalize(opzioneNome.replace('Accessori_', '').replace('_', ' ')),
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
-            });
+            const opzione = configurazione.data.categorie["Accessori"].opzioni.find(op => op.nome === this.value);
+            if (opzione) {
+              // Applica lo sconto per la categoria Accessori se disponibile
+              const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+              const prezzoScontato = opzione.prezzo - (opzione.prezzo * scontoCategoria / 100);
+              
+              configurazione.selections[categoria].push({
+                nome: opzione.nome,
+                prezzo: parseFloat(prezzoScontato.toFixed(2)),
+                sconto: scontoCategoria
+              });
+            }
           } else {
             // Rimuove l'opzione deselezionata
-            configurazione.selections[categoria] = configurazione.selections[categoria].filter(sel => sel.nome !== capitalize(this.value.replace('Accessori_', '').replace('_', ' ')));
+            configurazione.selections[categoria] = configurazione.selections[categoria].filter(sel => sel.nome !== this.value);
             if (configurazione.selections[categoria].length === 0) {
               delete configurazione.selections[categoria];
             }
@@ -422,14 +495,16 @@ function showStep(step) {
         });
       });
       break;
-
+    
     case "PLUS":
       configuratorDiv.innerHTML = `
         <h2><i class="fas fa-plus-circle"></i> Seleziona PLUS</h2>
-        <p>${configurazione.data.categorie["PLUS"].indicazioni || "Aggiungi funzioni extra al tuo automezzo."}</p>
+        <p>${configurazione.data.categorie["PLUS"].indicazioni}</p>
         <select id="plusCategoria">
           <option value="">-- Seleziona PLUS --</option>
-          ${getCategorieOptions("PLUS")}
+          ${configurazione.data.categorie["PLUS"].opzioni
+            .map((opzione) => `<option value="${opzione.nome}">${opzione.nome}</option>`)
+            .join("")}
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -444,25 +519,26 @@ function showStep(step) {
       document
         .getElementById("plusCategoria")
         .addEventListener("change", function () {
-          const selectedOpzioneNome = this.value;
-          if (selectedOpzioneNome) {
-            const categoria = `PLUS_${selectedOpzioneNome.replace(/ /g, '_')}`;
-            const basePrice = configurazione.data.configurazioni[categoria] || 0;
-            const discount = configurazione.customer.discounts["PLUS"] || 0;
-            const discountedPrice = basePrice - (basePrice * discount) / 100;
+          const selectedOpzione = configurazione.data.categorie["PLUS"].opzioni.find(op => op.nome === this.value);
+          if (selectedOpzione) {
+            // Applica lo sconto per la categoria PLUS se disponibile
+            const categoria = "PLUS";
+            const scontoCategoria = configurazione.customer.discounts[categoria] || 0;
+            const prezzoScontato = selectedOpzione.prezzo - (selectedOpzione.prezzo * scontoCategoria / 100);
 
             configurazione.selections["PLUS"] = {
-              nome: selectedOpzioneNome,
-              prezzo: parseFloat(discountedPrice.toFixed(2)),
-              sconto: discount
+              nome: selectedOpzione.nome,
+              prezzo: parseFloat(prezzoScontato.toFixed(2)),
+              sconto: scontoCategoria
             };
             document.getElementById("currentSelectionPrice").textContent =
-              `Prezzo Selezione Corrente: ${formatCurrency(discountedPrice)}`;
+              `Prezzo Selezione Corrente: ${formatCurrency(prezzoScontato)}`; // Rimosso la percentuale di sconto
           } else {
             delete configurazione.selections["PLUS"];
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
+          // Aggiorna prezzo parziale
           aggiornaPrezzo(false);
         });
       break;
@@ -484,25 +560,55 @@ function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
   // Definisci le categorie per le quali mostrare il messaggio di avviso
-  const stepsConValidazione = ["contenitore", "bascule", "gancio", "bocche", "guida", "adesivo", "Allestimento", "AUTOMEZZI", "ROBOT", "Compattatore", "Lavacontenitori", "Accessori", "PLUS"];
+  const stepsConValidazione = ["AUTOMEZZI", "Allestimento", "ROBOT", "Compattatore"];
 
   if (stepsConValidazione.includes(stepCorrente)) {
-    if (stepCorrente === "optional") {
-      // "optional" può avere selezioni multiple o nessuna, non obbligatorio
+    if (stepCorrente === "Accessori") {
+      // "Accessori" ora può avere selezioni multiple o nessuna
+      // Non è obbligatorio selezionare almeno un accessorio
+      // Puoi decidere se renderlo obbligatorio o meno
+      // In questo esempio, non è obbligatorio
     } else {
-      if (!configurazione.selections[stepCorrente] || (stepCorrente === "optional" && configurazione.selections[stepCorrente].length === 0)) {
-        const categoriaFormattata = capitalize(stepCorrente.replace('_', ' '));
+      if (!configurazione.selections[stepCorrente] || (stepCorrente === "Accessori" && configurazione.selections[stepCorrente].length === 0)) {
+        // Converti la prima lettera della categoria in maiuscolo per il messaggio
+        const categoriaFormattata = capitalize(stepCorrente.toLowerCase());
         showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
         return;
       }
     }
   }
 
-  showStep(nextStepName);
+  // Controlla se stiamo modificando una selezione
+  if (nextStepName === "resoconto" || configurazione.isModifying) {
+    showStep("resoconto");
+    configurazione.isModifying = false; // Resetta lo stato di modifica
+  } else {
+    // Per le altre categorie, procedi normalmente
+    showStep(nextStepName);
+  }
 }
 
 function prevStep(prevStepName) {
+  // **Rimozione della cancellazione della selezione precedente**
+  // Questo permette di mantenere le selezioni già fatte
   showStep(prevStepName);
+}
+
+/* ----------------------------------------------
+   Funzione modificaSelezione: permette di modificare una selezione specifica
+----------------------------------------------- */
+function modificaSelezione(categoria) {
+  const step = stepMap[categoria];
+  if (step) {
+    configurazione.isModifying = true; // Imposta lo stato di modifica
+
+    // **Nuova Modifica: Rimuove la selezione precedente per obbligare una nuova scelta**
+    delete configurazione.selections[categoria];
+
+    showStep(step);
+  } else {
+    alert("Passo non trovato per la modifica.");
+  }
 }
 
 /* ----------------------------------------------
@@ -513,11 +619,15 @@ function prevStep(prevStepName) {
 function aggiornaPrezzo(isFinal) {
   let prezzoUnitario = 0;
 
-  // Somma dei prezzi delle selezioni (scontati a livello di categoria)
+  // Somma dei prezzi delle selezioni
   for (let categoria in configurazione.selections) {
-    if (categoria === "optional") {
-      prezzoUnitario += configurazione.selections.optional.prezzo || 0;
+    if (Array.isArray(configurazione.selections[categoria])) {
+      // Se la selezione è un array (es. Accessori), somma tutti i prezzi
+      configurazione.selections[categoria].forEach(sel => {
+        prezzoUnitario += sel.prezzo || 0;
+      });
     } else {
+      // Se la selezione è un oggetto singolo
       prezzoUnitario += configurazione.selections[categoria].prezzo || 0;
     }
   }
@@ -531,7 +641,7 @@ function aggiornaPrezzo(isFinal) {
     configurazione.prezzoTotale = prezzoUnitario * configurazione.quantità;
 
     // Sconto extra
-    if (configurazione.customer.extra_discount.active) {
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
@@ -586,30 +696,27 @@ function mostraResoconto() {
   // Riempi la lista delle selezioni
   const ul = document.getElementById("riepilogoSelezioni");
   for (let categoria in configurazione.selections) {
-    if (categoria === "optional") {
-      if (configurazione.selections.optional.items.length > 0) {
-        const itemsHTML = configurazione.selections.optional.items
-          .map(
-            (item) => `<li>${item.nome} - ${formatCurrency(item.prezzo)}</li>`
-          )
-          .join("");
+    const sel = configurazione.selections[categoria];
+    if (Array.isArray(sel)) {
+      // Se la selezione è un array (es. Accessori)
+      sel.forEach((item, index) => {
         ul.innerHTML += `
           <li>
             <div>
-              <strong>${capitalize(categoria)}</strong>:
-              <ul>${itemsHTML}</ul>
+              <strong>${capitalize(categoria)} ${index + 1}</strong>:
+              ${item.nome} - ${formatCurrency(item.prezzo)} 
             </div>
-            <button class="modifica" onclick="modificaSelezione('optional')">Modifica</button>
+            <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
           </li>
         `;
-      }
+      });
     } else {
-      const sel = configurazione.selections[categoria];
+      // Se la selezione è un oggetto singolo
       ul.innerHTML += `
         <li>
           <div>
             <strong>${capitalize(categoria)}</strong>:
-            ${sel.nome} - ${formatCurrency(sel.prezzo)}
+            ${sel.nome} - ${formatCurrency(sel.prezzo)} 
           </div>
           <button class="modifica" onclick="modificaSelezione('${categoria}')">Modifica</button>
         </li>
@@ -647,7 +754,7 @@ function mostraResoconto() {
     let htmlPrezzi = `
       <p><strong>Prezzo Totale (${q} pz):</strong> ${formatCurrency(prezzoTotale)}</p>
     `;
-    if (configurazione.customer.extra_discount.active && scontoExtra > 0) {
+    if (configurazione.customer.extra_discount && configurazione.customer.extra_discount.active && scontoExtra > 0) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         htmlPrezzi += `
@@ -696,23 +803,11 @@ function mostraResoconto() {
 }
 
 /* ----------------------------------------------
-   Funzione modificaSelezione: permette di modificare una selezione specifica
------------------------------------------------ */
-function modificaSelezione(categoria) {
-  const step = stepMap[categoria];
-  if (step) {
-    showStep(step);
-  } else {
-    alert("Passo non trovato per la modifica.");
-  }
-}
-
-/* ----------------------------------------------
    Invia la configurazione: genera PDF + mailto + aggiorna uso del codice sconto
 ----------------------------------------------- */
 async function inviaConfigurazione() {
   const doc = new jsPDF();
-  const logoURL = "/path/to/Logo.jpg"; // Assicurati che il percorso sia corretto
+  const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
 
   try {
     const img = new Image();
@@ -720,7 +815,7 @@ async function inviaConfigurazione() {
     img.onload = async function () {
       doc.addImage(img, "JPEG", 10, 10, 50, 20);
       doc.setFontSize(20);
-      doc.text("Configurazione Utente", 105, 40, null, null, "center");
+      doc.text("Configurazione Mezzo", 105, 40, null, null, "center");
 
       // Dati utente
       doc.setFontSize(12);
@@ -737,16 +832,18 @@ async function inviaConfigurazione() {
       let y = 105;
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        if (categoria === "optional") {
-          if (sel.items.length > 0) {
-            doc.text(`${capitalize(categoria)}:`, 20, y);
+        if (Array.isArray(sel)) {
+          // Se la selezione è un array (es. Accessori)
+          sel.forEach((item, index) => {
+            doc.text(
+              `${capitalize(categoria)} ${index + 1}: ${item.nome} - ${formatCurrency(item.prezzo)}`,
+              20,
+              y
+            );
             y += 10;
-            sel.items.forEach((item) => {
-              doc.text(`- ${item.nome} - ${formatCurrency(item.prezzo)}`, 30, y);
-              y += 10;
-            });
-          }
+          });
         } else {
+          // Se la selezione è un oggetto singolo
           doc.text(
             `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}`,
             20,
@@ -758,17 +855,17 @@ async function inviaConfigurazione() {
 
       // Sconti finali
       if (
+        configurazione.customer.extra_discount &&
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
-        const extra = configurazione.customer.extra_discount;
-        if (extra.type === "percentuale") {
+        if (configurazione.customer.extra_discount.type === "percentuale") {
           doc.text(
-            `Sconto Extra: -${extra.value}% (${formatCurrency(configurazione.scontoExtra)})`,
+            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
             20,
             y
           );
-        } else if (extra.type === "fisso") {
+        } else if (configurazione.customer.extra_discount.type === "fisso") {
           doc.text(
             `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
             20,
@@ -786,11 +883,11 @@ async function inviaConfigurazione() {
       );
 
       // Salva PDF
-      doc.save("resoconto.pdf");
+      doc.save("resoconto_mezzo.pdf");
 
       // Aggiorna l'uso del codice sconto sul server
       try {
-        const updateResponse = await fetch('/api/customers/update-usage', { // Endpoint corretto
+        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -812,32 +909,29 @@ async function inviaConfigurazione() {
 
       // Prepara il mailto
       const toEmail = "ayoub.majdouli@esa-italy.com"; // Sostituisci con la tua email
-      const subject = encodeURIComponent("Nuova Configurazione Utente");
+      const subject = encodeURIComponent("Nuova Configurazione Mezzo");
 
       let body = `Nome: ${configurazione.userInfo.nome}\nCognome: ${configurazione.userInfo.cognome}\nAzienda: ${configurazione.userInfo.azienda}\nQuantità: ${configurazione.quantità}\n\nSelezioni:\n`;
 
       for (let categoria in configurazione.selections) {
         const sel = configurazione.selections[categoria];
-        if (categoria === "optional") {
-          if (sel.items.length > 0) {
-            body += `${capitalize(categoria)}:\n`;
-            sel.items.forEach((item) => {
-              body += `- ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
-            });
-          }
+        if (Array.isArray(sel)) {
+          sel.forEach((item, index) => {
+            body += `${capitalize(categoria)} ${index + 1}: ${item.nome} - ${formatCurrency(item.prezzo)}\n`;
+          });
         } else {
           body += `${capitalize(categoria)}: ${sel.nome} - ${formatCurrency(sel.prezzo)}\n`;
         }
       }
 
       if (
+        configurazione.customer.extra_discount &&
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
-        const extra = configurazione.customer.extra_discount;
-        if (extra.type === "percentuale") {
-          body += `\nSconto Extra: -${extra.value}% (${formatCurrency(configurazione.scontoExtra)})`;
-        } else if (extra.type === "fisso") {
+        if (configurazione.customer.extra_discount.type === "percentuale") {
+          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+        } else if (configurazione.customer.extra_discount.type === "fisso") {
           body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
         }
       }
@@ -886,24 +980,6 @@ function closeWarningModal() {
   }
 }
 
-function showSuccessModal(message) {
-  const successModal = document.getElementById("successModal");
-  const successMessageText = document.getElementById("successMessageText");
-  if (successMessageText) {
-    successMessageText.textContent = message;
-  }
-  if (successModal) {
-    successModal.style.display = "block";
-  }
-}
-
-function closeSuccessModal() {
-  const successModal = document.getElementById("successModal");
-  if (successModal) {
-    successModal.style.display = "none";
-  }
-}
-
 function openModal() {
   const modal = document.getElementById("messageModal");
   if (modal) {
@@ -923,32 +999,11 @@ function closeModal() {
 ----------------------------------------------- */
 window.onclick = function(event) {
   const warningModal = document.getElementById("warningModal");
-  const successModal = document.getElementById("successModal");
   const messageModal = document.getElementById("messageModal");
   if (warningModal && event.target === warningModal) {
     warningModal.style.display = 'none';
   }
-  if (successModal && event.target === successModal) {
-    successModal.style.display = 'none';
-  }
   if (messageModal && event.target === messageModal) {
     messageModal.style.display = 'none';
-  }
-}
-
-/* ----------------------------------------------
-   Funzione modificaSelezione: permette di modificare una selezione specifica
------------------------------------------------ */
-function modificaSelezione(categoria) {
-  const step = stepMap[categoria];
-  if (step) {
-    configurazione.isModifying = true; // Imposta lo stato di modifica
-
-    // Rimuove la selezione precedente per obbligare una nuova scelta
-    delete configurazione.selections[categoria];
-
-    showStep(step);
-  } else {
-    alert("Passo non trovato per la modifica.");
   }
 }
