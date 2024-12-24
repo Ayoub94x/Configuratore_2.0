@@ -1,108 +1,66 @@
+<!-- public/admin/prezz.html -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Configuratori</title>
-  <link rel="stylesheet" href="prezzi.css">
-  <!-- Includi Font Awesome per le icone -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>Admin Prezzi</title>
+  
+  <!-- Link al CSS -->
+  <link rel="stylesheet" href="/styles/prezzi.css">
+  
+  <!-- Font Awesome per le icone (opzionale) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <div class="container">
-      <img src="Logo.jpg" alt="Logo" class="logo">
-      <h1>Pannello di Amministrazione</h1>
+  <div class="container">
+    <h1>Gestione Prezzi</h1>
+    
+    <table id="prezziTable">
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Prezzo (€)</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- I prezzi verranno popolati dinamicamente -->
+      </tbody>
+    </table>
+    
+    <h2>Aggiungi Nuovo Prezzo</h2>
+    <form id="aggiungiPrezzoForm">
+      <label for="categoria">Categoria:</label>
+      <input type="text" id="categoria" name="categoria" required>
+      
+      <label for="prezzo">Prezzo (€):</label>
+      <input type="number" id="prezzo" name="prezzo" min="0" step="0.01" required>
+      
+      <button type="submit">Aggiungi</button>
+    </form>
+    
+    <!-- Modal di Avviso -->
+    <div id="warningModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeWarningModal()">&times;</span>
+        <p id="warningMessageText"></p>
+      </div>
     </div>
-  </header>
-
-  <!-- Login Section -->
-  <main>
-    <section id="login-section" class="form-section">
-      <div class="form-container">
-        <div class="form-left">
-          <h2>Benvenuto Admin!</h2>
-          <p>Accedi per gestire i prezzi dei configuratori.</p>
-          <img src="admin.png" alt="Admin Image" class="access-image">
-        </div>
-        <div class="form-right">
-          <form id="loginForm" class="user-form">
-            <div class="form-group">
-              <label for="username"><i class="fas fa-user"></i> Username:</label>
-              <input type="text" id="username" name="username" required placeholder="Inserisci username">
-            </div>
-
-            <div class="form-group">
-              <label for="password"><i class="fas fa-lock"></i> Password:</label>
-              <input type="password" id="password" name="password" required placeholder="Inserisci password">
-            </div>
-
-            <button type="submit" class="btn-primary">Accedi <i class="fas fa-sign-in-alt"></i></button>
-          </form>
-        </div>
+    
+    <!-- Modal di Successo -->
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeSuccessModal()">&times;</span>
+        <p id="successMessageText"></p>
       </div>
-    </section>
-
-    <!-- Gestione Prezzi -->
-    <section id="admin-section" class="admin-section" style="display: none;">
-      <div class="tabs">
-        <button class="tab-button active" data-target="contenitori">Contenitori</button>
-        <button class="tab-button" data-target="mezzi">Mezzi</button>
-      </div>
-
-      <div id="contenitori" class="tab-content active">
-        <h2><i class="fas fa-box"></i> Gestione Prezzi Contenitori</h2>
-        <table id="contenitori-table">
-          <thead>
-            <tr>
-              <th>Categoria</th>
-              <th>Opzione</th>
-              <th>Prezzo (€)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
-        <button id="save-contenitori" class="btn-secondary">Salva Modifiche <i class="fas fa-save"></i></button>
-      </div>
-
-      <div id="mezzi" class="tab-content">
-        <h2><i class="fas fa-truck"></i> Gestione Prezzi Mezzi</h2>
-        <table id="mezzi-table">
-          <thead>
-            <tr>
-              <th>Categoria</th>
-              <th>Opzione</th>
-              <th>Prezzo (€)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
-        <button id="save-mezzi" class="btn-secondary">Salva Modifiche <i class="fas fa-save"></i></button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Modal di Avviso -->
-  <div id="warningModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeWarningModal()">&times;</span>
-      <p id="warningMessageText"></p>
     </div>
   </div>
-
-  <!-- Modal di Successo -->
-  <div id="successModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeSuccessModal()">&times;</span>
-      <p id="successMessageText">I prezzi sono stati aggiornati con successo!</p>
-    </div>
-  </div>
-
-  <!-- Includi il tuo script -->
-  <script src="prezzi.js"></script>
+  
+  <!-- Link al JS -->
+  <script src="/js/prezziService.js"></script>
+  <script src="/admin/prezz.js"></script>
 </body>
 </html>

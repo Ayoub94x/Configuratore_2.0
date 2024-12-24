@@ -1,4 +1,4 @@
-// script.js
+// public/js/contenitori.js
 
 const { jsPDF } = window.jspdf;
 
@@ -20,7 +20,7 @@ const stepMap = {
   "bascule": "bascule",
   "gancio": "gancio",
   "bocche": "bocche",
-  "guida_a_terra": "guida",
+  "guida": "guida",
   "adesivo": "adesivo",
   "optional": "optional"
 };
@@ -36,150 +36,27 @@ let configurazione = {
   prezzoTotale: 0,               // Prezzo totale base (senza quantità/sconti finali)
   scontoExtra: 0,                // Valore in €
   prezzoTotaleScontato: 0,       // Prezzo totale scontato finale
-  currentStep: null              // Passo corrente
-};
-
-// Dati di base (volumi, prezzi, ecc.)
-configurazione.data = {
-  volumes: ["1750L", "2100L", "2500L", "2700L", "3000L", "3750L"],
-  configurazioni: {
-    "corpo_contenitore": {
-      prezzi: {
-        "1750L": 520.0,
-        "2100L": 550.0,
-        "2500L": 600.0,
-        "2700L": 650.0,
-        "3000L": 650.0,
-        "3750L": 710.0
-      }
-    },
-    "bascule ferro": {
-      prezzi: {
-        "1750L": 260.0,
-        "2100L": 290.0,
-        "2500L": 290.0,
-        "2700L": 320.0,
-        "3000L": 320.0,
-        "3750L": 350.0
-      }
-    },
-    "bascule hdpe": {
-      prezzi: {
-        "1750L": 120.0,
-        "2100L": 130.0,
-        "2500L": 135.0,
-        "2700L": 150.0,
-        "3000L": 155.0,
-        "3750L": 175.0
-      }
-    },
-    "gancio F90": {
-      prezzi: {
-        "1750L": 300.0,
-        "2100L": 310.0,
-        "2500L": 310.0,
-        "2700L": 320.0,
-        "3000L": 320.0,
-        "3750L": 330.0
-      }
-    },
-    "gancio ks": {
-      prezzi: {
-        "1750L": 300.0,
-        "2100L": 310.0,
-        "2500L": 310.0,
-        "2700L": 320.0,
-        "3000L": 320.0,
-        "3750L": 330.0
-      }
-    },
-    "Feritoia (metallo)": {
-      prezzi: {
-        "1750L": 195.0,
-        "2100L": 205.0,
-        "2500L": 195.0,
-        "2700L": 220.0,
-        "3000L": 205.0,
-        "3750L": 220.0
-      }
-    },
-    "Feritoia (Plastica)": {
-      prezzi: {
-        "1750L": 70.0,
-        "2100L": 80.0,
-        "2500L": 70.0,
-        "2700L": 90.0,
-        "3000L": 80.0,
-        "3750L": 90.0
-      }
-    },
-    "Cassetto": {
-      prezzi: {
-        "1750L": 295.0,
-        "2100L": 305.0,
-        "2500L": 295.0,
-        "2700L": 310.0,
-        "3000L": 305.0,
-        "3750L": 310.0
-      }
-    },
-    "Tamburo": {
-      prezzi: {
-        "1750L": 295.0,
-        "2100L": 305.0,
-        "2500L": 295.0,
-        "2700L": 310.0,
-        "3000L": 305.0,
-        "3750L": 310.0
-      }
-    },
-    "Oblò": {
-      prezzi: {
-        "1750L": 25.0,
-        "2100L": 25.0,
-        "2500L": 25.0,
-        "2700L": 25.0,
-        "3000L": 25.0,
-        "3750L": 25.0
-      }
-    },
-    "guida a terra metallo": {
-      prezzi: {
-        "1750L": 25.0,
-        "2100L": 28.0,
-        "2500L": 25.0,
-        "2700L": 31.0,
-        "3000L": 28.0,
-        "3750L": 31.0
-      }
-    },
-    "guida a terra hdpe": {
-      prezzi: {
-        "1750L": 16.0,
-        "2100L": 18.0,
-        "2500L": 16.0,
-        "2700L": 19.0,
-        "3000L": 18.0,
-        "3750L": 19.0
-      }
-    },
-    "adesivo": {
-      prezzi: {
-        "1750L": 26.4,
-        "2100L": 28.4,
-        "2500L": 26.4,
-        "2700L": 32.4,
-        "3000L": 28.4,
-        "3750L": 32.4
-      }
-    },
-    "optional": {
-      pedale: 77.0,
-      elettronica: 850.0,
-      "sensore volumetrico": 105.0
-    }
+  currentStep: null,             // Passo corrente
+  data: {
+    volumes: ["1750L", "2100L", "2500L", "2700L", "3000L", "3750L"],
+    configurazioni: {} // Sarà popolato dinamicamente
   }
 };
+
+// Carica i prezzi dal server all'avvio
+document.addEventListener('DOMContentLoaded', async () => {
+  const prezzi = await fetchPrezzi();
+  
+  // Popola configurazione.data.configurazioni con i prezzi
+  configurazione.data.configurazioni = {};
+
+  prezzi.forEach(p => {
+    configurazione.data.configurazioni[p.categoria] = p.prezzo;
+  });
+
+  // Inizializza la prima step
+  showStep("contenitore");
+});
 
 /* ----------------------------------------------
    Funzione di capitalizzazione di una stringa
@@ -206,7 +83,7 @@ document.getElementById("userForm").addEventListener("submit", async function (e
 
   try {
     // Chiamata reale al server per verificare il codice sconto
-    const response = await fetch('https://configuratore-2-0.onrender.com/api/customers/validate-code', { // Endpoint corretto
+    const response = await fetch('/api/customers/validate-code', { // Endpoint corretto
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -226,8 +103,8 @@ document.getElementById("userForm").addEventListener("submit", async function (e
     configurazione.customer = {
       code: customerData.code,
       name: customerData.name,
-      discounts: customerData.discounts,
-      extra_discount: customerData.extra_discount,
+      discounts: customerData.discounts, // Sconti per categoria
+      extra_discount: customerData.extra_discount || { active: false, type: null, value: 0 },
       usage_limit: customerData.usage_limit,
       is_active: customerData.is_active,
       usage_count: customerData.usage_count
@@ -282,12 +159,9 @@ function showStep(step) {
         .addEventListener("change", function () {
           const volume = this.value;
           if (volume) {
-            const basePrice =
-              configurazione.data.configurazioni["corpo_contenitore"].prezzi[
-                volume
-              ];
-            const discount =
-              configurazione.customer.discounts["corpo_contenitore"] || 0;
+            const categoria = `corpo_contenitore_${volume}`;
+            const basePrice = configurazione.data.configurazioni[categoria] || 0;
+            const discount = configurazione.customer.discounts["corpo_contenitore"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["corpo_contenitore"] = {
@@ -301,7 +175,6 @@ function showStep(step) {
             document.getElementById("currentSelectionPrice").textContent =
               `Prezzo Selezione Corrente: ${formatCurrency(0)}`;
           }
-          // Aggiorna prezzo parziale (no sconto quantità né sconto extra)
           aggiornaPrezzo(false);
         });
       break;
@@ -312,8 +185,8 @@ function showStep(step) {
         <p>Scegli tra bascule in ferro o HDPE.</p>
         <select id="bascule">
           <option value="">-- Seleziona --</option>
-          <option value="bascule ferro">Bascule Ferro</option>
-          <option value="bascule hdpe">Bascule HDPE</option>
+          <option value="bascule_ferro">Bascule Ferro</option>
+          <option value="bascule_hdpe">Bascule HDPE</option>
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -330,13 +203,13 @@ function showStep(step) {
           const basculeType = this.value;
           if (basculeType && configurazione.selections["corpo_contenitore"]) {
             const volume = getSelectedVolume();
-            const basePrice =
-              configurazione.data.configurazioni[basculeType].prezzi[volume];
+            const categoria = `${basculeType}_${volume}`;
+            const basePrice = configurazione.data.configurazioni[categoria] || 0;
             const discount = configurazione.customer.discounts["bascule"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["bascule"] = {
-              nome: capitalize(basculeType),
+              nome: capitalize(basculeType.replace('_', ' ')),
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
@@ -356,8 +229,8 @@ function showStep(step) {
         <p>Scegli il tipo di gancio (F90 o KS).</p>
         <select id="gancio">
           <option value="">-- Seleziona --</option>
-          <option value="gancio F90">Gancio F90</option>
-          <option value="gancio ks">Gancio KS</option>
+          <option value="gancio_F90">Gancio F90</option>
+          <option value="gancio_ks">Gancio KS</option>
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -374,13 +247,13 @@ function showStep(step) {
           const gancioType = this.value;
           if (gancioType && configurazione.selections["corpo_contenitore"]) {
             const volume = getSelectedVolume();
-            const basePrice =
-              configurazione.data.configurazioni[gancioType].prezzi[volume];
+            const categoria = `${gancioType}_${volume}`;
+            const basePrice = configurazione.data.configurazioni[categoria] || 0;
             const discount = configurazione.customer.discounts["gancio"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["gancio"] = {
-              nome: capitalize(gancioType),
+              nome: capitalize(gancioType.replace('_', ' ')),
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
@@ -400,11 +273,11 @@ function showStep(step) {
         <p>Scegli tra Feritoia, Cassetto, Tamburo o Oblò.</p>
         <select id="bocche">
           <option value="">-- Seleziona --</option>
-          <option value="Feritoia (metallo)">Feritoia (Metallo)</option>
-          <option value="Feritoia (Plastica)">Feritoia (Plastica)</option>
+          <option value="Feritoia_metallo">Feritoia (Metallo)</option>
+          <option value="Feritoia_plastica">Feritoia (Plastica)</option>
           <option value="Cassetto">Cassetto</option>
           <option value="Tamburo">Tamburo</option>
-          <option value="Oblò">Oblò</option>
+          <option value="Oblo">Oblò</option>
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -421,13 +294,13 @@ function showStep(step) {
           const boccaType = this.value;
           if (boccaType && configurazione.selections["corpo_contenitore"]) {
             const volume = getSelectedVolume();
-            const basePrice =
-              configurazione.data.configurazioni[boccaType].prezzi[volume];
+            const categoria = boccaType === "Oblo" ? `Oblo_${volume}` : `${boccaType}_${volume}`;
+            const basePrice = configurazione.data.configurazioni[categoria] || 0;
             const discount = configurazione.customer.discounts["bocche"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["bocche"] = {
-              nome: boccaType,
+              nome: capitalize(boccaType.replace('_', ' ')),
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
@@ -447,8 +320,8 @@ function showStep(step) {
         <p>Scegli la guida a terra per il contenitore.</p>
         <select id="guida">
           <option value="">-- Seleziona --</option>
-          <option value="guida a terra metallo">Guida a Terra Metallo</option>
-          <option value="guida a terra hdpe">Guida a Terra HDPE</option>
+          <option value="guida_a_terra_metallo">Guida a Terra Metallo</option>
+          <option value="guida_a_terra_hdpe">Guida a Terra HDPE</option>
         </select>
         <p id="currentSelectionPrice">Prezzo Selezione Corrente: ${formatCurrency(0)}</p>
         <p>Prezzo Totale: <span class="prezzo-totale">${formatCurrency(0)}</span></p>
@@ -465,14 +338,13 @@ function showStep(step) {
           const guidaType = this.value;
           if (guidaType && configurazione.selections["corpo_contenitore"]) {
             const volume = getSelectedVolume();
-            const basePrice =
-              configurazione.data.configurazioni[guidaType].prezzi[volume];
-            const discount =
-              configurazione.customer.discounts["guida_a_terra"] || 0;
+            const categoria = `${guidaType}_${volume}`;
+            const basePrice = configurazione.data.configurazioni[categoria] || 0;
+            const discount = configurazione.customer.discounts["guida_a_terra"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["guida_a_terra"] = {
-              nome: capitalize(guidaType),
+              nome: capitalize(guidaType.replace('_', ' ')),
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
@@ -509,14 +381,13 @@ function showStep(step) {
           const adesivoType = this.value;
           if (adesivoType && configurazione.selections["corpo_contenitore"]) {
             const volume = getSelectedVolume();
-            const basePrice =
-              configurazione.data.configurazioni[adesivoType].prezzi[volume];
-            const discount =
-              configurazione.customer.discounts["adesivo"] || 0;
+            const categoria = `${adesivoType}_${volume}`;
+            const basePrice = configurazione.data.configurazioni[categoria] || 0;
+            const discount = configurazione.customer.discounts["adesivo"] || 0;
             const discountedPrice = basePrice - (basePrice * discount) / 100;
 
             configurazione.selections["adesivo"] = {
-              nome: capitalize(adesivoType),
+              nome: capitalize(adesivoType.replace('_', ' ')),
               prezzo: parseFloat(discountedPrice.toFixed(2))
             };
             document.getElementById("currentSelectionPrice").textContent =
@@ -536,19 +407,19 @@ function showStep(step) {
         <p>Aggiungi funzioni extra.</p>
         <div class="optional-item">
           <label>
-            <input type="checkbox" name="optional" value="pedale" />
+            <input type="checkbox" name="optional" value="optional_pedale" />
             Pedale (Apertura a Pedale)
           </label>
         </div>
         <div class="optional-item">
           <label>
-            <input type="checkbox" name="optional" value="elettronica" />
+            <input type="checkbox" name="optional" value="optional_elettronica" />
             Elettronica (Monitoraggio)
           </label>
         </div>
         <div class="optional-item">
           <label>
-            <input type="checkbox" name="optional" value="sensore volumetrico" />
+            <input type="checkbox" name="optional" value="optional_sensore_volumetrico" />
             Sensore Volumetrico
           </label>
         </div>
@@ -572,14 +443,12 @@ function showStep(step) {
           checkboxes.forEach((box) => {
             if (box.checked) {
               const optName = box.value;
-              const basePrice =
-                configurazione.data.configurazioni.optional[optName];
-              const discount =
-                configurazione.customer.discounts["optional"] || 0;
+              const basePrice = configurazione.data.configurazioni[optName] || 0;
+              const discount = configurazione.customer.discounts["optional"] || 0;
               const discountedPrice = basePrice - (basePrice * discount) / 100;
 
               configurazione.selections["optional"].items.push({
-                nome: capitalize(optName),
+                nome: capitalize(optName.replace('optional_', '')),
                 prezzo: parseFloat(discountedPrice.toFixed(2))
               });
               configurazione.selections["optional"].prezzo += discountedPrice;
@@ -596,6 +465,10 @@ function showStep(step) {
     case "resoconto":
       mostraResoconto();
       return;
+
+    default:
+      configuratorDiv.innerHTML = "<p>Step non riconosciuto.</p>";
+      break;
   }
 }
 
@@ -605,13 +478,21 @@ function showStep(step) {
 function validateAndNextStep(nextStepName) {
   const stepCorrente = configurazione.currentStep;
 
-  // Controllo specifico per lo step 'contenitore'
-  if (stepCorrente === "contenitore") {
-    if (!configurazione.selections["corpo_contenitore"]) {
-      showWarningModal("Per continuare devi selezionare il contenitore!");
-      return;
+  // Definisci le categorie per le quali mostrare il messaggio di avviso
+  const stepsConValidazione = ["contenitore", "bascule", "gancio", "bocche", "guida", "adesivo"];
+
+  if (stepsConValidazione.includes(stepCorrente)) {
+    if (stepCorrente === "optional") {
+      // "optional" può avere selezioni multiple o nessuna, non obbligatorio
+    } else {
+      if (!configurazione.selections[stepCorrente] || (stepCorrente === "optional" && configurazione.selections[stepCorrente].length === 0)) {
+        const categoriaFormattata = capitalize(stepCorrente.replace('_', ' '));
+        showWarningModal(`Per continuare devi selezionare un ${categoriaFormattata}!`);
+        return;
+      }
     }
   }
+
   showStep(nextStepName);
 }
 
@@ -649,7 +530,7 @@ function aggiornaPrezzo(isFinal) {
       const extra = configurazione.customer.extra_discount;
       if (extra.type === "percentuale") {
         configurazione.scontoExtra = configurazione.prezzoTotale * (extra.value / 100);
-      } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
+      } else if (extra.type === "fisso") {
         configurazione.scontoExtra = extra.value;
       }
       configurazione.prezzoTotaleScontato = configurazione.prezzoTotale - configurazione.scontoExtra;
@@ -767,7 +648,7 @@ function mostraResoconto() {
         htmlPrezzi += `
           <p>Sconto Extra: -${extra.value}% (${formatCurrency(scontoExtra)})</p>
         `;
-      } else if (extra.type === "fisso") { // Modificato da 'valore' a 'fisso'
+      } else if (extra.type === "fisso") {
         htmlPrezzi += `<p>Sconto Extra: -${formatCurrency(scontoExtra)}</p>`;
       }
     }
@@ -826,7 +707,7 @@ function modificaSelezione(categoria) {
 ----------------------------------------------- */
 async function inviaConfigurazione() {
   const doc = new jsPDF();
-  const logoURL = "Logo.jpg"; // Assicurati che il percorso sia corretto
+  const logoURL = "/path/to/Logo.jpg"; // Assicurati che il percorso sia corretto
 
   try {
     const img = new Image();
@@ -875,13 +756,14 @@ async function inviaConfigurazione() {
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
-        if (configurazione.customer.extra_discount.type === "percentuale") {
+        const extra = configurazione.customer.extra_discount;
+        if (extra.type === "percentuale") {
           doc.text(
-            `Sconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`,
+            `Sconto Extra: -${extra.value}% (${formatCurrency(configurazione.scontoExtra)})`,
             20,
             y
           );
-        } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
+        } else if (extra.type === "fisso") {
           doc.text(
             `Sconto Extra: -${formatCurrency(configurazione.scontoExtra)}`,
             20,
@@ -903,7 +785,7 @@ async function inviaConfigurazione() {
 
       // Aggiorna l'uso del codice sconto sul server
       try {
-        const updateResponse = await fetch('https://configuratore-2-0.onrender.com/api/customers/update-usage', { // Endpoint corretto
+        const updateResponse = await fetch('/api/customers/update-usage', { // Endpoint corretto
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -947,9 +829,10 @@ async function inviaConfigurazione() {
         configurazione.customer.extra_discount.active &&
         configurazione.scontoExtra > 0
       ) {
-        if (configurazione.customer.extra_discount.type === "percentuale") {
-          body += `\nSconto Extra: -${configurazione.customer.extra_discount.value}% (${formatCurrency(configurazione.scontoExtra)})`;
-        } else if (configurazione.customer.extra_discount.type === "fisso") { // Modificato da 'valore' a 'fisso'
+        const extra = configurazione.customer.extra_discount;
+        if (extra.type === "percentuale") {
+          body += `\nSconto Extra: -${extra.value}% (${formatCurrency(configurazione.scontoExtra)})`;
+        } else if (extra.type === "fisso") {
           body += `\nSconto Extra: -${formatCurrency(configurazione.scontoExtra)}`;
         }
       }
@@ -958,7 +841,13 @@ async function inviaConfigurazione() {
       const encodedBody = encodeURIComponent(body);
       const mailtoLink = `mailto:${toEmail}?subject=${subject}&body=${encodedBody}`;
       const emailLink = document.getElementById("emailLink");
-      emailLink.href = mailtoLink;
+      if (emailLink) {
+        emailLink.href = mailtoLink;
+        emailLink.click(); // Avvia l'email client
+      } else {
+        // Se l'elemento non esiste, apri direttamente il mailto
+        window.location.href = mailtoLink;
+      }
 
       openModal();
     };
@@ -987,23 +876,33 @@ function getSelectedVolume() {
 function showWarningModal(message) {
   const warningModal = document.getElementById("warningModal");
   const warningMessageText = document.getElementById("warningMessageText");
-  warningMessageText.textContent = message;
-  warningModal.style.display = "block";
+  if (warningMessageText) {
+    warningMessageText.textContent = message;
+  }
+  if (warningModal) {
+    warningModal.style.display = "block";
+  }
 }
 
 function closeWarningModal() {
   const warningModal = document.getElementById("warningModal");
-  warningModal.style.display = "none";
+  if (warningModal) {
+    warningModal.style.display = "none";
+  }
 }
 
 function openModal() {
   const modal = document.getElementById("messageModal");
-  modal.style.display = "block";
+  if (modal) {
+    modal.style.display = "block";
+  }
 }
 
 function closeModal() {
   const modal = document.getElementById("messageModal");
-  modal.style.display = "none";
+  if (modal) {
+    modal.style.display = "none";
+  }
 }
 
 /* ----------------------------------------------
@@ -1012,10 +911,10 @@ function closeModal() {
 window.onclick = function(event) {
   const warningModal = document.getElementById("warningModal");
   const messageModal = document.getElementById("messageModal");
-  if (event.target === warningModal) {
-    warningModal.style.display = "none";
+  if (warningModal && event.target === warningModal) {
+    warningModal.style.display = 'none';
   }
-  if (event.target === messageModal) {
-    messageModal.style.display = "none";
+  if (messageModal && event.target === messageModal) {
+    messageModal.style.display = 'none';
   }
 }

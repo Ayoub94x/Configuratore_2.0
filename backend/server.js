@@ -9,7 +9,8 @@ const basicAuth = require('express-basic-auth');
 const path = require('path');
 
 const customersRoute = require('./routes/customerRoutes');
-const mezziRoute = require('./routes/mezzoRoutes'); // Importa le rotte dei mezzi
+const mezziRoute = require('./routes/mezzoRoutes'); // Assicurati che il percorso sia corretto
+const prezziRoute = require('./routes/prezzoRoutes'); // Importa le rotte dei prezzi
 
 const app = express();
 
@@ -29,6 +30,7 @@ mongoose.connect(mongoURI, {
 // Rotte API
 app.use('/api/customers', customersRoute);
 app.use('/api/mezzi', mezziRoute); // Usa le rotte dei mezzi
+app.use('/api/prezzi', prezziRoute); // Usa le rotte dei prezzi
 
 /**
  * Sezione dedicata all'ADMIN
@@ -47,20 +49,14 @@ app.use(
 );
 
 // Servire tutta la cartella "public" come statica
-// => Tutto ciò che sta in "public" è accessibile all'URL base
-//    (es. /index.html, /admin.html, /styles.css, ecc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotta di fallback per l’admin
-// Se l’utente richiede un percorso /admin/... che non esiste, 
-// inviargli la pagina admin_list.html (o admin.html, come preferisci).
 app.get('/admin/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin_mezzi.html')); // Cambia in admin_mezzi.html
 });
 
 // Rotta di fallback per TUTTO il resto
-// Se l’utente richiede una qualunque rotta che non sia /api/... o /admin/...,
-// mandiamo l’index.html (tipico scenario da SPA o sito statico generico).
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
