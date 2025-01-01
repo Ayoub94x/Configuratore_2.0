@@ -130,6 +130,18 @@ main {
     animation-delay: 0.7s;
 }
 
+.product-card:nth-child(4) {
+    animation-delay: 0.9s;
+}
+
+.product-card:nth-child(5) {
+    animation-delay: 1.1s;
+}
+
+.product-card:nth-child(6) {
+    animation-delay: 1.3s;
+}
+
 .product-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
@@ -157,7 +169,11 @@ main {
     transform: scale(1.08);
 }
 
-.product-image_cassonetti {
+.product-image_cassonetti,
+.product-image_ricambi,
+.product-image_assistenza,
+.product-image_aanutenzione,
+.product-image_gare {
     width: 100%;
     height: 100%;
     object-fit: contain; /* Adattare l'immagine senza tagli */
@@ -165,21 +181,14 @@ main {
     transform: scale(0.8);
 }
 
-.product-image_cassonetti:hover {
+.product-image_cassonetti:hover,
+.product-image_ricambi:hover,
+.product-image_assistenza:hover,
+.product-image_aanutenzione:hover,
+.product-image_gare:hover {
     transform: scale(0.9);
 }
 
-.product-image_ricambi{
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Adattare l'immagine senza tagli */
-    transition: transform 0.3s;
-    transform: scale(0.8);
-}
-
-.product-image_ricambi:hover {
-    transform: scale(0.9);
-}
 /* Titolo e Descrizione */
 .product-card h2 {
     font-size: 2em;
