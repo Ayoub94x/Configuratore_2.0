@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESA-APP</title>
+    <link rel="stylesheet" href="home.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHq+6g+ZjO4+4J4E4o3EYk1Z1e+4PZGh8FYH7AqI0A9QHRD+jz9eN5PAK7vG48E7ywZb5XBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="overlay"></div>
+    <header>
+        <div class="logo-container">
+            <img src="Logo.jpg" alt="Logo Aziendale" class="logo">
+        </div>
+        <div class="description">
+            <h1>La Tua Soluzione per Contenitori, Camion e Ricambi</h1>
+            <p>Personalizza i tuoi prodotti con facilità.</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="products">
+            <div class="product-card" id="cassonetti-card" data-aos="fade-up">
+                <div class="image-container">
+                    <img src="cassonetti.png" alt="Cassonetti" class="product-image_cassonetti" loading="lazy">
+                </div>
+                <h2>Contenitori</h2>
+                <p>Scopri la nostra gamma di contenitori robusti e affidabili.</p>
+                <a href="contenitori.html" class="button">Scopri di più</a>
+            </div>
+            <div class="product-card" id="camion-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="image-container">
+                    <img src="camion.png" alt="Camion" class="product-image" loading="lazy">
+                </div>
+                <h2>Camion</h2>
+                <p>I nostri camion sono progettati per massima efficienza e durata.</p>
+                <a href="mezzi.html" class="button">Scopri di più</a>
+            </div>
+            <div class="product-card" id="ricambi-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="image-container">
+                    <img src="ricambi.png" alt="Ricambi" class="product-image_ricambi" loading="lazy">
+                </div>
+                <h2>Ricambi</h2>
+                <p>Trova tutti i ricambi di cui hai bisogno per i tuoi camion e Contenitori.</p>
+                <a href="ricambi.html" class="button">Scopri di più</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- AOS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="home.js"></script>
+</body>
+</html>

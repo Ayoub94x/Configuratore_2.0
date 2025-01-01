@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #000000, #0a192f);
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px; /* Aumentato da 800px a 1200px */
+    padding: 20px;
+    transform-style: preserve-3d;
+}
+
+.logo-container {
+    width: 600px; /* Aumentato da 450px a 600px */
+    height: 600px; /* Aumentato da 450px a 600px */
+    margin-bottom: 80px; /* Aumentato da 60px a 80px */
+    animation: fadeIn 1s ease-out;
+    transition: transform 0.2s ease-out;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.logo {
+    width: 100%;
+    height: 100%;
+    background: url('logo.png') center/contain no-repeat;
+    filter: drop-shadow(0 0 30px rgba(0, 153, 255, 0.5));
+    transition: all 0.5s ease;
+    transform-style: preserve-3d;
+}
+
+.logo:hover {
+    filter: drop-shadow(0 0 70px rgba(0, 153, 255, 0.8)); /* Aumentato lo shadow */
+}
+
+.title {
+    color: white;
+    font-size: 8em; /* Aumentato da 7em a 8em */
+    margin: 60px 0; /* Aumentato da 50px a 60px */
+    opacity: 0;
+    animation: slideUp 1s ease forwards 0.5s;
+    text-shadow: 0 0 25px rgba(0, 153, 255, 0.5); /* Aumentato lo shadow */
+    transition: transform 0.2s ease-out;
+}
+
+.login-btn {
+    padding: 40px 120px; /* Aumentato da 30px 100px a 40px 120px */
+    font-size: 3em; /* Aumentato da 2.5em a 3em */
+    border: none;
+    border-radius: 60px; /* Aumentato da 50px a 60px */
+    background: linear-gradient(45deg, #0099ff, #00ccff);
+    color: white;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 1s;
+    box-shadow: 0 12px 30px rgba(0, 153, 255, 0.4); /* Aumentato lo shadow */
+    transform-style: preserve-3d;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1600px) {
+    .logo-container {
+        width: 500px; /* Adattamento intermedio */
+        height: 500px;
+        margin-bottom: 70px;
+    }
+
+    .title {
+        font-size: 7em;
+        margin: 50px 0;
+    }
+
+    .login-btn {
+        padding: 35px 100px;
+        font-size: 2.5em;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .logo-container {
+        width: 450px; /* Aumentato da 400px a 450px */
+        height: 450px; /* Aumentato da 400px a 450px */
+        margin-bottom: 60px; /* Aumentato da 50px a 60px */
+    }
+    
+    .title {
+        font-size: 6em; /* Aumentato da 6em a 6em */
+        margin: 50px 0; /* Aumentato da 40px a 50px */
+    }
+    
+    .login-btn {
+        padding: 30px 100px; /* Aumentato da 25px 90px a 30px 100px */
+        font-size: 2.5em; /* Mantenuto a 2.5em */
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .logo-container {
+        width: 400px;
+        height: 400px;
+        margin-bottom: 50px;
+    }
+    
+    .title {
+        font-size: 5em;
+        margin: 40px 0;
+    }
+    
+    .login-btn {
+        padding: 25px 90px;
+        font-size: 2.3em;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .logo-container {
+        width: 350px; /* Aumentato da 300px a 350px */
+        height: 350px; /* Aumentato da 300px a 350px */
+        margin-bottom: 40px;
+    }
+    
+    .title {
+        font-size: 5em; /* Mantenuto a 5em */
+        margin: 35px 0;
+    }
+    
+    .login-btn {
+        padding: 22px 80px; /* Mantenuto a 22px 80px */
+        font-size: 2em; /* Mantenuto a 2em */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .logo-container {
+        width: 300px; /* Aumentato da 250px a 300px */
+        height: 300px; /* Aumentato da 250px a 300px */
+        margin-bottom: 30px;
+    }
+    
+    .title {
+        font-size: 4em; /* Mantenuto a 4em */
+        margin: 25px 0;
+    }
+    
+    .login-btn {
+        padding: 18px 70px; /* Mantenuto a 18px 70px */
+        font-size: 1.8em; /* Mantenuto a 1.8em */
+    }
+}
+
+/* Resto del CSS rimane invariato */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    background: radial-gradient(circle, rgba(0, 153, 255, 0.8) 0%, rgba(0, 153, 255, 0) 70%);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.glow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--x) var(--y),
+                                      rgba(0, 153, 255, 0.15) 0%,
+                                      transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
