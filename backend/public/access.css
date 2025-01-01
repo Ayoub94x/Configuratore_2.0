@@ -24,10 +24,11 @@ body {
     max-width: 1200px; /* Aumentato da 800px a 1200px */
     padding: 20px;
     transform-style: preserve-3d;
+    height: 90%;
 }
 
 .logo-container {
-    width: 600px; /* Aumentato da 450px a 600px */
+    width: 700px; /* Aumentato da 450px a 600px */
     height: 600px; /* Aumentato da 450px a 600px */
     margin-bottom: 80px; /* Aumentato da 60px a 80px */
     animation: fadeIn 1s ease-out;
