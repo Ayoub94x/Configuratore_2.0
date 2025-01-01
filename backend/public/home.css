@@ -99,10 +99,44 @@ main {
 
 .products {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, auto);
+    grid-template-areas:
+        "cont cam ric"
+        "gare forecast manutenzione"
+        ". assistenza .";
     gap: 40px;
     width: 100%;
     max-width: 1200px;
+}
+
+/* Assegnazione delle aree della griglia */
+.grid-cont {
+    grid-area: cont;
+}
+
+.grid-cam {
+    grid-area: cam;
+}
+
+.grid-ric {
+    grid-area: ric;
+}
+
+.grid-gare {
+    grid-area: gare;
+}
+
+.grid-forecast {
+    grid-area: forecast;
+}
+
+.grid-manutenzione {
+    grid-area: manutenzione;
+}
+
+.grid-assistenza {
+    grid-area: assistenza;
 }
 
 .product-card {
@@ -118,28 +152,32 @@ main {
     border: 1px solid rgba(18, 63, 129, 0.1);
 }
 
-.product-card:nth-child(1) {
+.product-card:nth-child(1) { /* Contenitori */
     animation-delay: 0.3s;
 }
 
-.product-card:nth-child(2) {
+.product-card:nth-child(2) { /* Camion */
     animation-delay: 0.5s;
 }
 
-.product-card:nth-child(3) {
+.product-card:nth-child(3) { /* Ricambi */
     animation-delay: 0.7s;
 }
 
-.product-card:nth-child(4) {
+.product-card:nth-child(4) { /* Gare */
     animation-delay: 0.9s;
 }
 
-.product-card:nth-child(5) {
+.product-card:nth-child(5) { /* Forecast */
     animation-delay: 1.1s;
 }
 
-.product-card:nth-child(6) {
+.product-card:nth-child(6) { /* Manutenzione */
     animation-delay: 1.3s;
+}
+
+.product-card:nth-child(7) { /* Assistenza */
+    animation-delay: 1.5s;
 }
 
 .product-card:hover {
@@ -169,11 +207,14 @@ main {
     transform: scale(1.08);
 }
 
+/* Consolidamento delle classi delle immagini */
 .product-image_cassonetti,
+.product-image_camion,
 .product-image_ricambi,
-.product-image_assistenza,
-.product-image_aanutenzione,
-.product-image_gare {
+.product-image_gare,
+.product-image_forecast,
+.product-image_manutenzione,
+.product-image_assistenza {
     width: 100%;
     height: 100%;
     object-fit: contain; /* Adattare l'immagine senza tagli */
@@ -182,10 +223,12 @@ main {
 }
 
 .product-image_cassonetti:hover,
+.product-image_camion:hover,
 .product-image_ricambi:hover,
-.product-image_assistenza:hover,
-.product-image_aanutenzione:hover,
-.product-image_gare:hover {
+.product-image_gare:hover,
+.product-image_forecast:hover,
+.product-image_manutenzione:hover,
+.product-image_assistenza:hover {
     transform: scale(0.9);
 }
 
@@ -268,13 +311,28 @@ footer {
         font-size: 1em;
         padding: 10px 20px;
     }
+
+    .products {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(7, auto);
+        grid-template-areas:
+            "cont"
+            "cam"
+            "ric"
+            "gare"
+            "forecast"
+            "manutenzione"
+            "assistenza";
+        gap: 20px;
+        max-width: 600px;
+    }
 }
 
 /* Animazioni */
 @keyframes fadeInDown {
     from {
         opacity: 0;
-        transform: translateY(-50px);
+        transform: translateY(-20px);
     }
     to {
         opacity: 1;
