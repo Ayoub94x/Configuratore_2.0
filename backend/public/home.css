@@ -134,9 +134,7 @@ main {
 .grid-manutenzione {
     grid-area: manutenzione;
 }
-.grid-BI {
-    grid-area: BI;
-}
+
 .grid-assistenza {
     grid-area: assistenza;
 }
